@@ -25,7 +25,7 @@ const AuthNavigation = () => {
     setIsOpen(false);
     setTimeout(() => {
       navigate(path);
-    }, 700);
+    }, 1000);
   };
 
   return (
