@@ -49,7 +49,7 @@ function Register() {
                               onChange={(e) =>
                                 setFirstNameInput(e.target.value)
                               }
-                              className="w-full focus:outline-none focus:ring-0 py-3 text-xs text-neutral-500 bg-transparent"
+                              className="w-full focus:outline-none focus:ring-0 py-3 text-base text-neutral-500 bg-transparent"
                             />
                           </div>
                         </label>
@@ -65,7 +65,7 @@ function Register() {
                               id="lastName"
                               value={lastNameInput}
                               onChange={(e) => setLastNameInput(e.target.value)}
-                              className="w-full focus:outline-none focus:ring-0 py-3 text-xs text-neutral-500 bg-transparent"
+                              className="w-full focus:outline-none focus:ring-0 py-3 text-base text-neutral-500 bg-transparent"
                             />
                           </div>
                         </label>
@@ -82,7 +82,7 @@ function Register() {
                             id="email"
                             value={emailInput}
                             onChange={(e) => setEmailInput(e.target.value)}
-                            className="w-full focus:outline-none focus:ring-0 py-3 text-xs text-neutral-500 bg-transparent"
+                            className="w-full focus:outline-none focus:ring-0 py-3 text-base text-neutral-500 bg-transparent"
                           />
                           <Mail className="w-5 h-5 text-gray-400" />
                         </div>
@@ -99,7 +99,7 @@ function Register() {
                             id="password"
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
-                            className="w-full focus:outline-none focus:ring-0 py-3 text-xs text-neutral-500 bg-transparent"
+                            className="w-full focus:outline-none focus:ring-0 py-3 text-base text-neutral-500 bg-transparent"
                           />
                           {showPassword ? (
                             <Eye
