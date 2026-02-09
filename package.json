@@ -16,6 +16,7 @@
     "create": "^0.5.5",
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^0.563.0",
+    "motion": "^12.33.2",
     "npx": "^10.2.2",
     "radix-ui": "^1.4.3",
     "react": "^19.2.0",
