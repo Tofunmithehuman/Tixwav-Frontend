@@ -22,7 +22,7 @@ const Navigation = () => {
             </nav>
             <nav className="md:flex items-center space-x-4 hidden">
               <Link to="/login" className="text-gray-800">Login</Link>
-              <Link className="bg-[#ff7f11ff] hover:bg-[#e66f00] text-white py-2 px-4">
+              <Link className="bg-[#ff7f11ff] hover:bg-[#e66f00] rounded-xs text-white py-2 px-4">
                 Register
               </Link>
             </nav>

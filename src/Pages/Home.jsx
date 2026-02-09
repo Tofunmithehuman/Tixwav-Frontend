@@ -113,7 +113,7 @@ const Home = () => {
             <div className="mt-8 mx-2 text-center">
               <Link
                 to="/discover"
-                className="inline-block w-full sm:w-fit bg-[#ff7f11ff] text-white py-2 px-4 hover:bg-[#e66f00] transition-colors"
+                className="inline-block w-full sm:w-fit bg-[#ff7f11ff] text-white py-2 px-4 hover:bg-[#e66f00] transition-colors rounded-xs"
               >
                 View all events
               </Link>
@@ -147,7 +147,7 @@ const Home = () => {
                     <CardDescription>{event.description}</CardDescription>
                   </CardHeader>
                   <CardFooter>
-                    <Button className="w-full">View Event</Button>
+                    <Button className="w-full rounded-xs">View Event</Button>
                   </CardFooter>
                 </Card>
               ))}
