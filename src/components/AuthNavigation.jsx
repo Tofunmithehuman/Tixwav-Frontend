@@ -30,34 +30,69 @@ const AuthNavigation = () => {
 
   return (
     <div className="AuthNavigation">
-      <header className="p-4 lg:p-8 relative" style={{ zIndex: 50 }}>
+      <motion.header
+        className="p-4 lg:p-8 relative"
+        style={{ zIndex: 50 }}
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <div className="max-w-screen-2xl mx-auto">
           <div className="flex items-center justify-between">
             <nav>
-              <Link to="/" className="QurovaDEMO text-[#ff7f11ff] text-3xl">
-                Tixwav
-              </Link>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <Link to="/" className="QurovaDEMO text-[#ff7f11ff] text-3xl">
+                  Tixwav
+                </Link>
+              </motion.div>
             </nav>
+
+            {/* Desktop Navigation Links */}
             <nav className="lg:flex items-center space-x-8 hidden text-gray-800">
-              <Link to="/">Home</Link>
-              <Link>About</Link>
-              <Link>Discover</Link>
-              <Link>Pricing</Link>
-              <Link>
-                <Search />
-              </Link>
+              <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
+                <Link to="/" className="hover:text-[#ff7f11ff] duration-200">
+                  Home
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
+                <Link className="hover:text-[#ff7f11ff] duration-200">About</Link>
+              </motion.div>
+              <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
+                <Link className="hover:text-[#ff7f11ff] duration-200">
+                  Discover
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
+                <Link className="hover:text-[#ff7f11ff] duration-200">Pricing</Link>
+              </motion.div>
+              <motion.div
+                whileHover={{ rotate: 90, scale: 1.1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Link className="hover:text-[#ff7f11ff] duration-200">
+                  <Search />
+                </Link>
+              </motion.div>
             </nav>
+
+            {/* Mobile Menu Button */}
             <nav className="block lg:hidden relative" style={{ zIndex: 51 }}>
-              <button
+              <motion.button
                 onClick={() => setIsOpen(!isOpen)}
                 className="relative z-50"
+                whileTap={{ scale: 0.9 }}
+                animate={{ rotate: isOpen ? 90 : 0 }}
+                transition={{ duration: 0.3 }}
               >
                 {isOpen ? <X size={25} /> : <Menu size={25} />}
-              </button>
+              </motion.button>
             </nav>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Mobile Menu */}
       <motion.div
@@ -82,18 +117,19 @@ const AuthNavigation = () => {
         >
           {menuItems.map((item, i) => (
             <motion.div key={i} variants={itemVariants}>
-              <button
+              <motion.button
                 onClick={() => handleNavigation(item.path)}
                 className="text-gray-800 text-lg mt-4 block hover:text-[#ff7f11ff] transition-colors w-full text-left"
+                whileHover={{ x: 10 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {item.label}
-              </button>
+              </motion.button>
             </motion.div>
           ))}
         </motion.nav>
       </motion.div>
 
-      {/* Overlay */}
       {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -108,7 +144,6 @@ const AuthNavigation = () => {
   );
 };
 
-// Menu items
 const menuItems = [
   { label: "Home", path: "/" },
   { label: "About", path: "/about" },
@@ -116,7 +151,6 @@ const menuItems = [
   { label: "Pricing", path: "/pricing" },
 ];
 
-// Animation variants
 const sidebarVariants = {
   open: (height = 1000) => ({
     clipPath: `circle(${height * 2 + 200}px at calc(100% - 25px) 25px)`,
@@ -169,7 +203,6 @@ const itemVariants = {
   },
 };
 
-// Hook for dimensions
 const useDimensions = (ref) => {
   const dimensions = useRef({ width: 0, height: 0 });
 

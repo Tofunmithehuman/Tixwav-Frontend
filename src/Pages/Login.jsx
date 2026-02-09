@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Mail, Eye, EyeClosed } from "lucide-react";
 import google from "../assets/google.svg";
 import { Link } from "react-router-dom";
 import AuthNavigation from "@/components/AuthNavigation";
+import * as motion from "motion/react-client";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,6 +14,41 @@ function Login() {
     setShowPassword(!showPassword);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const formVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
+    },
+  };
+
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       <AuthNavigation />
@@ -20,24 +56,36 @@ function Login() {
         <section className="flex-1 overflow-auto">
           <div className="max-w-360 m-auto h-full">
             <div className="Auth flex justify-center items-center h-full">
-              <div className="w-11/12 max-w-100 p-4 sm:p-0 bg-white">
-                <div className="text-center">
+              <motion.div
+                className="w-11/12 max-w-100 p-4 sm:p-0 bg-white"
+                initial="hidden"
+                animate="visible"
+                variants={containerVariants}
+              >
+                {/* Header */}
+                <motion.div className="text-center" variants={itemVariants}>
                   <h1 className="text-base sm:text-xl text-neutral-600 font-semibold mb-1">
                     Log In
                   </h1>
                   <p className="text-[10px] sm:text-sm text-neutral-400">
                     Enter your credentials to access your account
                   </p>
-                </div>
+                </motion.div>
 
-                <div className="mt-10">
+                <motion.div className="mt-10" variants={formVariants}>
                   <form>
-                    <div className="flex flex-col gap-6">
-                      <label htmlFor="email">
+                    <motion.div
+                      className="flex flex-col gap-6"
+                      variants={containerVariants}
+                    >
+                      <motion.label htmlFor="email" variants={itemVariants}>
                         <p className="text-xs text-neutral-600 font-semibold mb-1">
                           EMAIL ADDRESS
                         </p>
-                        <div className="flex items-center border border-neutral-200 focus-within:border-primary-200 rounded px-4">
+                        <motion.div
+                          className="flex items-center border border-neutral-200 focus-within:border-[#ff7f11ff] rounded px-4 transition-colors"
+                          whileFocus={{ scale: 1.01 }}
+                        >
                           <input
                             type="email"
                             name="email"
@@ -46,38 +94,56 @@ function Login() {
                             onChange={(e) => setEmailInput(e.target.value)}
                             className="w-full focus:outline-none focus:ring-0 py-3 text-base text-neutral-500 bg-transparent"
                           />
-                          <Mail className="w-5 h-5 text-gray-400" />
-                        </div>
-                      </label>
+                          <motion.div
+                            animate={{
+                              scale: emailInput ? [1, 1.2, 1] : 1,
+                            }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <Mail className="w-5 h-5 text-gray-400" />
+                          </motion.div>
+                        </motion.div>
+                      </motion.label>
 
-                      <label htmlFor="password">
+                      <motion.label htmlFor="password" variants={itemVariants}>
                         <p className="text-xs text-neutral-600 font-semibold mb-1">
                           PASSWORD
                         </p>
-                        <div className="flex items-center border border-neutral-200 focus-within:border-primary-200 rounded px-4">
+                        <motion.div
+                          className="flex items-center border border-neutral-200 focus-within:border-[#ff7f11ff] rounded px-4 transition-colors"
+                          whileFocus={{ scale: 1.01 }}
+                        >
                           <input
                             type={showPassword ? "text" : "password"}
                             name="password"
                             id="password"
                             value={passwordInput}
                             onChange={(e) => setPasswordInput(e.target.value)}
-                             className="w-full focus:outline-none focus:ring-0 py-3 text-base text-neutral-500 bg-transparent"
+                            className="w-full focus:outline-none focus:ring-0 py-3 text-base text-neutral-500 bg-transparent"
                           />
-                          {showPassword ? (
-                            <Eye
-                              className="w-5 h-5 cursor-pointer text-gray-400"
-                              onClick={togglePasswordVisibility}
-                            />
-                          ) : (
-                            <EyeClosed
-                              className="w-5 h-5 cursor-pointer text-gray-400"
-                              onClick={togglePasswordVisibility}
-                            />
-                          )}
-                        </div>
-                      </label>
+                          <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                          >
+                            {showPassword ? (
+                              <Eye
+                                className="w-5 h-5 cursor-pointer text-gray-400"
+                                onClick={togglePasswordVisibility}
+                              />
+                            ) : (
+                              <EyeClosed
+                                className="w-5 h-5 cursor-pointer text-gray-400"
+                                onClick={togglePasswordVisibility}
+                              />
+                            )}
+                          </motion.div>
+                        </motion.div>
+                      </motion.label>
 
-                      <div className="flex items-center justify-between">
+                      <motion.div
+                        className="flex items-center justify-between"
+                        variants={itemVariants}
+                      >
                         <label
                           htmlFor="remember"
                           className="flex items-center gap-1"
@@ -92,45 +158,75 @@ function Login() {
                             Remember me for 30 days
                           </p>
                         </label>
-                        <Link
-                          to="/forgot-password"
-                          className="text-[#ff7f11ff]  text-xs"
-                        >
-                          Forgot Password?
-                        </Link>
-                      </div>
+                        <motion.div whileHover={{ x: 3 }}>
+                          <Link
+                            to="/forgot-password"
+                            className="text-[#ff7f11ff] text-xs"
+                          >
+                            Forgot Password?
+                          </Link>
+                        </motion.div>
+                      </motion.div>
 
-                      <button
+                      <motion.button
                         type="submit"
-                        className="w-full bg-[#ff7f11ff] cursor-pointer text-white py-3 rounded-xs text-sm font-semibold hover:bg-primary-600 transition duration-200"
+                        className="w-full bg-[#ff7f11ff] cursor-pointer text-white py-3 rounded-xs text-sm font-semibold hover:bg-[#e66f00] transition duration-200"
+                        variants={itemVariants}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                       >
                         Log into Account
-                      </button>
-                    </div>
+                      </motion.button>
+                    </motion.div>
                   </form>
 
-                  <div className="flex items-center justify-center gap-2 mt-6">
+                  <motion.div
+                    className="flex items-center justify-center gap-2 mt-6"
+                    initial={{ opacity: 0, scaleX: 0 }}
+                    animate={{ opacity: 1, scaleX: 1 }}
+                    transition={{ delay: 0.8, duration: 0.5 }}
+                  >
                     <div className="w-full h-px bg-neutral-200"></div>
                     <p className="text-sm text-neutral-500">or</p>
                     <div className="w-full h-px bg-neutral-200"></div>
-                  </div>
+                  </motion.div>
 
-                  <button className="w-full cursor-pointer bg-white border-2 border-neutral-200 text-neutral-500 py-3 rounded-xs text-sm font-semibold hover:bg-neutral-100 transition duration-200 flex items-center justify-center gap-2 mt-4">
-                    <img src={google} alt="Google" className="w-4 h-4" />
+                  <motion.button
+                    className="w-full cursor-pointer bg-white border-2 border-neutral-200 text-neutral-500 py-3 rounded-xs text-sm font-semibold hover:bg-neutral-100 transition duration-200 flex items-center justify-center gap-2 mt-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.9, duration: 0.5 }}
+                    whileHover={{ scale: 1.02, borderColor: "#ff7f11ff" }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <motion.img
+                      src={google}
+                      alt="Google"
+                      className="w-4 h-4"
+                      whileHover={{ rotate: 360 }}
+                      transition={{ duration: 0.6 }}
+                    />
                     Continue with Google
-                  </button>
+                  </motion.button>
 
-                  <p className="text-xs text-neutral-500 text-center mt-6">
+                  <motion.p
+                    className="text-xs text-neutral-500 text-center mt-6"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1, duration: 0.5 }}
+                  >
                     Are you new here?
-                    <Link
-                      to="/register"
-                      className="text-[#ff7f11ff] text-xs ms-1"
-                    >
-                      Create Account
-                    </Link>
-                  </p>
-                </div>
-              </div>
+                    <motion.span whileHover={{ x: 3 }} className="inline-block">
+                      <Link
+                        to="/register"
+                        className="text-[#ff7f11ff] text-xs ms-1"
+                      >
+                        Create Account
+                      </Link>
+                    </motion.span>
+                  </motion.p>
+                </motion.div>
+              </motion.div>
             </div>
           </div>
         </section>
