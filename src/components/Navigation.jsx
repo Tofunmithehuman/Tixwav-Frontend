@@ -53,15 +53,15 @@ const Navigation = () => {
             {/* Desktop Navigation Links */}
             <nav className="lg:flex items-center space-x-8 hidden text-gray-800">
               <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
-                <Link className="hover:text-[#ff7f11ff] duration-200">About</Link>
+                <Link to="/about" className="hover:text-[#ff7f11ff] duration-200">About</Link>
               </motion.div>
               <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
-                <Link className="hover:text-[#ff7f11ff] duration-200">
+                <Link to="/discover" className="hover:text-[#ff7f11ff] duration-200">
                   Discover
                 </Link>
               </motion.div>
               <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
-                <Link className="hover:text-[#ff7f11ff] duration-200">Pricing</Link>
+                <Link to="/pricing" className="hover:text-[#ff7f11ff] duration-200">Pricing</Link>
               </motion.div>
               <motion.div
                 whileHover={{ rotate: 90, scale: 1.1 }}
