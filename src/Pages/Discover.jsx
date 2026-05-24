@@ -58,7 +58,7 @@ const Discover = () => {
   const activeFilterCount = (category !== "All" ? 1 : 0) + (location !== "All" ? 1 : 0);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fffffcff] font-['Poppins',sans-serif]">
+    <div className="min-h-screen flex flex-col bg-[#fffffcff]">
       <Navigation />
 
       {/* Hero */}

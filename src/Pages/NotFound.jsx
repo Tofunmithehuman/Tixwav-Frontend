@@ -21,7 +21,7 @@ const NotFound = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#fffffcff] font-['Poppins',sans-serif] px-4 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#fffffcff] px-4 relative overflow-hidden">
 
       {/* Background decoration */}
       <div className="absolute inset-0 pointer-events-none">

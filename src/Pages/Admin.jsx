@@ -2609,7 +2609,7 @@ const Admin = () => {
   );
 
   return (
-    <div className="flex h-screen bg-[#fffffcff] overflow-hidden font-['Poppins',sans-serif]">
+    <div className="flex h-screen bg-[#fffffcff] overflow-hidden">
       {/* Desktop Sidebar */}
       <motion.aside
         className="hidden lg:flex w-56 shrink-0 border-r border-neutral-100 flex-col py-8 px-4 bg-white"

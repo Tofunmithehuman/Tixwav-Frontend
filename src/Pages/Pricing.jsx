@@ -110,7 +110,7 @@ const Pricing = () => {
   const [openFaq, setOpenFaq] = useState(null);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fffffcff] font-['Poppins',sans-serif]">
+    <div className="min-h-screen flex flex-col bg-[#fffffcff]">
       <Navigation />
 
       {/* Hero */}

@@ -75,7 +75,7 @@ const Footer = () => {
                     transition={{ type: "spring", stiffness: 300 }}
                   >
                     <MapPin size={16} className="text-[#ff7f11ff]" />
-                    <span>123 Event Street, City, State 12345</span>
+                    <span>Lagos | Nigeria</span>
                   </motion.div>
                   <motion.div
                     className="flex items-center gap-2 text-gray-600 text-sm"
@@ -84,10 +84,10 @@ const Footer = () => {
                   >
                     <Mail size={16} className="text-[#ff7f11ff]" />
                     <a
-                      href="mailto:hello@tixwav.com"
+                      href="mailto:tixwav@gmail.com"
                       className="hover:text-[#ff7f11ff] transition-colors"
                     >
-                      hello@tixwav.com
+                      tixwav@gmail.com
                     </a>
                   </motion.div>
                   <motion.div
@@ -97,10 +97,10 @@ const Footer = () => {
                   >
                     <Phone size={16} className="text-[#ff7f11ff]" />
                     <a
-                      href="tel:+1234567890"
+                      href="tel:+2347032638572"
                       className="hover:text-[#ff7f11ff] transition-colors"
                     >
-                      +1 (234) 567-890
+                      +234 703-263-8572
                     </a>
                   </motion.div>
                 </div>

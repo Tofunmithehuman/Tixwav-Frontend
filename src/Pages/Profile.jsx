@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -30,40 +32,37 @@ import {
   AlertTriangle,
   Eye,
   EyeOff,
-  ToggleLeft,
-  ToggleRight,
   Upload,
 } from "lucide-react";
 
+// Redux
+import { logoutUser, selectUser } from "../store/slices/authSlice";
+import {
+  getProfile,
+  updateProfile,
+  changePassword,
+  updateAvatar,
+  getMyOrders,
+  selectProfile,
+  selectOrders,
+  selectOrdersPagination,
+  selectIsUpdating,
+  selectIsAvatarUploading,
+  selectIsPasswordChanging,
+  selectIsOrdersLoading,
+  selectPasswordError,
+  clearPasswordError,
+} from "../store/slices/userSlice";
+
 // ── Toast ─────────────────────────────────────────────────────────────────────
-const Toast = ({ toasts }) => (
-  <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2 pointer-events-none">
-    {toasts.map((t) => (
-      <motion.div
-        key={t.id}
-        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0 }}
-        className={`px-4 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center gap-2 pointer-events-auto whitespace-nowrap ${
-          t.type === "success"
-            ? "bg-emerald-500 text-white"
-            : t.type === "error"
-              ? "bg-red-500 text-white"
-              : "bg-neutral-800 text-white"
-        }`}
-      >
-        {t.type === "success" ? (
-          <CheckCircle size={14} />
-        ) : t.type === "error" ? (
-          <XCircle size={14} />
-        ) : (
-          <Bell size={14} />
-        )}
-        {t.message}
-      </motion.div>
-    ))}
-  </div>
-);
+const ToastIcon = ({ type }) =>
+  type === "success" ? (
+    <CheckCircle size={14} />
+  ) : type === "error" ? (
+    <XCircle size={14} />
+  ) : (
+    <Bell size={14} />
+  );
 
 // ── Modal ─────────────────────────────────────────────────────────────────────
 const Modal = ({ open, onClose, title, children }) => {
@@ -101,7 +100,7 @@ const Modal = ({ open, onClose, title, children }) => {
 const Toggle = ({ value, onChange }) => (
   <button
     onClick={() => onChange(!value)}
-    className={`relative rounded-full transition-colors shrink-0`}
+    className="relative rounded-full transition-colors shrink-0"
     style={{
       width: "40px",
       height: "22px",
@@ -118,82 +117,34 @@ const Toggle = ({ value, onChange }) => (
 
 // ── Main Profile ──────────────────────────────────────────────────────────────
 const Profile = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // Redux state
+  const authUser = useSelector(selectUser);
+  const profile = useSelector(selectProfile);
+  const orders = useSelector(selectOrders);
+  const ordersPagination = useSelector(selectOrdersPagination);
+  const isUpdating = useSelector(selectIsUpdating);
+  const isAvatarUploading = useSelector(selectIsAvatarUploading);
+  const isPasswordChanging = useSelector(selectIsPasswordChanging);
+  const isOrdersLoading = useSelector(selectIsOrdersLoading);
+  const passwordError = useSelector(selectPasswordError);
+
+  // Use profile data if loaded, fall back to auth user
+  const user = profile || authUser;
+
   const [activeTab, setActiveTab] = useState("tickets");
   const [modal, setModal] = useState(null);
-  const [toasts, setToasts] = useState([]);
-
-  const showToast = (message, type = "info") => {
-    const id = Date.now();
-    setToasts((p) => [...p, { id, message, type }]);
-    setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 3000);
-  };
-
-  // ── Profile Data ────────────────────────────────────────────────────────────
-  const [form, setForm] = useState({
-    firstName: "Amara",
-    lastName: "Osei",
-    email: "amara.osei@email.com",
-    phone: "+234 812 345 6789",
-    location: "Lagos, Nigeria",
-    bio: "Event enthusiast and community builder. Always looking for the next great experience.",
-  });
   const [editMode, setEditMode] = useState(false);
-  const [draft, setDraft] = useState({ ...form });
+  const [draft, setDraft] = useState({});
+  const avatarInputRef = useRef(null);
 
-  const handleSave = () => {
-    setForm({ ...draft });
-    setEditMode(false);
-    showToast("Profile updated!", "success");
-  };
-  const handleCancel = () => {
-    setDraft({ ...form });
-    setEditMode(false);
-  };
-
-  // ── Tickets ─────────────────────────────────────────────────────────────────
-  const [tickets, setTickets] = useState([
-    {
-      id: "TXW-001",
-      event: "React Conference 2026",
-      date: "May 10, 2026",
-      seat: "A-14",
-      status: "upcoming",
-      price: 25000,
-    },
-    {
-      id: "TXW-002",
-      event: "Design Systems Meetup",
-      date: "Apr 28, 2026",
-      seat: "General",
-      status: "upcoming",
-      price: 5000,
-    },
-    {
-      id: "TXW-003",
-      event: "JavaScript Masterclass",
-      date: "Apr 22, 2026",
-      seat: "B-07",
-      status: "attended",
-      price: 20000,
-    },
-    {
-      id: "TXW-004",
-      event: "Web Performance Workshop",
-      date: "Mar 15, 2026",
-      seat: "C-02",
-      status: "attended",
-      price: 15000,
-    },
-  ]);
+  // Ticket filter (orders from API)
   const [ticketFilter, setTicketFilter] = useState("all");
   const [selectedTicket, setSelectedTicket] = useState(null);
 
-  const filteredTickets =
-    ticketFilter === "all"
-      ? tickets
-      : tickets.filter((t) => t.status === ticketFilter);
-
-  // ── Saved Events ────────────────────────────────────────────────────────────
+  // Saved events (UI-only for now — no API endpoint provided)
   const [saved, setSaved] = useState([
     {
       id: 1,
@@ -218,12 +169,7 @@ const Profile = () => {
     },
   ]);
 
-  const removeSaved = (id) => {
-    setSaved((p) => p.filter((e) => e.id !== id));
-    showToast("Event removed from saved.", "info");
-  };
-
-  // ── Notifications ───────────────────────────────────────────────────────────
+  // Notifications (local only)
   const [notifs, setNotifs] = useState({
     eventReminders: true,
     newEvents: true,
@@ -232,7 +178,7 @@ const Profile = () => {
     smsAlerts: false,
   });
 
-  // ── Password Change ─────────────────────────────────────────────────────────
+  // Password change form
   const [passwords, setPasswords] = useState({
     current: "",
     newPass: "",
@@ -244,45 +190,152 @@ const Profile = () => {
     confirm: false,
   });
 
+  // ── On mount: load profile + orders ───────────────────────────────────────
+  useEffect(() => {
+    dispatch(getProfile());
+    dispatch(getMyOrders());
+  }, [dispatch]);
+
+  // Sync draft when profile loads
+  useEffect(() => {
+    if (user) {
+      setDraft({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        bio: user.bio || "",
+      });
+    }
+  }, [user]);
+
+  // Show password error from Redux as toast
+  useEffect(() => {
+    if (passwordError) {
+      toast.error(passwordError);
+      dispatch(clearPasswordError());
+    }
+  }, [passwordError]);
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
+  const handleSave = () => {
+    const { firstName, lastName, phone, bio } = draft;
+    dispatch(updateProfile({ firstName, lastName, phone, bio }))
+      .unwrap()
+      .then(() => {
+        setEditMode(false);
+        toast.success("Profile updated!");
+      })
+      .catch((err) => toast.error(err || "Failed to update profile"));
+  };
+
+  const handleCancel = () => {
+    setDraft({
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+      bio: user?.bio || "",
+    });
+    setEditMode(false);
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5 MB.");
+      return;
+    }
+    dispatch(updateAvatar(file))
+      .unwrap()
+      .then(() => toast.success("Avatar updated!"))
+      .catch((err) => toast.error(err || "Failed to upload avatar"));
+  };
+
   const handlePasswordChange = () => {
     if (!passwords.current || !passwords.newPass || !passwords.confirm) {
-      showToast("Please fill all fields.", "error");
+      toast.error("Please fill all fields.");
       return;
     }
     if (passwords.newPass !== passwords.confirm) {
-      showToast("Passwords don't match.", "error");
+      toast.error("Passwords don't match.");
       return;
     }
     if (passwords.newPass.length < 8) {
-      showToast("Password must be 8+ characters.", "error");
+      toast.error("Password must be 8+ characters.");
       return;
     }
-    setPasswords({ current: "", newPass: "", confirm: "" });
-    setModal(null);
-    showToast("Password changed successfully!", "success");
+    dispatch(
+      changePassword({
+        currentPassword: passwords.current,
+        newPassword: passwords.newPass,
+      }),
+    )
+      .unwrap()
+      .then(() => {
+        setPasswords({ current: "", newPass: "", confirm: "" });
+        setModal(null);
+        toast.success("Password changed successfully!");
+      })
+      .catch(() => {}); // handled by passwordError useEffect
   };
 
-  // ── Stats ────────────────────────────────────────────────────────────────────
+  const handleLogout = () => {
+    dispatch(logoutUser())
+      .unwrap()
+      .then(() => {
+        toast.info("Signed out.");
+        navigate("/login", { replace: true });
+      })
+      .catch(() => navigate("/login", { replace: true }));
+  };
+
+  const removeSaved = (id) => {
+    setSaved((p) => p.filter((e) => e.id !== id));
+    toast.info("Event removed from saved.");
+  };
+
+  // ── Derived stats from orders ─────────────────────────────────────────────
+  const attendedCount = orders.filter(
+    (o) => o.event?.status === "completed",
+  ).length;
+  const totalSpent = orders.reduce((a, o) => a + (o.totalAmount || 0), 0);
   const stats = [
-    {
-      label: "Events Attended",
-      value: tickets.filter((t) => t.status === "attended").length,
-      icon: Calendar,
-    },
-    { label: "Tickets Bought", value: tickets.length, icon: Ticket },
+    { label: "Events Attended", value: attendedCount, icon: Calendar },
+    { label: "Orders", value: orders.length, icon: Ticket },
     { label: "Saved Events", value: saved.length, icon: Heart },
     {
       label: "Total Spent",
-      value: `₦${tickets.reduce((a, t) => a + t.price, 0).toLocaleString("en-NG")}`,
+      value: `₦${totalSpent.toLocaleString("en-NG")}`,
       icon: Star,
     },
   ];
 
+  // Filter orders for tickets tab
+  const filteredOrders =
+    ticketFilter === "all"
+      ? orders
+      : orders.filter((o) => {
+          if (ticketFilter === "upcoming")
+            return (
+              o.event?.status === "active" || o.event?.status === "upcoming"
+            );
+          if (ticketFilter === "attended")
+            return o.event?.status === "completed";
+          return true;
+        });
+
   const inp =
     "w-full border border-neutral-200 focus:border-[#ff7f11ff] rounded-lg px-3 py-2.5 text-sm text-neutral-700 focus:outline-none transition-colors bg-white";
 
+  // Avatar initials
+  const initials = user
+    ? `${user.firstName?.[0] || ""}${user.lastName?.[0] || ""}`
+    : "?";
+
   return (
-    <div className="font-['Poppins',sans-serif]">
+    <div>
       <Navigation />
       <div className="min-h-screen bg-[#fffffcff] pb-16">
         {/* Banner */}
@@ -312,26 +365,54 @@ const Profile = () => {
           >
             {/* Avatar */}
             <div className="relative w-fit">
-              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#ff7f11ff] to-[#ff3f00] flex items-center justify-center text-white text-3xl font-semibold shadow-lg border-4 border-white select-none">
-                {form.firstName[0]}
-                {form.lastName[0]}
-              </div>
-              <motion.button
-                onClick={() => showToast("Photo upload coming soon!", "info")}
-                whileTap={{ scale: 0.9 }}
-                className="absolute -bottom-1.5 -right-1.5 w-7 h-7 bg-white border border-neutral-200 rounded-full flex items-center justify-center shadow-sm hover:border-[#ff7f11ff] transition-colors"
+              {user?.avatar && user.avatar.trim() !== "" ? (
+                <img
+                  src={user.avatar}
+                  alt="Avatar"
+                  className="w-24 h-24 rounded-2xl object-cover shadow-lg border-4 border-white"
+                  onError={(e) => {
+                    e.target.style.display = "none";
+                    e.target.nextSibling.style.display = "flex";
+                  }}
+                />
+              ) : null}
+              <div
+                style={{
+                  display:
+                    user?.avatar && user.avatar.trim() !== "" ? "none" : "flex",
+                }}
+                className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#ff7f11ff] to-[#ff3f00] flex items-center justify-center text-white text-3xl font-semibold shadow-lg border-4 border-white select-none"
               >
-                <Camera size={12} className="text-neutral-500" />
+                {initials}
+              </div>
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarChange}
+              />
+              <motion.button
+                onClick={() => avatarInputRef.current?.click()}
+                disabled={isAvatarUploading}
+                whileTap={{ scale: 0.9 }}
+                className="absolute -bottom-1.5 -right-1.5 w-7 h-7 bg-white border border-neutral-200 rounded-full flex items-center justify-center shadow-sm hover:border-[#ff7f11ff] transition-colors disabled:opacity-50"
+              >
+                {isAvatarUploading ? (
+                  <div className="w-3 h-3 border border-[#ff7f11] border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Camera size={12} className="text-neutral-500" />
+                )}
               </motion.button>
             </div>
 
             <div className="flex-1 pb-1">
               <h1 className="text-xl font-semibold text-neutral-800">
-                {form.firstName} {form.lastName}
+                {user ? `${user.firstName} ${user.lastName}` : "Loading…"}
               </h1>
               <p className="text-sm text-neutral-400 flex items-center gap-1 mt-0.5">
-                <MapPin size={12} className="text-[#ff7f11ff]" />{" "}
-                {form.location}
+                <MapPin size={12} className="text-[#ff7f11ff]" />
+                {user?.email || user?.phone || ""}
               </p>
             </div>
 
@@ -346,9 +427,7 @@ const Profile = () => {
                     <Edit3 size={14} /> Edit Profile
                   </motion.button>
                   <motion.button
-                    onClick={() =>
-                      showToast("Downloading your data...", "info")
-                    }
+                    onClick={() => toast.info("Downloading your data…")}
                     whileTap={{ scale: 0.96 }}
                     className="flex items-center gap-2 px-3 py-2 rounded-lg border border-neutral-200 text-sm text-neutral-500 hover:bg-neutral-50 transition-all"
                   >
@@ -359,10 +438,16 @@ const Profile = () => {
                 <div className="flex gap-2">
                   <motion.button
                     onClick={handleSave}
+                    disabled={isUpdating}
                     whileTap={{ scale: 0.96 }}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#ff7f11ff] text-white text-sm font-medium hover:bg-[#e66f00] transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#ff7f11ff] text-white text-sm font-medium hover:bg-[#e66f00] transition-colors disabled:opacity-60"
                   >
-                    <Check size={14} /> Save
+                    {isUpdating ? (
+                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Check size={14} />
+                    )}
+                    Save
                   </motion.button>
                   <motion.button
                     onClick={handleCancel}
@@ -458,7 +543,6 @@ const Profile = () => {
                     {[
                       ["Email", "email", "email"],
                       ["Phone", "phone", "tel"],
-                      ["Location", "location", "text"],
                     ].map(([label, key, type]) => (
                       <div key={key}>
                         <label className="text-[10px] text-neutral-400 font-semibold uppercase">
@@ -466,12 +550,18 @@ const Profile = () => {
                         </label>
                         <input
                           type={type}
-                          className={`mt-1 ${inp}`}
-                          value={draft[key]}
+                          disabled={key === "email"}
+                          className={`mt-1 ${inp} ${key === "email" ? "opacity-50 cursor-not-allowed" : ""}`}
+                          value={draft[key] || ""}
                           onChange={(e) =>
                             setDraft((p) => ({ ...p, [key]: e.target.value }))
                           }
                         />
+                        {key === "email" && (
+                          <p className="text-[10px] text-neutral-400 mt-0.5">
+                            Email cannot be changed here
+                          </p>
+                        )}
                       </div>
                     ))}
                     <div>
@@ -481,7 +571,7 @@ const Profile = () => {
                       <textarea
                         className={`mt-1 ${inp} resize-none`}
                         rows={3}
-                        value={draft.bio}
+                        value={draft.bio || ""}
                         onChange={(e) =>
                           setDraft((p) => ({ ...p, bio: e.target.value }))
                         }
@@ -491,62 +581,40 @@ const Profile = () => {
                 ) : (
                   <div className="space-y-3">
                     {[
-                      { icon: Mail, value: form.email },
-                      { icon: Phone, value: form.phone },
-                      { icon: MapPin, value: form.location },
+                      { icon: Mail, value: user?.email },
+                      { icon: Phone, value: user?.phone || "Not set" },
                     ].map(({ icon: Icon, value }, i) => (
                       <div key={i} className="flex items-start gap-2.5">
                         <Icon
                           size={13}
-                          className="text-[#ff7f11ff] mt-0.5 shrink-0"
+                          className="text-neutral-300 mt-0.5 shrink-0"
                         />
-                        <span className="text-sm text-neutral-600 break-all">
+                        <p className="text-sm text-neutral-600 break-all">
                           {value}
-                        </span>
+                        </p>
                       </div>
                     ))}
-                    <div className="pt-2 border-t border-neutral-50">
-                      <p className="text-xs text-neutral-500 leading-relaxed">
-                        {form.bio}
+                    {user?.bio && (
+                      <p className="text-xs text-neutral-500 pt-1 border-t border-neutral-50">
+                        {user.bio}
                       </p>
-                    </div>
+                    )}
+                    {user?.isEmailVerified !== undefined && (
+                      <div
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${user.isEmailVerified ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}
+                      >
+                        {user.isEmailVerified ? (
+                          <CheckCircle size={10} />
+                        ) : (
+                          <AlertTriangle size={10} />
+                        )}
+                        {user.isEmailVerified
+                          ? "Email verified"
+                          : "Email not verified"}
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
-
-              {/* Notifications */}
-              <div className="bg-white border border-neutral-100 rounded-xl p-5 shadow-sm">
-                <h2 className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider mb-4">
-                  Notifications
-                </h2>
-                <div className="space-y-3.5">
-                  {[
-                    { key: "eventReminders", label: "Event Reminders" },
-                    { key: "newEvents", label: "New Events Near Me" },
-                    { key: "ticketUpdates", label: "Ticket Updates" },
-                    { key: "newsletter", label: "Newsletter" },
-                    { key: "smsAlerts", label: "SMS Alerts" },
-                  ].map((n) => (
-                    <div
-                      key={n.key}
-                      className="flex items-center justify-between"
-                    >
-                      <span className="text-sm text-neutral-600">
-                        {n.label}
-                      </span>
-                      <Toggle
-                        value={notifs[n.key]}
-                        onChange={(v) => {
-                          setNotifs((p) => ({ ...p, [n.key]: v }));
-                          showToast(
-                            `${n.label} ${v ? "enabled" : "disabled"}.`,
-                            "info",
-                          );
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
               </div>
             </motion.div>
 
@@ -557,284 +625,329 @@ const Profile = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: 0.15 }}
             >
-              {/* Tickets / Saved Tabs */}
+              {/* Tabs */}
               <div className="bg-white border border-neutral-100 rounded-xl shadow-sm overflow-hidden">
-                {/* Tab bar */}
-                <div className="flex border-b border-neutral-100 px-6">
+                <div className="flex border-b border-neutral-100">
                   {[
-                    { id: "tickets", label: "My Tickets", icon: Ticket },
-                    { id: "saved", label: "Saved Events", icon: Heart },
+                    { key: "tickets", label: "Tickets", icon: Ticket },
+                    { key: "saved", label: "Saved", icon: Heart },
+                    { key: "notifications", label: "Alerts", icon: Bell },
+                    { key: "settings", label: "Settings", icon: Shield },
                   ].map((tab) => {
                     const Icon = tab.icon;
                     return (
                       <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`relative flex items-center gap-2 px-1 py-4 mr-6 text-sm font-medium transition-colors ${activeTab === tab.id ? "text-[#ff7f11ff]" : "text-neutral-400 hover:text-neutral-600"}`}
+                        key={tab.key}
+                        onClick={() => setActiveTab(tab.key)}
+                        className={`flex-1 flex items-center justify-center gap-1.5 py-3.5 text-xs font-medium transition-colors ${
+                          activeTab === tab.key
+                            ? "text-[#ff7f11ff] border-b-2 border-[#ff7f11ff] -mb-px bg-[#ff7f11ff]/[0.02]"
+                            : "text-neutral-400 hover:text-neutral-600"
+                        }`}
                       >
-                        <Icon size={14} /> {tab.label}
-                        {activeTab === tab.id && (
-                          <motion.div
-                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#ff7f11ff] rounded-full"
-                            layoutId="tabLine"
-                          />
-                        )}
+                        <Icon size={13} />
+                        <span className="hidden sm:inline">{tab.label}</span>
                       </button>
                     );
                   })}
                 </div>
 
                 <div className="p-5">
-                  {/* Tickets */}
+                  {/* ── Tickets Tab ─────────────────────────────────────── */}
                   {activeTab === "tickets" && (
                     <motion.div
-                      key="tickets"
-                      initial={{ opacity: 0, y: 6 }}
+                      initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="space-y-4"
                     >
-                      {/* Filter pills */}
-                      <div className="flex gap-2">
+                      <div className="flex items-center gap-2 mb-4">
                         {["all", "upcoming", "attended"].map((f) => (
                           <button
                             key={f}
                             onClick={() => setTicketFilter(f)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-all ${ticketFilter === f ? "bg-[#ff7f11ff] text-white" : "border border-neutral-200 text-neutral-500 hover:border-[#ff7f11ff] hover:text-[#ff7f11ff]"}`}
+                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors capitalize ${
+                              ticketFilter === f
+                                ? "bg-[#ff7f11ff] text-white"
+                                : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200"
+                            }`}
                           >
                             {f}
                           </button>
                         ))}
                       </div>
-                      <div className="space-y-3">
-                        {filteredTickets.map((t, i) => (
-                          <motion.div
-                            key={t.id}
-                            initial={{ opacity: 0, x: -8 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.06 }}
-                            className="flex items-center gap-4 p-4 border border-neutral-100 rounded-xl hover:border-[#ff7f11ff]/25 hover:shadow-sm transition-all group cursor-pointer"
-                            onClick={() => {
-                              setSelectedTicket(t);
-                              setModal("ticket");
-                            }}
-                          >
-                            <div
-                              className={`w-1 h-14 rounded-full shrink-0 ${t.status === "upcoming" ? "bg-[#ff7f11ff]" : "bg-neutral-300"}`}
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-semibold text-neutral-800 truncate">
-                                {t.event}
-                              </p>
-                              <div className="flex items-center gap-3 mt-1">
-                                <span className="text-xs text-neutral-400 flex items-center gap-1">
-                                  <Calendar size={10} />
-                                  {t.date}
-                                </span>
-                                <span className="text-xs text-neutral-400 flex items-center gap-1">
-                                  <Star size={10} />
-                                  Seat {t.seat}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="text-right shrink-0">
-                              <span
-                                className={`text-[10px] font-medium px-2 py-1 rounded-full ${t.status === "upcoming" ? "bg-emerald-50 text-emerald-600" : "bg-neutral-100 text-neutral-500"}`}
-                              >
-                                {t.status}
-                              </span>
-                              <p className="text-xs font-semibold text-neutral-700 mt-1.5">
-                                ₦{t.price.toLocaleString("en-NG")}
-                              </p>
-                            </div>
-                            <ChevronRight
-                              size={14}
-                              className="text-neutral-200 group-hover:text-[#ff7f11ff] transition-colors shrink-0"
-                            />
-                          </motion.div>
-                        ))}
-                        {filteredTickets.length === 0 && (
-                          <div className="text-center py-10 text-sm text-neutral-400">
-                            No {ticketFilter !== "all" ? ticketFilter : ""}{" "}
-                            tickets found
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
 
-                  {/* Saved Events */}
-                  {activeTab === "saved" && (
-                    <motion.div
-                      key="saved"
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="space-y-3"
-                    >
-                      {saved.map((ev, i) => (
-                        <motion.div
-                          key={ev.id}
-                          initial={{ opacity: 0, x: -8 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.07 }}
-                          layout
-                          className="flex items-center gap-4 p-4 border border-neutral-100 rounded-xl hover:border-[#ff7f11ff]/25 hover:shadow-sm transition-all group"
-                        >
-                          <div className="w-10 h-10 rounded-xl bg-[#ff7f11ff]/10 flex items-center justify-center shrink-0">
-                            <Heart size={14} className="text-[#ff7f11ff]" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-neutral-800 truncate">
-                              {ev.name}
-                            </p>
-                            <p className="text-xs text-neutral-400 flex items-center gap-1 mt-0.5">
-                              <Clock size={10} />
-                              {ev.date}
-                            </p>
-                          </div>
-                          <div className="text-right shrink-0 space-y-1.5">
-                            <p className="text-sm font-semibold text-neutral-800">
-                              {ev.price === 0
-                                ? "Free"
-                                : `₦${ev.price.toLocaleString("en-NG")}`}
-                            </p>
-                            <div className="flex gap-1.5 justify-end">
-                              <motion.button
-                                onClick={() =>
-                                  showToast(
-                                    `Buying ticket for ${ev.name}...`,
-                                    "success",
-                                  )
-                                }
-                                whileTap={{ scale: 0.94 }}
-                                className="text-[10px] text-white font-medium bg-[#ff7f11ff] hover:bg-[#e66f00] px-2.5 py-1 rounded-lg transition-colors"
-                              >
-                                Get Ticket
-                              </motion.button>
-                              <motion.button
-                                onClick={() => removeSaved(ev.id)}
-                                whileTap={{ scale: 0.94 }}
-                                className="text-[10px] text-neutral-400 hover:text-red-500 border border-neutral-200 hover:border-red-200 px-2 py-1 rounded-lg transition-colors"
-                              >
-                                <Trash2 size={10} />
-                              </motion.button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      ))}
-                      {saved.length === 0 && (
-                        <div className="text-center py-10">
-                          <Heart
-                            size={28}
-                            className="text-neutral-200 mx-auto mb-3"
+                      {isOrdersLoading ? (
+                        <div className="flex items-center justify-center py-12">
+                          <div className="w-6 h-6 border-2 border-[#ff7f11] border-t-transparent rounded-full animate-spin" />
+                        </div>
+                      ) : filteredOrders.length === 0 ? (
+                        <div className="text-center py-12">
+                          <Ticket
+                            size={32}
+                            className="text-neutral-200 mx-auto mb-2"
                           />
                           <p className="text-sm text-neutral-400">
-                            No saved events yet
+                            No tickets found
                           </p>
-                          <Link
-                            to="/discover"
-                            className="text-xs text-[#ff7f11ff] mt-1 inline-block hover:underline"
-                          >
-                            Browse events →
-                          </Link>
+                        </div>
+                      ) : (
+                        <div className="space-y-2.5">
+                          {filteredOrders.map((order, i) => (
+                            <motion.div
+                              key={order._id}
+                              initial={{ opacity: 0, y: 6 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: i * 0.05 }}
+                              onClick={() => {
+                                setSelectedTicket(order);
+                                setModal("ticket");
+                              }}
+                              className="flex items-center gap-3 p-3.5 rounded-xl border border-neutral-100 hover:border-[#ff7f11ff]/30 hover:bg-[#ff7f11ff]/[0.02] cursor-pointer transition-all group"
+                            >
+                              <div className="w-9 h-9 rounded-lg bg-[#ff7f11ff]/10 flex items-center justify-center shrink-0">
+                                <Ticket
+                                  size={15}
+                                  className="text-[#ff7f11ff]"
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-neutral-700 truncate group-hover:text-[#ff7f11ff] transition-colors">
+                                  {order.event?.title || "Event"}
+                                </p>
+                                <p className="text-xs text-neutral-400 flex items-center gap-1 mt-0.5">
+                                  <Clock size={10} />
+                                  {order.event?.startDate
+                                    ? new Date(
+                                        order.event.startDate,
+                                      ).toLocaleDateString("en-NG", {
+                                        day: "numeric",
+                                        month: "short",
+                                        year: "numeric",
+                                      })
+                                    : "Date TBD"}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize ${
+                                    order.status === "completed"
+                                      ? "bg-emerald-50 text-emerald-600"
+                                      : order.status === "paid"
+                                        ? "bg-blue-50 text-blue-600"
+                                        : "bg-amber-50 text-amber-600"
+                                  }`}
+                                >
+                                  {order.status}
+                                </span>
+                                <ChevronRight
+                                  size={13}
+                                  className="text-neutral-200 group-hover:text-[#ff7f11ff] transition-colors"
+                                />
+                              </div>
+                            </motion.div>
+                          ))}
                         </div>
                       )}
                     </motion.div>
                   )}
-                </div>
-              </div>
 
-              {/* Account Settings */}
-              <div className="bg-white border border-neutral-100 rounded-xl p-5 shadow-sm">
-                <h2 className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider mb-4">
-                  Account Settings
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {[
-                    {
-                      label: "Change Password",
-                      desc: "Update your login credentials",
-                      icon: "🔒",
-                      action: () => setModal("password"),
-                    },
-                    {
-                      label: "Download My Data",
-                      desc: "Export all your account data",
-                      icon: "📦",
-                      action: () =>
-                        showToast("Preparing your data export...", "info"),
-                    },
-                    {
-                      label: "Privacy Settings",
-                      desc: "Control your data & visibility",
-                      icon: "🛡️",
-                      action: () =>
-                        showToast("Privacy settings coming soon!", "info"),
-                    },
-                    {
-                      label: "Manage Devices",
-                      desc: "View active login sessions",
-                      icon: "📱",
-                      action: () =>
-                        showToast("Session manager coming soon!", "info"),
-                    },
-                  ].map((item, i) => (
-                    <motion.button
-                      key={i}
-                      onClick={item.action}
-                      whileTap={{ scale: 0.97 }}
-                      className="flex items-start gap-3 p-4 rounded-xl border border-neutral-100 text-left hover:border-[#ff7f11ff]/30 hover:bg-[#ff7f11ff]/[0.02] transition-all group"
+                  {/* ── Saved Tab ───────────────────────────────────────── */}
+                  {activeTab === "saved" && (
+                    <motion.div
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.06 + 0.2 }}
                     >
-                      <span className="text-base leading-none mt-0.5">
-                        {item.icon}
-                      </span>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-neutral-700 group-hover:text-[#ff7f11ff] transition-colors">
-                          {item.label}
-                        </p>
-                        <p className="text-xs text-neutral-400 mt-0.5">
-                          {item.desc}
-                        </p>
+                      {saved.length === 0 ? (
+                        <div className="text-center py-12">
+                          <Heart
+                            size={32}
+                            className="text-neutral-200 mx-auto mb-2"
+                          />
+                          <p className="text-sm text-neutral-400">
+                            No saved events
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2.5">
+                          {saved.map((event, i) => (
+                            <motion.div
+                              key={event.id}
+                              initial={{ opacity: 0, y: 6 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: i * 0.05 }}
+                              className="flex items-center gap-3 p-3.5 rounded-xl border border-neutral-100 hover:border-neutral-200 transition-all group"
+                            >
+                              <div className="w-9 h-9 rounded-lg bg-rose-50 flex items-center justify-center shrink-0">
+                                <Heart size={15} className="text-rose-400" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-neutral-700 truncate">
+                                  {event.name}
+                                </p>
+                                <p className="text-xs text-neutral-400 mt-0.5">
+                                  {event.date} · {event.category}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-semibold text-[#ff7f11ff]">
+                                  {event.price === 0
+                                    ? "Free"
+                                    : `₦${event.price.toLocaleString("en-NG")}`}
+                                </span>
+                                <motion.button
+                                  onClick={() => removeSaved(event.id)}
+                                  whileTap={{ scale: 0.9 }}
+                                  className="p-1 rounded-lg hover:bg-red-50 text-neutral-300 hover:text-red-400 transition-colors"
+                                >
+                                  <X size={13} />
+                                </motion.button>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+
+                  {/* ── Notifications Tab ───────────────────────────────── */}
+                  {activeTab === "notifications" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="space-y-3"
+                    >
+                      {[
+                        {
+                          key: "eventReminders",
+                          label: "Event Reminders",
+                          desc: "Get notified before events you've booked",
+                        },
+                        {
+                          key: "newEvents",
+                          label: "New Events",
+                          desc: "Be the first to know about new events",
+                        },
+                        {
+                          key: "ticketUpdates",
+                          label: "Ticket Updates",
+                          desc: "Changes to your booked tickets",
+                        },
+                        {
+                          key: "newsletter",
+                          label: "Newsletter",
+                          desc: "Weekly digest of events near you",
+                        },
+                        {
+                          key: "smsAlerts",
+                          label: "SMS Alerts",
+                          desc: "Text message reminders",
+                        },
+                      ].map(({ key, label, desc }) => (
+                        <div
+                          key={key}
+                          className="flex items-center justify-between p-3.5 rounded-xl border border-neutral-100 hover:bg-neutral-50/50 transition-colors"
+                        >
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-neutral-700">
+                              {label}
+                            </p>
+                            <p className="text-xs text-neutral-400 mt-0.5">
+                              {desc}
+                            </p>
+                          </div>
+                          <Toggle
+                            value={notifs[key]}
+                            onChange={(v) =>
+                              setNotifs((p) => ({ ...p, [key]: v }))
+                            }
+                          />
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+
+                  {/* ── Settings Tab ────────────────────────────────────── */}
+                  {activeTab === "settings" && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      <div className="space-y-2">
+                        {[
+                          {
+                            icon: "🔑",
+                            label: "Change Password",
+                            desc: "Update your account password",
+                            action: () => setModal("password"),
+                          },
+                          {
+                            icon: "🛡️",
+                            label: "Two-Factor Auth",
+                            desc: "Add an extra layer of security",
+                            action: () => toast.info("2FA coming soon!"),
+                          },
+                          {
+                            icon: "📁",
+                            label: "Export My Data",
+                            desc: "Download a copy of your account data",
+                            action: () =>
+                              toast.info("Data export coming soon!"),
+                          },
+                        ].map((item, i) => (
+                          <motion.button
+                            key={i}
+                            onClick={item.action}
+                            whileTap={{ scale: 0.99 }}
+                            className="w-full flex items-center gap-3 p-3.5 rounded-xl border border-neutral-100 hover:border-neutral-200 hover:bg-neutral-50/50 transition-all text-left group"
+                          >
+                            <span className="text-base leading-none mt-0.5">
+                              {item.icon}
+                            </span>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-neutral-700 group-hover:text-[#ff7f11ff] transition-colors">
+                                {item.label}
+                              </p>
+                              <p className="text-xs text-neutral-400 mt-0.5">
+                                {item.desc}
+                              </p>
+                            </div>
+                            <ChevronRight
+                              size={13}
+                              className="text-neutral-200 group-hover:text-[#ff7f11ff] transition-colors mt-0.5 shrink-0"
+                            />
+                          </motion.button>
+                        ))}
                       </div>
-                      <ChevronRight
-                        size={13}
-                        className="text-neutral-200 group-hover:text-[#ff7f11ff] transition-colors mt-0.5 shrink-0"
-                      />
-                    </motion.button>
-                  ))}
-                </div>
 
-                {/* Danger Row */}
-                <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-red-100 rounded-xl bg-red-50/30">
-                  <div>
-                    <p className="text-sm font-medium text-red-600">
-                      Delete Account
-                    </p>
-                    <p className="text-xs text-neutral-400 mt-0.5">
-                      Permanently delete your account and all data
-                    </p>
-                  </div>
-                  <motion.button
-                    onClick={() => setModal("delete")}
-                    whileTap={{ scale: 0.96 }}
-                    className="mt-2 sm:mt-0 ml-0 sm:ml-4 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition-colors shrink-0"
-                  >
-                    <Trash2 size={12} /> Delete
-                  </motion.button>
-                </div>
+                      {/* Danger Row */}
+                      <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-red-100 rounded-xl bg-red-50/30">
+                        <div>
+                          <p className="text-sm font-medium text-red-600">
+                            Delete Account
+                          </p>
+                          <p className="text-xs text-neutral-400 mt-0.5">
+                            Permanently delete your account and all data
+                          </p>
+                        </div>
+                        <motion.button
+                          onClick={() => setModal("delete")}
+                          whileTap={{ scale: 0.96 }}
+                          className="mt-2 sm:mt-0 ml-0 sm:ml-4 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition-colors shrink-0"
+                        >
+                          <Trash2 size={12} /> Delete
+                        </motion.button>
+                      </div>
 
-                {/* Logout */}
-                <motion.button
-                  onClick={() => showToast("Signing out...", "info")}
-                  whileTap={{ scale: 0.97 }}
-                  className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 border border-neutral-200 rounded-xl text-sm text-neutral-500 hover:border-neutral-300 hover:bg-neutral-50 transition-all"
-                >
-                  <LogOut size={14} /> Sign Out
-                </motion.button>
+                      {/* Logout */}
+                      <motion.button
+                        onClick={handleLogout}
+                        whileTap={{ scale: 0.97 }}
+                        className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 border border-neutral-200 rounded-xl text-sm text-neutral-500 hover:border-neutral-300 hover:bg-neutral-50 transition-all"
+                      >
+                        <LogOut size={14} /> Sign Out
+                      </motion.button>
+                    </motion.div>
+                  )}
+                </div>
               </div>
             </motion.div>
           </div>
@@ -847,22 +960,34 @@ const Profile = () => {
       <Modal
         open={modal === "ticket"}
         onClose={() => setModal(null)}
-        title="Ticket Details"
+        title="Order Details"
       >
         {selectedTicket && (
           <div className="space-y-4">
             <div className="p-4 bg-[#ff7f11ff]/5 rounded-xl border border-[#ff7f11ff]/10 text-center">
               <p className="text-lg font-mono font-bold text-[#ff7f11ff]">
-                {selectedTicket.id}
+                {selectedTicket._id?.slice(-8).toUpperCase()}
               </p>
               <p className="text-xs text-neutral-500 mt-1">
-                {selectedTicket.event}
+                {selectedTicket.event?.title || "Event"}
               </p>
             </div>
             {[
-              ["Date", selectedTicket.date],
-              ["Seat", selectedTicket.seat],
-              ["Price", `₦${selectedTicket.price.toLocaleString("en-NG")}`],
+              [
+                "Date",
+                selectedTicket.event?.startDate
+                  ? new Date(
+                      selectedTicket.event.startDate,
+                    ).toLocaleDateString()
+                  : "TBD",
+              ],
+              ["Venue", selectedTicket.event?.venue?.name || "TBD"],
+              [
+                "Amount",
+                selectedTicket.totalAmount != null
+                  ? `₦${selectedTicket.totalAmount.toLocaleString("en-NG")}`
+                  : "–",
+              ],
               ["Status", selectedTicket.status],
             ].map(([k, v]) => (
               <div
@@ -875,33 +1000,16 @@ const Profile = () => {
                 </span>
               </div>
             ))}
-            <div className="flex gap-2 pt-1">
-              <motion.button
-                onClick={() => {
-                  showToast("Ticket downloaded!", "success");
-                  setModal(null);
-                }}
-                whileTap={{ scale: 0.96 }}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#ff7f11ff] text-white rounded-lg text-sm font-semibold hover:bg-[#e66f00] transition-colors"
-              >
-                <Download size={13} /> Download
-              </motion.button>
-              {selectedTicket.status === "upcoming" && (
-                <motion.button
-                  onClick={() => {
-                    setTickets((p) =>
-                      p.filter((t) => t.id !== selectedTicket.id),
-                    );
-                    setModal(null);
-                    showToast("Ticket cancelled. Refund initiated.", "error");
-                  }}
-                  whileTap={{ scale: 0.96 }}
-                  className="px-4 py-2.5 border border-red-200 text-red-500 rounded-lg text-sm hover:bg-red-50 transition-colors"
-                >
-                  Cancel
-                </motion.button>
-              )}
-            </div>
+            <motion.button
+              onClick={() => {
+                toast.success("Ticket downloaded!");
+                setModal(null);
+              }}
+              whileTap={{ scale: 0.96 }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#ff7f11ff] text-white rounded-lg text-sm font-semibold hover:bg-[#e66f00] transition-colors"
+            >
+              <Download size={13} /> Download
+            </motion.button>
           </div>
         )}
       </Modal>
@@ -962,10 +1070,18 @@ const Profile = () => {
             </button>
             <motion.button
               onClick={handlePasswordChange}
+              disabled={isPasswordChanging}
               whileTap={{ scale: 0.97 }}
-              className="flex-1 py-2.5 bg-[#ff7f11ff] text-white rounded-lg text-sm font-semibold hover:bg-[#e66f00] transition-colors"
+              className="flex-1 py-2.5 bg-[#ff7f11ff] text-white rounded-lg text-sm font-semibold hover:bg-[#e66f00] transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
             >
-              Update
+              {isPasswordChanging ? (
+                <>
+                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />{" "}
+                  Updating…
+                </>
+              ) : (
+                "Update"
+              )}
             </motion.button>
           </div>
         </div>
@@ -996,7 +1112,7 @@ const Profile = () => {
             <motion.button
               onClick={() => {
                 setModal(null);
-                showToast("Account deletion is disabled in demo.", "error");
+                toast.error("Account deletion is disabled. Contact support.");
               }}
               whileTap={{ scale: 0.97 }}
               className="flex-1 py-2.5 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600 transition-colors"
@@ -1007,7 +1123,6 @@ const Profile = () => {
         </div>
       </Modal>
 
-      <Toast toasts={toasts} />
       <Footer />
       <ScrollToTop />
     </div>
