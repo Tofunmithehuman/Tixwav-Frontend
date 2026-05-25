@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Search, Menu, X, Ticket, LogOut } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 import * as motion from "motion/react-client";
 import {
   selectIsAuthenticated,
@@ -47,7 +48,10 @@ const Navigation = () => {
 
   const handleLogout = () => {
     setDropdownOpen(false);
-    dispatch(logoutUser()).then(() => navigate("/login", { replace: true }));
+    dispatch(logoutUser()).then(() => {
+      toast.success("You've been signed out.");
+      navigate("/login", { replace: true });
+    });
   };
 
   return (

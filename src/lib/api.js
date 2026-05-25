@@ -56,6 +56,9 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    const isAuthEndpoint = originalRequest?.url?.includes("/auth/");
+    if (isAuthEndpoint) return Promise.reject(error);
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {

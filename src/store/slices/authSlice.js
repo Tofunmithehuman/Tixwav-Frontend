@@ -4,7 +4,7 @@ import api, {
   clearInMemoryToken,
   setInMemoryRefreshToken,
   clearInMemoryRefreshToken,
-  getInMemoryToken
+  getInMemoryToken,
 } from "../../lib/api";
 
 // ── Async Thunks ─────────────────────────────────────────────────────────────
@@ -60,11 +60,16 @@ export const getMe = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       if (!getInMemoryToken()) {
+        if (!localStorage.getItem("isLoggedIn")) {
+          return rejectWithValue("Not logged in");
+        }
         try {
           const { data: refreshData } = await api.post("/auth/refresh", {});
           setInMemoryToken(refreshData.token);
-          if (refreshData.refreshToken) setInMemoryRefreshToken(refreshData.refreshToken);
+          if (refreshData.refreshToken)
+            setInMemoryRefreshToken(refreshData.refreshToken);
         } catch {
+          localStorage.removeItem("isLoggedIn");
           return rejectWithValue("Session expired");
         }
       }
@@ -73,7 +78,7 @@ export const getMe = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Session expired");
     }
-  }
+  },
 );
 
 export const forgotPassword = createAsyncThunk(
@@ -161,6 +166,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.isAuthenticated = true;
         state.sessionChecked = true;
+        localStorage.setItem("isLoggedIn", "true");
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -178,6 +184,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.isAuthenticated = true;
         state.sessionChecked = true;
+        localStorage.setItem("isLoggedIn", "true");
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -189,11 +196,13 @@ const authSlice = createSlice({
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.isAuthenticated = false;
+        localStorage.removeItem("isLoggedIn");
       })
       .addCase(logoutUser.rejected, (state) => {
         // Still clear state even if the server call fails
         state.user = null;
         state.isAuthenticated = false;
+        localStorage.removeItem("isLoggedIn");
       });
 
     // ── Get Me (session restore) ──────────────────────────────────────────────
@@ -248,6 +257,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.isAuthenticated = true;
         state.sessionChecked = true;
+        localStorage.setItem("isLoggedIn", "true");
       })
       .addCase(exchangeOAuthCode.rejected, (state, action) => {
         state.error = action.payload;

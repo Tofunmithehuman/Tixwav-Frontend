@@ -51,7 +51,7 @@ const AuthCallback = () => {
     <div className="h-screen flex items-center justify-center bg-white">
       <div className="flex flex-col items-center gap-4">
         <span className="QurovaDEMO text-[#ff7f11] text-3xl">Tixwav</span>
-        <p className="text-neutral-500 text-sm">Completing sign-in…</p>
+        <p className="text-neutral-500 text-sm">Completing Sign-in</p>
         <div className="w-6 h-6 border-2 border-[#ff7f11] border-t-transparent rounded-full animate-spin" />
       </div>
     </div>
