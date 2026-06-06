@@ -1,61 +1,81 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import EventCard from "@/components/EventCard";
 import * as motion from "motion/react-client";
-import { Search, SlidersHorizontal, MapPin, Calendar, Tag, X, ChevronDown } from "lucide-react";
+import {
+  Search,
+  SlidersHorizontal,
+  MapPin,
+  Tag,
+  X,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import {
+  fetchEvents,
+  selectEvents,
+  selectEventsPagination,
+  selectEventsLoading,
+} from "@/store/slices/eventSlice";
 
-const allEvents = [
-  { id: 1, title: "Design Systems Meetup", category: "Design", date: "Apr 28, 2026", location: "Lagos", price: 0, image: "https://avatar.vercel.sh/ds1", tags: ["UI", "Components"] },
-  { id: 2, title: "React Conference 2026", category: "Tech", date: "May 10, 2026", location: "Abuja", price: 25000, image: "https://avatar.vercel.sh/rc2", tags: ["React", "Frontend"] },
-  { id: 3, title: "Web Performance Workshop", category: "Workshop", date: "May 3, 2026", location: "Lagos", price: 15000, image: "https://avatar.vercel.sh/wp3", tags: ["Speed", "Core Web Vitals"] },
-  { id: 4, title: "AI & Machine Learning Summit", category: "Tech", date: "Jun 1, 2026", location: "Port Harcourt", price: 25000, image: "https://avatar.vercel.sh/ai4", tags: ["AI", "ML"] },
-  { id: 5, title: "JavaScript Masterclass", category: "Workshop", date: "Jun 7, 2026", location: "Lagos", price: 20000, image: "https://avatar.vercel.sh/jm5", tags: ["JS", "Advanced"] },
-  { id: 6, title: "UX Design Bootcamp", category: "Design", date: "Jun 14, 2026", location: "Lagos", price: 40000, image: "https://avatar.vercel.sh/ux6", tags: ["UX", "Research"] },
-  { id: 7, title: "Startup Weekend Lagos", category: "Business", date: "Jul 4, 2026", location: "Lagos", price: 0, image: "https://avatar.vercel.sh/sw7", tags: ["Startup", "Pitch"] },
-  { id: 8, title: "DevOps & Cloud Summit", category: "Tech", date: "Jul 18, 2026", location: "Abuja", price: 30000, image: "https://avatar.vercel.sh/dc8", tags: ["DevOps", "Cloud"] },
-  { id: 9, title: "Product Management Workshop", category: "Business", date: "Aug 2, 2026", location: "Lagos", price: 18000, image: "https://avatar.vercel.sh/pm9", tags: ["Product", "Strategy"] },
+const categories = [
+  "All", "Tech", "Design", "Workshop", "Business", "Music", "Sports", "Food", "Arts", "Other",
 ];
-
-const categories = ["All", "Tech", "Design", "Workshop", "Business"];
-const locations = ["All", "Lagos", "Abuja", "Port Harcourt"];
-
-const fmt = (n) => (n === 0 ? "Free" : `₦${Number(n).toLocaleString("en-NG")}`);
+const sorts = [
+  { value: "startDate", label: "Date (soonest)" },
+  { value: "-createdAt", label: "Newest" },
+  { value: "-views", label: "Most popular" },
+];
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.07, delayChildren: 0.1 } },
-};
-const itemVariants = {
-  hidden: { opacity: 0, y: 18 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
 };
 
 const Discover = () => {
+  const dispatch = useDispatch();
+  const events = useSelector(selectEvents);
+  const pagination = useSelector(selectEventsPagination);
+  const loading = useSelector(selectEventsLoading);
+
   const [search, setSearch] = useState("");
+  const [debounced, setDebounced] = useState("");
   const [category, setCategory] = useState("All");
-  const [location, setLocation] = useState("All");
+  const [city, setCity] = useState("");
+  const [sort, setSort] = useState("startDate");
+  const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
-  const [sort, setSort] = useState("date");
 
-  const filtered = allEvents
-    .filter((e) => {
-      const matchSearch =
-        e.title.toLowerCase().includes(search.toLowerCase()) ||
-        e.tags.some((t) => t.toLowerCase().includes(search.toLowerCase()));
-      const matchCat = category === "All" || e.category === category;
-      const matchLoc = location === "All" || e.location === location;
-      return matchSearch && matchCat && matchLoc;
-    })
-    .sort((a, b) =>
-      sort === "price-asc"
-        ? a.price - b.price
-        : sort === "price-desc"
-          ? b.price - a.price
-          : a.date.localeCompare(b.date),
+  // Debounce the free-text search
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(search), 350);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  // Reset to page 1 whenever a filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [debounced, category, city, sort]);
+
+  useEffect(() => {
+    dispatch(
+      fetchEvents({
+        search: debounced,
+        category,
+        city: city.trim(),
+        sort,
+        page,
+        limit: 12,
+      }),
     );
+  }, [dispatch, debounced, category, city, sort, page]);
 
-  const activeFilterCount = (category !== "All" ? 1 : 0) + (location !== "All" ? 1 : 0);
+  const activeFilterCount = (category !== "All" ? 1 : 0) + (city ? 1 : 0);
+  const total = pagination?.total ?? events.length;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fffffcff]">
@@ -69,38 +89,18 @@ const Discover = () => {
         transition={{ duration: 0.5 }}
       >
         <div className="max-w-screen-xl mx-auto">
-          <motion.p
-            className="text-[11px] font-semibold text-[#ff7f11] uppercase tracking-widest mb-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
+          <p className="text-[11px] font-semibold text-[#ff7f11] uppercase tracking-widest mb-2">
             Browse Events
-          </motion.p>
-          <motion.h1
-            className="text-2xl md:text-3xl font-semibold text-neutral-800 mb-1"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-          >
+          </p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-neutral-800 mb-1">
             Discover what's happening
-          </motion.h1>
-          <motion.p
-            className="text-sm text-neutral-400 mb-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            {allEvents.length} events across Nigeria — find yours.
-          </motion.p>
+          </h1>
+          <p className="text-sm text-neutral-400 mb-6">
+            Find events across Nigeria — and beyond.
+          </p>
 
           {/* Search Bar */}
-          <motion.div
-            className="flex gap-2"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35 }}
-          >
+          <div className="flex gap-2">
             <div className="flex-1 flex items-center border border-neutral-200 focus-within:border-[#ff7f11] rounded-lg px-4 bg-white transition-colors">
               <Search size={15} className="text-neutral-400 shrink-0" />
               <input
@@ -111,7 +111,10 @@ const Discover = () => {
                 className="flex-1 py-3 px-3 text-sm text-neutral-600 focus:outline-none bg-transparent placeholder:text-neutral-300"
               />
               {search && (
-                <button onClick={() => setSearch("")} className="text-neutral-300 hover:text-neutral-500 transition-colors">
+                <button
+                  onClick={() => setSearch("")}
+                  className="text-neutral-300 hover:text-neutral-500 transition-colors"
+                >
                   <X size={14} />
                 </button>
               )}
@@ -119,7 +122,11 @@ const Discover = () => {
             <motion.button
               onClick={() => setShowFilters(!showFilters)}
               whileTap={{ scale: 0.95 }}
-              className={`flex items-center gap-2 px-4 py-3 rounded-lg border text-sm font-medium transition-all ${showFilters || activeFilterCount > 0 ? "border-[#ff7f11] text-[#ff7f11] bg-[#ff7f11]/5" : "border-neutral-200 text-neutral-500 bg-white"}`}
+              className={`flex items-center gap-2 px-4 py-3 rounded-lg border text-sm font-medium transition-all ${
+                showFilters || activeFilterCount > 0
+                  ? "border-[#ff7f11] text-[#ff7f11] bg-[#ff7f11]/5"
+                  : "border-neutral-200 text-neutral-500 bg-white"
+              }`}
             >
               <SlidersHorizontal size={15} />
               <span className="hidden sm:inline">Filters</span>
@@ -129,7 +136,7 @@ const Discover = () => {
                 </span>
               )}
             </motion.button>
-          </motion.div>
+          </div>
 
           {/* Filter Panel */}
           {showFilters && (
@@ -139,7 +146,6 @@ const Discover = () => {
               animate={{ opacity: 1, height: "auto" }}
               transition={{ duration: 0.3 }}
             >
-              {/* Category */}
               <div>
                 <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1">
                   <Tag size={10} /> Category
@@ -149,7 +155,11 @@ const Discover = () => {
                     <button
                       key={c}
                       onClick={() => setCategory(c)}
-                      className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${category === c ? "bg-[#ff7f11] text-white" : "border border-neutral-200 text-neutral-500 hover:border-[#ff7f11] hover:text-[#ff7f11]"}`}
+                      className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                        category === c
+                          ? "bg-[#ff7f11] text-white"
+                          : "border border-neutral-200 text-neutral-500 hover:border-[#ff7f11] hover:text-[#ff7f11]"
+                      }`}
                     >
                       {c}
                     </button>
@@ -157,38 +167,38 @@ const Discover = () => {
                 </div>
               </div>
 
-              {/* Location */}
               <div>
                 <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1">
-                  <MapPin size={10} /> Location
+                  <MapPin size={10} /> City
                 </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {locations.map((l) => (
-                    <button
-                      key={l}
-                      onClick={() => setLocation(l)}
-                      className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${location === l ? "bg-[#ff7f11] text-white" : "border border-neutral-200 text-neutral-500 hover:border-[#ff7f11] hover:text-[#ff7f11]"}`}
-                    >
-                      {l}
-                    </button>
-                  ))}
-                </div>
+                <input
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="e.g. Lagos"
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-xs text-neutral-600 focus:outline-none focus:border-[#ff7f11]"
+                />
               </div>
 
-              {/* Sort */}
               <div>
-                <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider mb-2">Sort by</p>
+                <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider mb-2">
+                  Sort by
+                </p>
                 <div className="relative">
                   <select
                     value={sort}
                     onChange={(e) => setSort(e.target.value)}
                     className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-xs text-neutral-600 focus:outline-none focus:border-[#ff7f11] appearance-none bg-white cursor-pointer"
                   >
-                    <option value="date">Date (Earliest)</option>
-                    <option value="price-asc">Price (Low to High)</option>
-                    <option value="price-desc">Price (High to Low)</option>
+                    {sorts.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
                   </select>
-                  <ChevronDown size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                  <ChevronDown
+                    size={12}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+                  />
                 </div>
               </div>
             </motion.div>
@@ -201,11 +211,16 @@ const Discover = () => {
         <div className="max-w-screen-xl mx-auto">
           <div className="flex items-center justify-between mb-5">
             <p className="text-xs text-neutral-400">
-              <span className="font-semibold text-neutral-700">{filtered.length}</span> event{filtered.length !== 1 ? "s" : ""} found
+              <span className="font-semibold text-neutral-700">{total}</span> event
+              {total !== 1 ? "s" : ""} found
             </p>
-            {(category !== "All" || location !== "All" || search) && (
+            {(category !== "All" || city || search) && (
               <button
-                onClick={() => { setCategory("All"); setLocation("All"); setSearch(""); }}
+                onClick={() => {
+                  setCategory("All");
+                  setCity("");
+                  setSearch("");
+                }}
                 className="text-xs text-[#ff7f11] hover:underline flex items-center gap-1"
               >
                 <X size={11} /> Clear filters
@@ -213,7 +228,11 @@ const Discover = () => {
             )}
           </div>
 
-          {filtered.length === 0 ? (
+          {loading ? (
+            <div className="h-[30vh] flex items-center justify-center">
+              <div className="w-7 h-7 border-2 border-[#ff7f11] border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : events.length === 0 ? (
             <motion.div
               className="text-center py-24"
               initial={{ opacity: 0 }}
@@ -222,70 +241,49 @@ const Discover = () => {
               <div className="w-14 h-14 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-4">
                 <Search size={22} className="text-neutral-300" />
               </div>
-              <p className="text-sm font-medium text-neutral-500">No events match your search</p>
-              <p className="text-xs text-neutral-300 mt-1">Try adjusting your filters or search terms</p>
+              <p className="text-sm font-medium text-neutral-500">
+                No events match your search
+              </p>
+              <p className="text-xs text-neutral-300 mt-1">
+                Try adjusting your filters or search terms
+              </p>
             </motion.div>
           ) : (
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              {filtered.map((event) => (
-                <motion.div
-                  key={event.id}
-                  variants={itemVariants}
-                  whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                  className="bg-white border border-neutral-100 rounded-2xl overflow-hidden shadow-sm group cursor-pointer"
-                >
-                  {/* Image */}
-                  <div className="relative aspect-video overflow-hidden bg-neutral-100">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="w-full h-full object-cover brightness-75 group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute top-3 left-3 flex gap-1.5">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold ${event.price === 0 ? "bg-emerald-500 text-white" : "bg-white/90 text-neutral-700"}`}>
-                        {fmt(event.price)}
-                      </span>
-                    </div>
-                    <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/30 backdrop-blur-sm text-white text-[10px] font-medium">
-                      {event.category}
-                    </span>
-                  </div>
+            <>
+              <motion.div
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                {events.map((event, i) => (
+                  <EventCard key={event._id} event={event} index={i} />
+                ))}
+              </motion.div>
 
-                  {/* Content */}
-                  <div className="p-4">
-                    <h3 className="text-sm font-semibold text-neutral-800 mb-2 group-hover:text-[#ff7f11] transition-colors line-clamp-1">
-                      {event.title}
-                    </h3>
-                    <div className="flex flex-col gap-1.5 mb-3">
-                      <span className="flex items-center gap-1.5 text-[11px] text-neutral-400">
-                        <Calendar size={11} className="text-[#ff7f11]" /> {event.date}
-                      </span>
-                      <span className="flex items-center gap-1.5 text-[11px] text-neutral-400">
-                        <MapPin size={11} className="text-[#ff7f11]" /> {event.location}
-                      </span>
-                    </div>
-                    <div className="flex gap-1 flex-wrap mb-4">
-                      {event.tags.map((tag) => (
-                        <span key={tag} className="px-2 py-0.5 bg-neutral-100 rounded text-[10px] text-neutral-500">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <motion.button
-                      whileTap={{ scale: 0.97 }}
-                      className="w-full py-2.5 bg-[#ff7f11] text-white text-xs font-semibold rounded-lg hover:bg-[#e66f00] transition-colors"
-                    >
-                      Get Tickets
-                    </motion.button>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+              {/* Pagination */}
+              {pagination?.pages > 1 && (
+                <div className="flex items-center justify-center gap-3 mt-10">
+                  <button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page <= 1}
+                    className="flex items-center gap-1 px-3 py-2 rounded-lg border border-neutral-200 text-sm text-neutral-600 disabled:opacity-40 hover:border-[#ff7f11] hover:text-[#ff7f11]"
+                  >
+                    <ChevronLeft size={15} /> Prev
+                  </button>
+                  <span className="text-sm text-neutral-500">
+                    {page} / {pagination.pages}
+                  </span>
+                  <button
+                    onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
+                    disabled={page >= pagination.pages}
+                    className="flex items-center gap-1 px-3 py-2 rounded-lg border border-neutral-200 text-sm text-neutral-600 disabled:opacity-40 hover:border-[#ff7f11] hover:text-[#ff7f11]"
+                  >
+                    Next <ChevronRight size={15} />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </main>

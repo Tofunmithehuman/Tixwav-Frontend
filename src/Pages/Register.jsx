@@ -12,6 +12,7 @@ import {
   selectAuthLoading,
   selectAuth,
 } from "../store/slices/authSlice";
+import { becomeOrganizer } from "../store/slices/organizerSlice";
 
 
 function Register() {
@@ -20,15 +21,18 @@ function Register() {
   const [lastNameInput, setLastNameInput] = useState("");
   const [emailInput, setEmailInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
+  const [accountType, setAccountType] = useState("user"); // "user" | "organizer"
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isLoading = useSelector(selectAuthLoading);
   const { error, isAuthenticated } = useSelector(selectAuth);
 
+  // Redirect away only if already logged in on mount (post-register nav is handled below)
   useEffect(() => {
     if (isAuthenticated) navigate("/profile", { replace: true });
-  }, [isAuthenticated]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (error) {
@@ -56,11 +60,21 @@ function Register() {
       }),
     )
       .unwrap()
-      .then((data) => {
-        toast.success(
-          data.message || "Account created! Please verify your email.",
-        );
-        navigate("/profile", { replace: true });
+      .then(async (data) => {
+        if (accountType === "organizer") {
+          try {
+            await dispatch(becomeOrganizer({})).unwrap();
+          } catch {
+            // non-fatal — they can finish onboarding from the dashboard
+          }
+          toast.success("Account created! Let's set up your payouts.");
+          navigate("/organizer/payout", { replace: true });
+        } else {
+          toast.success(
+            data.message || "Account created! Please verify your email.",
+          );
+          navigate("/profile", { replace: true });
+        }
       })
       .catch(() => {}); // error handled by useEffect above
   };
@@ -113,6 +127,35 @@ function Register() {
                   <p className="text-[10px] sm:text-sm text-neutral-400">
                     Enter your credentials to create your account
                   </p>
+                </motion.div>
+
+                {/* Account type */}
+                <motion.div
+                  className="mt-6 grid grid-cols-2 gap-2"
+                  variants={itemVariants}
+                >
+                  {[
+                    { key: "user", title: "Attendee", sub: "Buy tickets" },
+                    { key: "organizer", title: "Organizer", sub: "Sell tickets" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setAccountType(opt.key)}
+                      className={`rounded-lg border p-3 text-left transition-all ${
+                        accountType === opt.key
+                          ? "border-[#ff7f11] bg-[#ff7f11]/5"
+                          : "border-neutral-200 hover:border-neutral-300"
+                      }`}
+                    >
+                      <p
+                        className={`text-sm font-semibold ${accountType === opt.key ? "text-[#ff7f11]" : "text-neutral-700"}`}
+                      >
+                        {opt.title}
+                      </p>
+                      <p className="text-[11px] text-neutral-400">{opt.sub}</p>
+                    </button>
+                  ))}
                 </motion.div>
 
                 <motion.div className="mt-10" variants={formVariants}>
