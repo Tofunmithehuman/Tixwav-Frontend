@@ -27,6 +27,16 @@ const Search = () => {
     setTerm(query);
   }, [query]);
 
+  // Real-time search: debounce the input and reflect it in the URL (replace, so
+  // we don't spam browser history). The fetch effect below reacts to the URL.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const next = term.trim();
+      if (next !== query) setParams(next ? { q: next } : {}, { replace: true });
+    }, 300);
+    return () => clearTimeout(t);
+  }, [term, query, setParams]);
+
   useEffect(() => {
     // Search published events (server-side) whenever the URL query changes
     dispatch(fetchEvents(query ? { search: query, limit: 24 } : { limit: 24 }));
@@ -34,7 +44,8 @@ const Search = () => {
 
   const submit = (e) => {
     e.preventDefault();
-    setParams(term ? { q: term } : {});
+    const next = term.trim();
+    setParams(next ? { q: next } : {}, { replace: true });
   };
 
   return (

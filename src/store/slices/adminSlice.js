@@ -302,5 +302,8 @@ export const selectAdminTicketAnalytics = (state) => state.admin.ticketAnalytics
 export const selectAdminUsers = (state) => state.admin.users;
 export const selectAdminEvents = (state) => state.admin.events;
 export const selectAdminOrders = (state) => state.admin.orders;
+export const selectAdminUsersPagination = (state) => state.admin.usersPagination;
+export const selectAdminEventsPagination = (state) => state.admin.eventsPagination;
+export const selectAdminOrdersPagination = (state) => state.admin.ordersPagination;
 export const selectAdminLoading = (state) => state.admin.isLoading;
 export const selectAdminError = (state) => state.admin.error;
