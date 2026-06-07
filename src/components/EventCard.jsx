@@ -63,9 +63,19 @@ const EventCard = ({ event, index = 0 }) => {
 
         {/* Content */}
         <div className="flex flex-col flex-1 p-4">
-          <h3 className="text-sm font-semibold text-neutral-800 mb-2 group-hover:text-[#ff7f11] transition-colors line-clamp-2">
+          <h3 className="text-sm font-semibold text-neutral-800 mb-1 group-hover:text-[#ff7f11] transition-colors line-clamp-2">
             {event.title}
           </h3>
+          {event.organizer && (
+            <p className="text-[11px] text-neutral-400 mb-2 truncate">
+              by{" "}
+              <span className="text-neutral-600 font-medium">
+                {event.organizer.organizerInfo?.companyName ||
+                  `${event.organizer.firstName || ""} ${event.organizer.lastName || ""}`.trim() ||
+                  "Organizer"}
+              </span>
+            </p>
+          )}
           <div className="flex flex-col gap-1.5 mb-3">
             <span className="flex items-center gap-1.5 text-[11px] text-neutral-500">
               <Calendar size={12} className="text-[#ff7f11] shrink-0" />

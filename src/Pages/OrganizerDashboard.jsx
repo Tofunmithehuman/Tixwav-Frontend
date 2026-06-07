@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -16,15 +16,18 @@ import {
   AlertCircle,
   Eye,
   EyeOff,
+  Search,
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Pagination from "@/components/Pagination";
 import { selectUser } from "@/store/slices/authSlice";
 import {
   fetchMyEvents,
   publishEvent,
   deleteEvent,
   selectMyEvents,
+  selectMyEventsPagination,
 } from "@/store/slices/eventSlice";
 import {
   fetchOrgOverview,
@@ -60,14 +63,33 @@ const OrganizerDashboard = () => {
   const navigate = useNavigate();
   const user = useSelector(selectUser);
   const events = useSelector(selectMyEvents);
+  const pagination = useSelector(selectMyEventsPagination);
   const overview = useSelector(selectOrgOverview);
   const payout = useSelector(selectPayoutAccount);
 
+  const [q, setQ] = useState("");
+  const [debouncedQ, setDebouncedQ] = useState("");
+  const [page, setPage] = useState(1);
+
   useEffect(() => {
-    dispatch(fetchMyEvents());
     dispatch(fetchOrgOverview());
     dispatch(fetchPayout());
   }, [dispatch]);
+
+  // Debounce the event search
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQ(q.trim()), 300);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  useEffect(() => {
+    dispatch(fetchMyEvents({ search: debouncedQ || undefined, page, limit: 10 }));
+  }, [dispatch, debouncedQ, page]);
+
+  const onSearch = (v) => {
+    setQ(v);
+    setPage(1);
+  };
 
   const handlePublish = (ev) => {
     const action = ev.status === "published" ? "unpublish" : "publish";
@@ -169,19 +191,37 @@ const OrganizerDashboard = () => {
           </div>
 
           {/* My events */}
-          <h2 className="text-sm font-semibold text-neutral-700 mb-3">Your events</h2>
-          {events.length === 0 ? (
-            <div className="bg-white border border-neutral-100 rounded-2xl p-12 text-center">
-              <CalendarDays size={28} className="text-neutral-300 mx-auto mb-3" />
-              <p className="text-sm text-neutral-500">You haven't created any events yet.</p>
-              <Link
-                to="/organizer/events/new"
-                className="inline-block mt-4 bg-[#ff7f11] text-white px-5 py-2.5 rounded-xs text-sm font-semibold hover:bg-[#e66f00]"
-              >
-                Create your first event
-              </Link>
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h2 className="text-sm font-semibold text-neutral-700">Your events</h2>
+            <div className="flex items-center border border-neutral-200 focus-within:border-[#ff7f11] rounded-lg px-3 bg-white">
+              <Search size={14} className="text-neutral-400 shrink-0" />
+              <input
+                value={q}
+                onChange={(e) => onSearch(e.target.value)}
+                placeholder="Search your events"
+                className="py-2 px-2 text-base focus:outline-none bg-transparent w-40 sm:w-56 min-w-0"
+              />
             </div>
+          </div>
+          {events.length === 0 ? (
+            debouncedQ ? (
+              <div className="bg-white border border-neutral-100 rounded-2xl p-12 text-center text-sm text-neutral-400">
+                No events match “{debouncedQ}”.
+              </div>
+            ) : (
+              <div className="bg-white border border-neutral-100 rounded-2xl p-12 text-center">
+                <CalendarDays size={28} className="text-neutral-300 mx-auto mb-3" />
+                <p className="text-sm text-neutral-500">You haven't created any events yet.</p>
+                <Link
+                  to="/organizer/events/new"
+                  className="inline-block mt-4 bg-[#ff7f11] text-white px-5 py-2.5 rounded-xs text-sm font-semibold hover:bg-[#e66f00]"
+                >
+                  Create your first event
+                </Link>
+              </div>
+            )
           ) : (
+            <>
             <div className="bg-white border border-neutral-100 rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -265,6 +305,8 @@ const OrganizerDashboard = () => {
                 </table>
               </div>
             </div>
+            <Pagination page={page} pages={pagination?.pages} total={pagination?.total} onPage={setPage} />
+            </>
           )}
         </div>
       </main>

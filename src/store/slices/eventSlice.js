@@ -243,6 +243,7 @@ export const selectEventsPagination = (state) => state.event.pagination;
 export const selectFeatured = (state) => state.event.featured;
 export const selectCurrentEvent = (state) => state.event.current;
 export const selectMyEvents = (state) => state.event.myEvents;
+export const selectMyEventsPagination = (state) => state.event.myPagination;
 export const selectEventsLoading = (state) => state.event.isLoading;
 export const selectCurrentLoading = (state) => state.event.isLoadingCurrent;
 export const selectEventMutating = (state) => state.event.isMutating;
