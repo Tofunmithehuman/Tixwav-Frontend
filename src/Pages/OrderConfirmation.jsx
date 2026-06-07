@@ -68,7 +68,7 @@ const OrderConfirmation = () => {
                   placeholder="you@example.com"
                   value={guestEmail}
                   onChange={(e) => setGuestEmail(e.target.value)}
-                  className="flex-1 border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#ff7f11]"
+                  className="flex-1 border border-neutral-200 rounded-lg px-3 py-2.5 text-base focus:outline-none focus:border-[#ff7f11]"
                 />
                 <button className="bg-[#ff7f11] text-white px-5 rounded-xs text-sm font-semibold hover:bg-[#e66f00]">
                   View

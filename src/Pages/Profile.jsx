@@ -514,7 +514,7 @@ const Profile = () => {
                           First
                         </label>
                         <input
-                          className={`mt-1 ${inp}`}
+                          className={`mt-1 text-base ${inp}`}
                           value={draft.firstName}
                           onChange={(e) =>
                             setDraft((p) => ({
@@ -529,7 +529,7 @@ const Profile = () => {
                           Last
                         </label>
                         <input
-                          className={`mt-1 ${inp}`}
+                          className={`mt-1 text-base ${inp}`}
                           value={draft.lastName}
                           onChange={(e) =>
                             setDraft((p) => ({
@@ -551,7 +551,7 @@ const Profile = () => {
                         <input
                           type={type}
                           disabled={key === "email"}
-                          className={`mt-1 ${inp} ${key === "email" ? "opacity-50 cursor-not-allowed" : ""}`}
+                          className={`mt-1 text-base ${inp} ${key === "email" ? "opacity-50 cursor-not-allowed" : ""}`}
                           value={draft[key] || ""}
                           onChange={(e) =>
                             setDraft((p) => ({ ...p, [key]: e.target.value }))
@@ -569,7 +569,7 @@ const Profile = () => {
                         Bio
                       </label>
                       <textarea
-                        className={`mt-1 ${inp} resize-none`}
+                        className={`mt-1 text-base ${inp} resize-none`}
                         rows={3}
                         value={draft.bio || ""}
                         onChange={(e) =>

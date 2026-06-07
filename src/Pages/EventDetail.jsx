@@ -362,20 +362,20 @@ const EventDetail = () => {
                           placeholder="Full name"
                           value={guest.name}
                           onChange={(e) => setGuest({ ...guest, name: e.target.value })}
-                          className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#ff7f11]"
+                          className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-base focus:outline-none focus:border-[#ff7f11]"
                         />
                         <input
                           placeholder="Email (tickets sent here)"
                           type="email"
                           value={guest.email}
                           onChange={(e) => setGuest({ ...guest, email: e.target.value })}
-                          className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#ff7f11]"
+                          className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-base focus:outline-none focus:border-[#ff7f11]"
                         />
                         <input
                           placeholder="Phone (optional)"
                           value={guest.phone}
                           onChange={(e) => setGuest({ ...guest, phone: e.target.value })}
-                          className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#ff7f11]"
+                          className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-base focus:outline-none focus:border-[#ff7f11]"
                         />
                       </div>
                     )}

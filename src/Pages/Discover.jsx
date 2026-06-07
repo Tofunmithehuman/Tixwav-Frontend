@@ -178,7 +178,7 @@ const Discover = () => {
                   value={city}
                   onChange={(e) => onCity(e.target.value)}
                   placeholder="e.g. Lagos"
-                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-xs text-neutral-600 focus:outline-none focus:border-[#ff7f11]"
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-base text-neutral-600 focus:outline-none focus:border-[#ff7f11]"
                 />
               </div>
 

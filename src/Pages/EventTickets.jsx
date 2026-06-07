@@ -84,7 +84,7 @@ const EventTickets = () => {
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
                 placeholder="Search name, email, code"
-                className="py-2 px-2 text-sm focus:outline-none bg-transparent w-52"
+                className="py-2 px-2 text-base focus:outline-none bg-transparent w-52"
               />
             </div>
           </div>

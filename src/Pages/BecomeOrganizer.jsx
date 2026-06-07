@@ -90,7 +90,7 @@ const BecomeOrganizer = () => {
                 value={form.companyName}
                 onChange={(e) => setForm({ ...form, companyName: e.target.value })}
                 placeholder="e.g. Lagos Live Events"
-                className="w-full mt-1 border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#ff7f11]"
+                className="w-full mt-1 border border-neutral-200 rounded-lg px-3 py-2.5 text-base focus:outline-none focus:border-[#ff7f11]"
               />
             </div>
             <div>
@@ -101,7 +101,7 @@ const BecomeOrganizer = () => {
                 value={form.website}
                 onChange={(e) => setForm({ ...form, website: e.target.value })}
                 placeholder="https://"
-                className="w-full mt-1 border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#ff7f11]"
+                className="w-full mt-1 border border-neutral-200 rounded-lg px-3 py-2.5 text-base focus:outline-none focus:border-[#ff7f11]"
               />
             </div>
             <div>
