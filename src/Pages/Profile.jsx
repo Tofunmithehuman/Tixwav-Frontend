@@ -145,29 +145,7 @@ const Profile = () => {
   const [selectedTicket, setSelectedTicket] = useState(null);
 
   // Saved events (UI-only for now — no API endpoint provided)
-  const [saved, setSaved] = useState([
-    {
-      id: 1,
-      name: "AI & Machine Learning Summit",
-      date: "Jun 1, 2026",
-      price: 25000,
-      category: "Tech",
-    },
-    {
-      id: 2,
-      name: "UX Design Bootcamp",
-      date: "Jun 14, 2026",
-      price: 40000,
-      category: "Design",
-    },
-    {
-      id: 3,
-      name: "Startup Weekend Lagos",
-      date: "Jul 4, 2026",
-      price: 0,
-      category: "Business",
-    },
-  ]);
+  const [saved, setSaved] = useState([]);
 
   // Notifications (local only)
   const [notifs, setNotifs] = useState({

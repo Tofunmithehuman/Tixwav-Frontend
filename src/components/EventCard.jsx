@@ -17,8 +17,7 @@ const EventCard = ({ event, index = 0 }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: (index % 9) * 0.05 }}
       whileHover={{ y: -5 }}
     >
