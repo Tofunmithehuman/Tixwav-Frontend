@@ -255,8 +255,7 @@ const Pricing = () => {
           <motion.div
             className="text-center mb-10"
             initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
             <p className="text-[11px] font-semibold text-[#ff7f11] uppercase tracking-widest mb-2">FAQ</p>
@@ -267,8 +266,7 @@ const Pricing = () => {
             className="space-y-2"
             variants={containerVariants}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate="visible"
           >
             {faqs.map((faq, i) => (
               <motion.div
@@ -308,8 +306,7 @@ const Pricing = () => {
       <motion.section
         className="px-4 md:px-8 py-12"
         initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
         <div className="max-w-screen-lg mx-auto bg-[#ff7f11] rounded-2xl px-8 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">

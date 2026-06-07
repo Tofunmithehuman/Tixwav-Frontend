@@ -12,6 +12,7 @@ import {
   Ticket,
   ArrowLeft,
   Globe,
+  Heart,
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -25,6 +26,11 @@ import {
   initiateOrder,
   selectIsInitiating,
 } from "@/store/slices/orderSlice";
+import {
+  getSavedEvents,
+  toggleSavedEvent,
+  selectSavedIds,
+} from "@/store/slices/userSlice";
 import { selectIsAuthenticated, selectUser } from "@/store/slices/authSlice";
 import { formatPrice, formatDate } from "@/lib/format";
 
@@ -43,6 +49,7 @@ const EventDetail = () => {
   const isInitiating = useSelector(selectIsInitiating);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const user = useSelector(selectUser);
+  const savedIds = useSelector(selectSavedIds);
 
   const [qty, setQty] = useState({}); // tierId -> quantity
   const [guest, setGuest] = useState({ name: "", email: "", phone: "" });
@@ -50,6 +57,25 @@ const EventDetail = () => {
   useEffect(() => {
     dispatch(fetchEvent(id));
   }, [dispatch, id]);
+
+  // Load the user's saved events so we can show the correct heart state
+  useEffect(() => {
+    if (isAuthenticated) dispatch(getSavedEvents());
+  }, [dispatch, isAuthenticated]);
+
+  const isSaved = event ? savedIds.includes(event._id) : false;
+
+  const handleSave = () => {
+    if (!isAuthenticated) {
+      toast.info("Log in to save events.");
+      navigate("/login", { state: { from: { pathname: `/events/${id}` } } });
+      return;
+    }
+    dispatch(toggleSavedEvent(event._id))
+      .unwrap()
+      .then((res) => toast.success(res.saved ? "Saved to your list" : "Removed from saved"))
+      .catch(() => toast.error("Could not update saved events."));
+  };
 
   const setTierQty = (tierId, delta, max) => {
     setQty((prev) => {
@@ -168,9 +194,23 @@ const EventDetail = () => {
                 )}
               </motion.div>
 
-              <h1 className="text-2xl md:text-3xl font-semibold text-neutral-800 mb-3">
-                {event.title}
-              </h1>
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <h1 className="text-2xl md:text-3xl font-semibold text-neutral-800">
+                  {event.title}
+                </h1>
+                <motion.button
+                  onClick={handleSave}
+                  whileTap={{ scale: 0.9 }}
+                  aria-label={isSaved ? "Remove from saved" : "Save event"}
+                  className={`shrink-0 w-10 h-10 rounded-full border flex items-center justify-center transition-colors ${
+                    isSaved
+                      ? "border-[#ff7f11] bg-[#ff7f11]/10 text-[#ff7f11]"
+                      : "border-neutral-200 text-neutral-400 hover:border-[#ff7f11] hover:text-[#ff7f11]"
+                  }`}
+                >
+                  <Heart size={18} className={isSaved ? "fill-[#ff7f11]" : ""} />
+                </motion.button>
+              </div>
 
               <div className="flex flex-wrap gap-x-6 gap-y-2 mb-6 text-sm text-neutral-500">
                 <span className="flex items-center gap-2">
