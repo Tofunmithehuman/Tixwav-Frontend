@@ -135,4 +135,5 @@ export default ticketSlice.reducer;
 export const selectScanResult = (state) => state.ticket.scanResult;
 export const selectIsVerifying = (state) => state.ticket.isVerifying;
 export const selectEventTickets = (state) => state.ticket.eventTickets;
+export const selectTicketsPagination = (state) => state.ticket.ticketsPagination;
 export const selectTicketsLoading = (state) => state.ticket.isLoading;

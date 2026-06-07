@@ -5,10 +5,12 @@ import { toast } from "react-toastify";
 import { ArrowLeft, Ban, Search } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Pagination from "@/components/Pagination";
 import {
   fetchEventTickets,
   cancelTicket,
   selectEventTickets,
+  selectTicketsPagination,
   selectTicketsLoading,
 } from "@/store/slices/ticketSlice";
 
@@ -24,12 +26,14 @@ const EventTickets = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const tickets = useSelector(selectEventTickets);
+  const pagination = useSelector(selectTicketsPagination);
   const loading = useSelector(selectTicketsLoading);
   const [filter, setFilter] = useState("");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    dispatch(fetchEventTickets({ eventId: id }));
-  }, [dispatch, id]);
+    dispatch(fetchEventTickets({ eventId: id, page, limit: 20 }));
+  }, [dispatch, id, page]);
 
   const disable = (code) => {
     if (!window.confirm(`Disable ticket ${code}? The holder won't be able to check in.`))
@@ -150,6 +154,7 @@ const EventTickets = () => {
               </div>
             </div>
           )}
+          <Pagination page={page} pages={pagination?.pages} total={pagination?.total} onPage={setPage} />
         </div>
       </main>
       <Footer />
