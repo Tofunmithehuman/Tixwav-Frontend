@@ -1,5 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Search, Menu, X, Ticket, LogOut } from "lucide-react";
+import {
+  Search,
+  Menu,
+  X,
+  Ticket,
+  LogOut,
+  LayoutDashboard,
+  Shield,
+  Store,
+} from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
@@ -107,7 +116,11 @@ const Navigation = () => {
                 whileHover={{ rotate: 90, scale: 1.1 }}
                 transition={{ duration: 0.3 }}
               >
-                <button className="hover:text-[#ff7f11ff] duration-200">
+                <button
+                  onClick={() => navigate("/search")}
+                  aria-label="Search events"
+                  className="hover:text-[#ff7f11ff] duration-200"
+                >
                   <Search size={18} />
                 </button>
               </motion.div>
@@ -172,6 +185,38 @@ const Navigation = () => {
                         <Ticket size={14} />
                         View Tickets
                       </Link>
+
+                      {/* Role-based links */}
+                      {(user.role === "organizer" || user.role === "admin") && (
+                        <Link
+                          to="/organizer"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-[#ff7f11] transition-colors"
+                        >
+                          <LayoutDashboard size={14} />
+                          Organizer
+                        </Link>
+                      )}
+                      {user.role === "admin" && (
+                        <Link
+                          to="/admin"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-[#ff7f11] transition-colors"
+                        >
+                          <Shield size={14} />
+                          Admin
+                        </Link>
+                      )}
+                      {user.role === "user" && (
+                        <Link
+                          to="/become-organizer"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-[#ff7f11] transition-colors"
+                        >
+                          <Store size={14} />
+                          Become an organizer
+                        </Link>
+                      )}
 
                       {/* Sign Out */}
                       <button
@@ -284,7 +329,7 @@ const Navigation = () => {
                 </div>
               </motion.div>
 
-              {/* 2. View Tickets */}
+              {/* 2. View Tickets + role links */}
               <motion.div variants={itemVariants} className="mb-2">
                 <motion.button
                   onClick={() => handleNavigation("/profile")}
@@ -294,6 +339,36 @@ const Navigation = () => {
                 >
                   <Ticket size={16} /> View Tickets
                 </motion.button>
+                {(user.role === "organizer" || user.role === "admin") && (
+                  <motion.button
+                    onClick={() => handleNavigation("/organizer")}
+                    className="flex items-center gap-2.5 text-neutral-700 text-lg hover:text-[#ff7f11ff] transition-colors w-full py-2"
+                    whileHover={{ x: 10 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <LayoutDashboard size={16} /> Organizer
+                  </motion.button>
+                )}
+                {user.role === "admin" && (
+                  <motion.button
+                    onClick={() => handleNavigation("/admin")}
+                    className="flex items-center gap-2.5 text-neutral-700 text-lg hover:text-[#ff7f11ff] transition-colors w-full py-2"
+                    whileHover={{ x: 10 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Shield size={16} /> Admin
+                  </motion.button>
+                )}
+                {user.role === "user" && (
+                  <motion.button
+                    onClick={() => handleNavigation("/become-organizer")}
+                    className="flex items-center gap-2.5 text-neutral-700 text-lg hover:text-[#ff7f11ff] transition-colors w-full py-2"
+                    whileHover={{ x: 10 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Store size={16} /> Become an organizer
+                  </motion.button>
+                )}
               </motion.div>
 
               {/* 3. Nav links */}
