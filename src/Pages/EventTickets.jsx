@@ -28,12 +28,31 @@ const EventTickets = () => {
   const tickets = useSelector(selectEventTickets);
   const pagination = useSelector(selectTicketsPagination);
   const loading = useSelector(selectTicketsLoading);
-  const [filter, setFilter] = useState("");
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
 
+  // Debounce the search term for real-time, server-side search across all pages
   useEffect(() => {
-    dispatch(fetchEventTickets({ eventId: id, page, limit: 20 }));
-  }, [dispatch, id, page]);
+    const t = setTimeout(() => setDebouncedSearch(search.trim()), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  useEffect(() => {
+    dispatch(
+      fetchEventTickets({
+        eventId: id,
+        page,
+        limit: 20,
+        search: debouncedSearch || undefined,
+      }),
+    );
+  }, [dispatch, id, page, debouncedSearch]);
+
+  const onSearch = (v) => {
+    setSearch(v);
+    setPage(1);
+  };
 
   const disable = (code) => {
     if (!window.confirm(`Disable ticket ${code}? The holder won't be able to check in.`))
@@ -44,24 +63,7 @@ const EventTickets = () => {
       .catch((err) => toast.error(err || "Could not disable ticket."));
   };
 
-  const filtered = tickets.filter((t) => {
-    const q = filter.toLowerCase();
-    return (
-      !q ||
-      t.ticketCode?.toLowerCase().includes(q) ||
-      t.holder?.name?.toLowerCase().includes(q) ||
-      t.holder?.email?.toLowerCase().includes(q)
-    );
-  });
-
-  const stats = tickets.reduce(
-    (acc, t) => {
-      acc.total += 1;
-      if (t.status === "used") acc.used += 1;
-      return acc;
-    },
-    { total: 0, used: 0 },
-  );
+  const total = pagination?.total ?? tickets.length;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fffffc]">
@@ -79,14 +81,14 @@ const EventTickets = () => {
             <div>
               <h1 className="text-xl font-semibold text-neutral-800">Attendees</h1>
               <p className="text-xs text-neutral-400">
-                {stats.total} ticket{stats.total !== 1 ? "s" : ""} · {stats.used} checked in
+                {total} ticket{total !== 1 ? "s" : ""}
               </p>
             </div>
             <div className="flex items-center border border-neutral-200 focus-within:border-[#ff7f11] rounded-lg px-3 bg-white">
               <Search size={14} className="text-neutral-400" />
               <input
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
+                value={search}
+                onChange={(e) => onSearch(e.target.value)}
                 placeholder="Search name, email, code"
                 className="py-2 px-2 text-base focus:outline-none bg-transparent w-52"
               />
@@ -97,9 +99,9 @@ const EventTickets = () => {
             <div className="h-[30vh] flex items-center justify-center">
               <div className="w-7 h-7 border-2 border-[#ff7f11] border-t-transparent rounded-full animate-spin" />
             </div>
-          ) : filtered.length === 0 ? (
+          ) : tickets.length === 0 ? (
             <div className="bg-white border border-neutral-100 rounded-2xl p-12 text-center text-sm text-neutral-400">
-              No tickets {tickets.length ? "match your search" : "sold yet"}.
+              No tickets {debouncedSearch ? "match your search" : "sold yet"}.
             </div>
           ) : (
             <div className="bg-white border border-neutral-100 rounded-2xl overflow-hidden">
@@ -115,7 +117,7 @@ const EventTickets = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filtered.map((t) => (
+                    {tickets.map((t) => (
                       <tr
                         key={t._id || t.ticketCode}
                         className="border-b border-neutral-50 last:border-0 hover:bg-neutral-50/50"
