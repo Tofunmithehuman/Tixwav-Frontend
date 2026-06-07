@@ -274,7 +274,7 @@ const UsersTab = () => {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search users"
-          className="py-2 px-2 text-sm focus:outline-none bg-transparent flex-1"
+          className="py-2 px-2 text-base focus:outline-none bg-transparent flex-1"
         />
       </form>
 

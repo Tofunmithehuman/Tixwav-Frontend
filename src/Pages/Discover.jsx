@@ -111,7 +111,7 @@ const Discover = () => {
                 placeholder="Search events, topics..."
                 value={search}
                 onChange={(e) => onSearch(e.target.value)}
-                className="flex-1 py-3 px-3 text-sm text-neutral-600 focus:outline-none bg-transparent placeholder:text-neutral-300"
+                className="flex-1 py-3 px-3 text-base text-neutral-600 focus:outline-none bg-transparent placeholder:text-neutral-300"
               />
               {search && (
                 <button
@@ -178,7 +178,7 @@ const Discover = () => {
                   value={city}
                   onChange={(e) => onCity(e.target.value)}
                   placeholder="e.g. Lagos"
-                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-xs text-neutral-600 focus:outline-none focus:border-[#ff7f11]"
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-base text-neutral-600 focus:outline-none focus:border-[#ff7f11]"
                 />
               </div>
 

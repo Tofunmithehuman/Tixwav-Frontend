@@ -247,7 +247,7 @@ const ScanTicket = () => {
                     value={manual}
                     onChange={(e) => setManual(e.target.value)}
                     placeholder="e.g. A1B2C3D4E5F6"
-                    className="flex-1 border border-neutral-200 rounded-lg px-3 py-2.5 text-sm uppercase tracking-wide focus:outline-none focus:border-[#ff7f11]"
+                    className="flex-1 border border-neutral-200 rounded-lg px-3 py-2.5 text-base uppercase tracking-wide focus:outline-none focus:border-[#ff7f11]"
                   />
                   <button
                     disabled={isVerifying || !manual.trim()}

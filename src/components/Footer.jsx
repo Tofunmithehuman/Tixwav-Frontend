@@ -150,7 +150,7 @@ const Footer = () => {
                 <input
                   type="email"
                   placeholder="Subscribe to newsletter"
-                  className="px-4 py-2 text-sm border border-gray-300 rounded-xs focus:outline-none focus:border-[#ff7f11ff] transition-colors w-48 hidden lg:block"
+                  className="px-4 py-2 text-base border border-gray-300 rounded-xs focus:outline-none focus:border-[#ff7f11ff] transition-colors w-48 hidden lg:block"
                 />
                 <motion.button
                   className="bg-[#ff7f11ff] text-white px-4 py-2 rounded-xs text-sm hover:bg-[#e66f00] transition-colors hidden lg:block"

@@ -119,7 +119,7 @@ const PayoutSetup = () => {
                   setAccountNumber(e.target.value.replace(/\D/g, "").slice(0, 10))
                 }
                 placeholder="0123456789"
-                className="w-full mt-1 border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#ff7f11] tracking-wide"
+                className="w-full mt-1 border border-neutral-200 rounded-lg px-3 py-2.5 text-base focus:outline-none focus:border-[#ff7f11] tracking-wide"
               />
             </div>
 

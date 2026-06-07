@@ -54,7 +54,7 @@ const Search = () => {
                 value={term}
                 onChange={(e) => setTerm(e.target.value)}
                 placeholder="Search events, topics, tags…"
-                className="flex-1 min-w-0 py-3 px-2 sm:px-3 text-sm text-neutral-600 focus:outline-none bg-transparent placeholder:text-neutral-300"
+                className="flex-1 min-w-0 py-3 px-2 sm:px-3 text-base text-neutral-600 focus:outline-none bg-transparent placeholder:text-neutral-300"
               />
               {term && (
                 <button
