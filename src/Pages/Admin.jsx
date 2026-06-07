@@ -18,6 +18,7 @@ import {
   Search,
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import Pagination from "@/components/Pagination";
 import {
   fetchAdminOverview,
   fetchAdminRevenue,
@@ -36,6 +37,9 @@ import {
   selectAdminUsers,
   selectAdminEvents,
   selectAdminOrders,
+  selectAdminUsersPagination,
+  selectAdminEventsPagination,
+  selectAdminOrdersPagination,
   selectAdminLoading,
 } from "@/store/slices/adminSlice";
 import { formatNaira, formatDate } from "@/lib/format";
@@ -156,11 +160,13 @@ const Overview = () => {
 const EventsTab = () => {
   const dispatch = useDispatch();
   const events = useSelector(selectAdminEvents);
+  const pagination = useSelector(selectAdminEventsPagination);
   const loading = useSelector(selectAdminLoading);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    dispatch(fetchAllEvents());
-  }, [dispatch]);
+    dispatch(fetchAllEvents({ page, limit: 10 }));
+  }, [dispatch, page]);
 
   const act = (thunk, okMsg) =>
     dispatch(thunk)
@@ -171,6 +177,7 @@ const EventsTab = () => {
   return loading && events.length === 0 ? (
     <Loader />
   ) : (
+    <>
     <div className="bg-white border border-neutral-100 rounded-2xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -247,6 +254,8 @@ const EventsTab = () => {
       </div>
       {events.length === 0 && <Empty label="No events" />}
     </div>
+    <Pagination page={page} pages={pagination?.pages} total={pagination?.total} onPage={setPage} />
+    </>
   );
 };
 
@@ -254,33 +263,43 @@ const EventsTab = () => {
 const UsersTab = () => {
   const dispatch = useDispatch();
   const users = useSelector(selectAdminUsers);
+  const pagination = useSelector(selectAdminUsersPagination);
   const loading = useSelector(selectAdminLoading);
   const [q, setQ] = useState("");
+  const [debouncedQ, setDebouncedQ] = useState("");
+  const [page, setPage] = useState(1);
+
+  // Debounce the search term for real-time search
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQ(q.trim()), 300);
+    return () => clearTimeout(t);
+  }, [q]);
 
   useEffect(() => {
-    dispatch(fetchAllUsers());
-  }, [dispatch]);
+    dispatch(fetchAllUsers({ search: debouncedQ || undefined, page, limit: 10 }));
+  }, [dispatch, debouncedQ, page]);
 
-  const search = (e) => {
-    e.preventDefault();
-    dispatch(fetchAllUsers(q ? { search: q } : {}));
+  const onSearch = (v) => {
+    setQ(v);
+    setPage(1); // new query → back to first page
   };
 
   return (
     <div>
-      <form onSubmit={search} className="flex items-center border border-neutral-200 focus-within:border-[#ff7f11] rounded-lg px-3 bg-white mb-4 max-w-sm">
-        <Search size={14} className="text-neutral-400" />
+      <div className="flex items-center border border-neutral-200 focus-within:border-[#ff7f11] rounded-lg px-3 bg-white mb-4 max-w-sm">
+        <Search size={14} className="text-neutral-400 shrink-0" />
         <input
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => onSearch(e.target.value)}
           placeholder="Search users"
-          className="py-2 px-2 text-base focus:outline-none bg-transparent flex-1"
+          className="py-2 px-2 text-base focus:outline-none bg-transparent flex-1 min-w-0"
         />
-      </form>
+      </div>
 
       {loading && users.length === 0 ? (
         <Loader />
       ) : (
+        <>
         <div className="bg-white border border-neutral-100 rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -340,6 +359,8 @@ const UsersTab = () => {
           </div>
           {users.length === 0 && <Empty label="No users" />}
         </div>
+        <Pagination page={page} pages={pagination?.pages} total={pagination?.total} onPage={setPage} />
+        </>
       )}
     </div>
   );
@@ -349,11 +370,13 @@ const UsersTab = () => {
 const OrdersTab = () => {
   const dispatch = useDispatch();
   const orders = useSelector(selectAdminOrders);
+  const pagination = useSelector(selectAdminOrdersPagination);
   const loading = useSelector(selectAdminLoading);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    dispatch(fetchAllOrders());
-  }, [dispatch]);
+    dispatch(fetchAllOrders({ page, limit: 10 }));
+  }, [dispatch, page]);
 
   const refund = (o) => {
     if (!window.confirm(`Refund order ${o.orderRef}?`)) return;
@@ -366,6 +389,7 @@ const OrdersTab = () => {
   return loading && orders.length === 0 ? (
     <Loader />
   ) : (
+    <>
     <div className="bg-white border border-neutral-100 rounded-2xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -409,6 +433,8 @@ const OrdersTab = () => {
       </div>
       {orders.length === 0 && <Empty label="No orders" />}
     </div>
+    <Pagination page={page} pages={pagination?.pages} total={pagination?.total} onPage={setPage} />
+    </>
   );
 };
 
