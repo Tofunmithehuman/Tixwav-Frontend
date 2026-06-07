@@ -28,8 +28,13 @@ const PaymentVerify = () => {
     dispatch(verifyOrder(reference))
       .unwrap()
       .then((data) => {
-        setStatus("success");
         const orderId = data.order?._id;
+        if (!orderId) {
+          setStatus("failed");
+          setMessage("Payment confirmed, but we couldn't load your order. Check your email for tickets or see your profile.");
+          return;
+        }
+        setStatus("success");
         // Brief success screen, then go to the order/tickets page
         setTimeout(() => navigate(`/orders/${orderId}`, { replace: true }), 1500);
       })

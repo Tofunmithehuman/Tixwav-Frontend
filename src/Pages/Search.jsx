@@ -22,6 +22,11 @@ const Search = () => {
 
   const query = params.get("q") || "";
 
+  // Keep the input in sync with the URL (e.g. browser back/forward)
+  useEffect(() => {
+    setTerm(query);
+  }, [query]);
+
   useEffect(() => {
     // Search published events (server-side) whenever the URL query changes
     dispatch(fetchEvents(query ? { search: query, limit: 24 } : { limit: 24 }));

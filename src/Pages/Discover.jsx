@@ -56,10 +56,13 @@ const Discover = () => {
     return () => clearTimeout(t);
   }, [search]);
 
-  // Reset to page 1 whenever a filter changes
-  useEffect(() => {
-    setPage(1);
-  }, [debounced, category, city, sort]);
+  // Reset to page 1 when a filter changes — done in the handlers (not an effect)
+  // to avoid cascading renders and a double fetch.
+  const onSearch = (v) => { setSearch(v); setPage(1); };
+  const onCategory = (v) => { setCategory(v); setPage(1); };
+  const onCity = (v) => { setCity(v); setPage(1); };
+  const onSort = (v) => { setSort(v); setPage(1); };
+  const clearFilters = () => { setCategory("All"); setCity(""); setSearch(""); setPage(1); };
 
   useEffect(() => {
     dispatch(
@@ -107,12 +110,12 @@ const Discover = () => {
                 type="text"
                 placeholder="Search events, topics..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => onSearch(e.target.value)}
                 className="flex-1 py-3 px-3 text-sm text-neutral-600 focus:outline-none bg-transparent placeholder:text-neutral-300"
               />
               {search && (
                 <button
-                  onClick={() => setSearch("")}
+                  onClick={() => onSearch("")}
                   className="text-neutral-300 hover:text-neutral-500 transition-colors"
                 >
                   <X size={14} />
@@ -154,7 +157,7 @@ const Discover = () => {
                   {categories.map((c) => (
                     <button
                       key={c}
-                      onClick={() => setCategory(c)}
+                      onClick={() => onCategory(c)}
                       className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
                         category === c
                           ? "bg-[#ff7f11] text-white"
@@ -173,7 +176,7 @@ const Discover = () => {
                 </p>
                 <input
                   value={city}
-                  onChange={(e) => setCity(e.target.value)}
+                  onChange={(e) => onCity(e.target.value)}
                   placeholder="e.g. Lagos"
                   className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-xs text-neutral-600 focus:outline-none focus:border-[#ff7f11]"
                 />
@@ -186,7 +189,7 @@ const Discover = () => {
                 <div className="relative">
                   <select
                     value={sort}
-                    onChange={(e) => setSort(e.target.value)}
+                    onChange={(e) => onSort(e.target.value)}
                     className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-xs text-neutral-600 focus:outline-none focus:border-[#ff7f11] appearance-none bg-white cursor-pointer"
                   >
                     {sorts.map((s) => (
@@ -216,11 +219,7 @@ const Discover = () => {
             </p>
             {(category !== "All" || city || search) && (
               <button
-                onClick={() => {
-                  setCategory("All");
-                  setCity("");
-                  setSearch("");
-                }}
+                onClick={clearFilters}
                 className="text-xs text-[#ff7f11] hover:underline flex items-center gap-1"
               >
                 <X size={11} /> Clear filters
