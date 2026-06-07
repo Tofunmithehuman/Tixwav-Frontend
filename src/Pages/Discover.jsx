@@ -104,19 +104,19 @@ const Discover = () => {
 
           {/* Search Bar */}
           <div className="flex gap-2">
-            <div className="flex-1 flex items-center border border-neutral-200 focus-within:border-[#ff7f11] rounded-lg px-4 bg-white transition-colors">
+            <div className="flex-1 min-w-0 flex items-center border border-neutral-200 focus-within:border-[#ff7f11] rounded-lg px-3 sm:px-4 bg-white transition-colors">
               <Search size={15} className="text-neutral-400 shrink-0" />
               <input
                 type="text"
                 placeholder="Search events, topics..."
                 value={search}
                 onChange={(e) => onSearch(e.target.value)}
-                className="flex-1 py-3 px-3 text-sm text-neutral-600 focus:outline-none bg-transparent placeholder:text-neutral-300"
+                className="flex-1 min-w-0 py-3 px-2 sm:px-3 text-sm text-neutral-600 focus:outline-none bg-transparent placeholder:text-neutral-300"
               />
               {search && (
                 <button
                   onClick={() => onSearch("")}
-                  className="text-neutral-300 hover:text-neutral-500 transition-colors"
+                  className="text-neutral-300 hover:text-neutral-500 transition-colors shrink-0"
                 >
                   <X size={14} />
                 </button>
@@ -125,7 +125,7 @@ const Discover = () => {
             <motion.button
               onClick={() => setShowFilters(!showFilters)}
               whileTap={{ scale: 0.95 }}
-              className={`flex items-center gap-2 px-4 py-3 rounded-lg border text-sm font-medium transition-all ${
+              className={`shrink-0 flex items-center gap-2 px-4 py-3 rounded-lg border text-sm font-medium transition-all ${
                 showFilters || activeFilterCount > 0
                   ? "border-[#ff7f11] text-[#ff7f11] bg-[#ff7f11]/5"
                   : "border-neutral-200 text-neutral-500 bg-white"

@@ -341,13 +341,14 @@ const Profile = () => {
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           {/* Header Row */}
           <motion.div
-            className="flex flex-col sm:flex-row sm:items-center gap-4 -mt-14 mb-8"
+            className="relative -mt-16 mb-8 bg-white border border-neutral-100 rounded-2xl shadow-sm p-5 sm:p-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5">
             {/* Avatar */}
-            <div className="relative w-fit">
+            <div className="relative w-fit mx-auto sm:mx-0">
               {user?.avatar && user.avatar.trim() !== "" ? (
                 <img
                   src={user.avatar}
@@ -389,8 +390,8 @@ const Profile = () => {
               </motion.button>
             </div>
 
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex-1 min-w-0 text-center sm:text-left">
+              <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
                 <h1 className="text-xl font-semibold text-neutral-800">
                   {user ? `${user.firstName} ${user.lastName}` : "Loading…"}
                 </h1>
@@ -400,13 +401,13 @@ const Profile = () => {
                   </span>
                 )}
               </div>
-              <div className="flex flex-col gap-0.5 mt-1">
-                <p className="text-sm text-neutral-400 flex items-center gap-1.5">
+              <div className="flex flex-col gap-1 mt-2 items-center sm:items-start">
+                <p className="text-sm text-neutral-500 flex items-center gap-1.5">
                   <Mail size={13} className="text-[#ff7f11ff] shrink-0" />
                   <span className="truncate">{user?.email || ""}</span>
                 </p>
                 {user?.phone && (
-                  <p className="text-sm text-neutral-400 flex items-center gap-1.5">
+                  <p className="text-sm text-neutral-500 flex items-center gap-1.5">
                     <Phone size={13} className="text-[#ff7f11ff] shrink-0" />
                     {user.phone}
                   </p>
@@ -414,7 +415,7 @@ const Profile = () => {
               </div>
             </div>
 
-            <div className="sm:pb-1 sm:ml-auto flex gap-2 shrink-0">
+            <div className="sm:ml-auto flex gap-2 shrink-0 justify-center w-full sm:w-auto">
               {!editMode ? (
                 <>
                   <motion.button
@@ -456,6 +457,7 @@ const Profile = () => {
                   </motion.button>
                 </div>
               )}
+            </div>
             </div>
           </motion.div>
 
