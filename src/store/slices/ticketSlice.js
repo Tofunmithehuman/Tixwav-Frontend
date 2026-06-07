@@ -43,10 +43,11 @@ export const cancelTicket = createAsyncThunk(
 
 export const fetchEventTickets = createAsyncThunk(
   "ticket/eventTickets",
-  async ({ eventId, status, page = 1, limit = 50 }, { rejectWithValue }) => {
+  async ({ eventId, status, page = 1, limit = 50, search }, { rejectWithValue }) => {
     try {
       const q = new URLSearchParams({ page, limit });
       if (status) q.append("status", status);
+      if (search) q.append("search", search);
       const { data } = await api.get(`/tickets/events/${eventId}?${q}`);
       return data;
     } catch (err) {
