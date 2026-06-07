@@ -23,7 +23,7 @@ const EventCard = ({ event, index = 0 }) => {
     >
       <Link
         to={to}
-        className="block bg-white border border-neutral-100 rounded-2xl overflow-hidden shadow-sm group h-full"
+        className="block bg-white border border-neutral-100 rounded-sm overflow-hidden shadow-sm group h-full"
       >
         <div className="relative aspect-video overflow-hidden bg-neutral-100">
           <img
