@@ -348,7 +348,7 @@ const Profile = () => {
           >
             <div className="flex flex-col sm:flex-row sm:items-center gap-5">
             {/* Avatar */}
-            <div className="relative w-fit mx-auto sm:mx-0">
+            <div className="relative w-fit">
               {user?.avatar && user.avatar.trim() !== "" ? (
                 <img
                   src={user.avatar}
@@ -390,8 +390,8 @@ const Profile = () => {
               </motion.button>
             </div>
 
-            <div className="flex-1 min-w-0 text-center sm:text-left">
-              <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+            <div className="flex-1 min-w-0 sm:text-left">
+              <div className="flex items-center justify-start gap-2 flex-wrap">
                 <h1 className="text-xl font-semibold text-neutral-800">
                   {user ? `${user.firstName} ${user.lastName}` : "Loading…"}
                 </h1>
@@ -401,7 +401,7 @@ const Profile = () => {
                   </span>
                 )}
               </div>
-              <div className="flex flex-col gap-1 mt-2 items-center sm:items-start">
+              <div className="flex flex-col gap-1 mt-2 items-start">
                 <p className="text-sm text-neutral-500 flex items-center gap-1.5">
                   <Mail size={13} className="text-[#ff7f11ff] shrink-0" />
                   <span className="truncate">{user?.email || ""}</span>
@@ -415,7 +415,7 @@ const Profile = () => {
               </div>
             </div>
 
-            <div className="sm:ml-auto flex gap-2 shrink-0 justify-center w-full sm:w-auto">
+            <div className="sm:ml-auto flex gap-2 shrink-0 w-full sm:w-auto">
               {!editMode ? (
                 <>
                   <motion.button

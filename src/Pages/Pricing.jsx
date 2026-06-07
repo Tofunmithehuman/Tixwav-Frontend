@@ -163,8 +163,7 @@ const Pricing = () => {
               Free for attendees. Fair for organizers.
             </h2>
             <p className="text-sm text-neutral-500 mt-2 max-w-md mx-auto">
-              Buying tickets is always free. Hosting is free too — Tixwav only
-              earns when you do.
+              Buying tickets is always free. Hosting is free too — designed for seamless event experiences.
             </p>
             <motion.div
               className="mt-6"
