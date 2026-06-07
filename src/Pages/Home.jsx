@@ -108,8 +108,7 @@ const Home = () => {
             <motion.section
               className="mt-16"
               initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
+              animate="visible"
               variants={containerVariants}
             >
               <motion.h2

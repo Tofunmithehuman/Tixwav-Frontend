@@ -84,12 +84,43 @@ export const getMyOrders = createAsyncThunk(
   }
 );
 
+export const getSavedEvents = createAsyncThunk(
+  "user/getSavedEvents",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get("/users/saved");
+      return data.events;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to load saved events"
+      );
+    }
+  }
+);
+
+export const toggleSavedEvent = createAsyncThunk(
+  "user/toggleSavedEvent",
+  async (eventId, { rejectWithValue }) => {
+    try {
+      const { data } = await api.post(`/users/saved/${eventId}`);
+      return { eventId, saved: data.saved };
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to update saved events"
+      );
+    }
+  }
+);
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 
 const initialState = {
   profile: null,
   orders: [],
   ordersPagination: null,
+  savedEvents: [],
+  savedIds: [],
+  isSavedLoading: false,
   isProfileLoading: false,
   isUpdating: false,
   isAvatarUploading: false,
@@ -185,6 +216,31 @@ const userSlice = createSlice({
         state.isOrdersLoading = false;
         state.error = action.payload;
       });
+
+    // ── Saved events ──────────────────────────────────────────────────────────
+    builder
+      .addCase(getSavedEvents.pending, (state) => {
+        state.isSavedLoading = true;
+      })
+      .addCase(getSavedEvents.fulfilled, (state, action) => {
+        state.isSavedLoading = false;
+        state.savedEvents = action.payload;
+        state.savedIds = action.payload.map((e) => e._id);
+      })
+      .addCase(getSavedEvents.rejected, (state, action) => {
+        state.isSavedLoading = false;
+        state.error = action.payload;
+      });
+
+    builder.addCase(toggleSavedEvent.fulfilled, (state, action) => {
+      const { eventId, saved } = action.payload;
+      if (saved) {
+        if (!state.savedIds.includes(eventId)) state.savedIds.push(eventId);
+      } else {
+        state.savedIds = state.savedIds.filter((id) => id !== eventId);
+        state.savedEvents = state.savedEvents.filter((e) => e._id !== eventId);
+      }
+    });
   },
 });
 
@@ -201,3 +257,6 @@ export const selectIsPasswordChanging = (state) => state.user.isPasswordChanging
 export const selectIsOrdersLoading = (state) => state.user.isOrdersLoading;
 export const selectUserError = (state) => state.user.error;
 export const selectPasswordError = (state) => state.user.passwordError;
+export const selectSavedEvents = (state) => state.user.savedEvents;
+export const selectSavedIds = (state) => state.user.savedIds;
+export const selectIsSavedLoading = (state) => state.user.isSavedLoading;

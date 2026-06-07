@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Navigation from "@/components/Navigation";
@@ -10,7 +10,6 @@ import {
   User,
   Mail,
   Phone,
-  MapPin,
   Camera,
   Ticket,
   Calendar,
@@ -52,6 +51,9 @@ import {
   selectIsOrdersLoading,
   selectPasswordError,
   clearPasswordError,
+  getSavedEvents,
+  toggleSavedEvent,
+  selectSavedEvents,
 } from "../store/slices/userSlice";
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
@@ -144,8 +146,8 @@ const Profile = () => {
   const [ticketFilter, setTicketFilter] = useState("all");
   const [selectedTicket, setSelectedTicket] = useState(null);
 
-  // Saved events (UI-only for now — no API endpoint provided)
-  const [saved, setSaved] = useState([]);
+  // Saved events (from the API)
+  const saved = useSelector(selectSavedEvents);
 
   // Notifications (local only)
   const [notifs, setNotifs] = useState({
@@ -168,10 +170,11 @@ const Profile = () => {
     confirm: false,
   });
 
-  // ── On mount: load profile + orders ───────────────────────────────────────
+  // ── On mount: load profile + orders + saved events ────────────────────────
   useEffect(() => {
     dispatch(getProfile());
     dispatch(getMyOrders());
+    dispatch(getSavedEvents());
   }, [dispatch]);
 
   // Sync draft when profile loads
@@ -270,8 +273,10 @@ const Profile = () => {
   };
 
   const removeSaved = (id) => {
-    setSaved((p) => p.filter((e) => e.id !== id));
-    toast.info("Event removed from saved.");
+    dispatch(toggleSavedEvent(id))
+      .unwrap()
+      .then(() => toast.info("Event removed from saved."))
+      .catch(() => toast.error("Could not update saved events."));
   };
 
   // ── Derived stats from orders ─────────────────────────────────────────────
@@ -336,7 +341,7 @@ const Profile = () => {
         <div className="max-w-screen-xl mx-auto px-4 md:px-8">
           {/* Header Row */}
           <motion.div
-            className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-14 mb-8"
+            className="flex flex-col sm:flex-row sm:items-center gap-4 -mt-14 mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -384,17 +389,32 @@ const Profile = () => {
               </motion.button>
             </div>
 
-            <div className="flex-1 pb-1">
-              <h1 className="text-xl font-semibold text-neutral-800">
-                {user ? `${user.firstName} ${user.lastName}` : "Loading…"}
-              </h1>
-              <p className="text-sm text-neutral-400 flex items-center gap-1 mt-0.5">
-                <MapPin size={12} className="text-[#ff7f11ff]" />
-                {user?.email || user?.phone || ""}
-              </p>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl font-semibold text-neutral-800">
+                  {user ? `${user.firstName} ${user.lastName}` : "Loading…"}
+                </h1>
+                {user?.role && user.role !== "user" && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#ff7f11]/10 text-[#ff7f11] text-[11px] font-semibold capitalize">
+                    <Shield size={11} /> {user.role}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col gap-0.5 mt-1">
+                <p className="text-sm text-neutral-400 flex items-center gap-1.5">
+                  <Mail size={13} className="text-[#ff7f11ff] shrink-0" />
+                  <span className="truncate">{user?.email || ""}</span>
+                </p>
+                {user?.phone && (
+                  <p className="text-sm text-neutral-400 flex items-center gap-1.5">
+                    <Phone size={13} className="text-[#ff7f11ff] shrink-0" />
+                    {user.phone}
+                  </p>
+                )}
+              </div>
             </div>
 
-            <div className="sm:pb-1 flex gap-2">
+            <div className="sm:pb-1 sm:ml-auto flex gap-2 shrink-0">
               {!editMode ? (
                 <>
                   <motion.button
@@ -746,41 +766,64 @@ const Profile = () => {
                         </div>
                       ) : (
                         <div className="space-y-2.5">
-                          {saved.map((event, i) => (
-                            <motion.div
-                              key={event.id}
-                              initial={{ opacity: 0, y: 6 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: i * 0.05 }}
-                              className="flex items-center gap-3 p-3.5 rounded-xl border border-neutral-100 hover:border-neutral-200 transition-all group"
-                            >
-                              <div className="w-9 h-9 rounded-lg bg-rose-50 flex items-center justify-center shrink-0">
-                                <Heart size={15} className="text-rose-400" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-neutral-700 truncate">
-                                  {event.name}
-                                </p>
-                                <p className="text-xs text-neutral-400 mt-0.5">
-                                  {event.date} · {event.category}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-semibold text-[#ff7f11ff]">
-                                  {event.price === 0
-                                    ? "Free"
-                                    : `₦${event.price.toLocaleString("en-NG")}`}
-                                </span>
-                                <motion.button
-                                  onClick={() => removeSaved(event.id)}
-                                  whileTap={{ scale: 0.9 }}
-                                  className="p-1 rounded-lg hover:bg-red-50 text-neutral-300 hover:text-red-400 transition-colors"
+                          {saved.map((event, i) => {
+                            const prices = (event.ticketTiers || []).map(
+                              (t) => t.price ?? 0,
+                            );
+                            const minPrice = prices.length
+                              ? Math.min(...prices)
+                              : 0;
+                            return (
+                              <motion.div
+                                key={event._id}
+                                initial={{ opacity: 0, y: 6 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.05 }}
+                                className="flex items-center gap-3 p-3.5 rounded-xl border border-neutral-100 hover:border-neutral-200 transition-all group"
+                              >
+                                {event.image ? (
+                                  <img
+                                    src={event.image}
+                                    alt=""
+                                    className="w-10 h-10 rounded-lg object-cover shrink-0"
+                                  />
+                                ) : (
+                                  <div className="w-10 h-10 rounded-lg bg-rose-50 flex items-center justify-center shrink-0">
+                                    <Heart size={15} className="text-rose-400" />
+                                  </div>
+                                )}
+                                <Link
+                                  to={`/events/${event.slug || event._id}`}
+                                  className="flex-1 min-w-0"
                                 >
-                                  <X size={13} />
-                                </motion.button>
-                              </div>
-                            </motion.div>
-                          ))}
+                                  <p className="text-sm font-medium text-neutral-700 truncate group-hover:text-[#ff7f11] transition-colors">
+                                    {event.title}
+                                  </p>
+                                  <p className="text-xs text-neutral-400 mt-0.5">
+                                    {new Date(event.startDate).toLocaleDateString(
+                                      "en-NG",
+                                      { month: "short", day: "numeric", year: "numeric" },
+                                    )}{" "}
+                                    · {event.category}
+                                  </p>
+                                </Link>
+                                <div className="flex items-center gap-2 shrink-0">
+                                  <span className="text-xs font-semibold text-[#ff7f11ff]">
+                                    {minPrice === 0
+                                      ? "Free"
+                                      : `₦${minPrice.toLocaleString("en-NG")}`}
+                                  </span>
+                                  <motion.button
+                                    onClick={() => removeSaved(event._id)}
+                                    whileTap={{ scale: 0.9 }}
+                                    className="p-1 rounded-lg hover:bg-red-50 text-neutral-300 hover:text-red-400 transition-colors"
+                                  >
+                                    <X size={13} />
+                                  </motion.button>
+                                </div>
+                              </motion.div>
+                            );
+                          })}
                         </div>
                       )}
                     </motion.div>

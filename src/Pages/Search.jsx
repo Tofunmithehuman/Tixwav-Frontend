@@ -47,26 +47,26 @@ const Search = () => {
             Search events
           </h1>
           <form onSubmit={submit} className="flex gap-2 max-w-2xl">
-            <div className="flex-1 flex items-center border border-neutral-200 focus-within:border-[#ff7f11] rounded-lg px-4 bg-white transition-colors">
+            <div className="flex-1 min-w-0 flex items-center border border-neutral-200 focus-within:border-[#ff7f11] rounded-lg px-3 sm:px-4 bg-white transition-colors">
               <SearchIcon size={16} className="text-neutral-400 shrink-0" />
               <input
                 autoFocus
                 value={term}
                 onChange={(e) => setTerm(e.target.value)}
                 placeholder="Search events, topics, tags…"
-                className="flex-1 py-3 px-3 text-sm text-neutral-600 focus:outline-none bg-transparent placeholder:text-neutral-300"
+                className="flex-1 min-w-0 py-3 px-2 sm:px-3 text-sm text-neutral-600 focus:outline-none bg-transparent placeholder:text-neutral-300"
               />
               {term && (
                 <button
                   type="button"
                   onClick={() => setTerm("")}
-                  className="text-neutral-300 hover:text-neutral-500"
+                  className="text-neutral-300 hover:text-neutral-500 shrink-0"
                 >
                   <X size={15} />
                 </button>
               )}
             </div>
-            <button className="bg-[#ff7f11] text-white px-6 rounded-xs text-sm font-semibold hover:bg-[#e66f00] transition-colors">
+            <button className="shrink-0 bg-[#ff7f11] text-white px-4 sm:px-6 rounded-xs text-sm font-semibold hover:bg-[#e66f00] transition-colors">
               Search
             </button>
           </form>

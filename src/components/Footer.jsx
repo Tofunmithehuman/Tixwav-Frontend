@@ -51,8 +51,7 @@ const Footer = () => {
           <motion.div
             className="max-w-screen-2xl mx-auto pt-16 pb-4 px-4 lg:px-8"
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
+            animate="visible"
             variants={containerVariants}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 mb-12">
