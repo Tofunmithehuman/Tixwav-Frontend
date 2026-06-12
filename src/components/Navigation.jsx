@@ -177,15 +177,6 @@ const Navigation = () => {
                         </p>
                       </div>
 
-                      {/* My Tickets */}
-                      <Link
-                        to="/my-tickets"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-[#ff7f11] transition-colors"
-                      >
-                        <Ticket size={14} />
-                        My Tickets
-                      </Link>
                       {/* Profile */}
                       <Link
                         to="/profile"
@@ -194,6 +185,16 @@ const Navigation = () => {
                       >
                         <UserIcon size={14} />
                         Profile
+                      </Link>
+
+                       {/* My Tickets */}
+                      <Link
+                        to="/my-tickets"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-[#ff7f11] transition-colors"
+                      >
+                        <Ticket size={14} />
+                        My Tickets
                       </Link>
 
                       {/* Role-based links */}
@@ -342,20 +343,20 @@ const Navigation = () => {
               {/* 2. My Tickets + Profile + role links */}
               <motion.div variants={itemVariants} className="mb-2">
                 <motion.button
-                  onClick={() => handleNavigation("/my-tickets")}
-                  className="flex items-center gap-2.5 text-neutral-700 text-lg hover:text-[#ff7f11ff] transition-colors w-full py-2"
-                  whileHover={{ x: 10 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Ticket size={16} /> My Tickets
-                </motion.button>
-                <motion.button
                   onClick={() => handleNavigation("/profile")}
                   className="flex items-center gap-2.5 text-neutral-700 text-lg hover:text-[#ff7f11ff] transition-colors w-full py-2"
                   whileHover={{ x: 10 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <UserIcon size={16} /> Profile
+                </motion.button>
+                 <motion.button
+                  onClick={() => handleNavigation("/my-tickets")}
+                  className="flex items-center gap-2.5 text-neutral-700 text-lg hover:text-[#ff7f11ff] transition-colors w-full py-2"
+                  whileHover={{ x: 10 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Ticket size={16} /> My Tickets
                 </motion.button>
                 {(user.role === "organizer" || user.role === "admin") && (
                   <motion.button
@@ -480,9 +481,9 @@ const Navigation = () => {
 };
 
 const menuItems = [
-  { label: "About", path: "/about" },
+  // { label: "About", path: "/about" },
   { label: "Discover", path: "/discover" },
-  { label: "Pricing", path: "/pricing" },
+  // { label: "Pricing", path: "/pricing" },
   { label: "Search", path: "/search" },
 ];
 
