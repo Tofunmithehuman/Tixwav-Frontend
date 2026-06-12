@@ -112,6 +112,20 @@ export const toggleSavedEvent = createAsyncThunk(
   }
 );
 
+export const removeMyTicket = createAsyncThunk(
+  "user/removeMyTicket",
+  async (ticketCode, { rejectWithValue }) => {
+    try {
+      const { data } = await api.put(`/tickets/${ticketCode}/remove`);
+      return { ticketCode, ...data };
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Could not remove ticket"
+      );
+    }
+  }
+);
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 
 const initialState = {
@@ -240,6 +254,16 @@ const userSlice = createSlice({
         state.savedIds = state.savedIds.filter((id) => id !== eventId);
         state.savedEvents = state.savedEvents.filter((e) => e._id !== eventId);
       }
+    });
+
+    builder.addCase(removeMyTicket.fulfilled, (state, action) => {
+      const code = action.payload.ticketCode;
+      state.orders = state.orders.map((o) => ({
+        ...o,
+        tickets: (o.tickets || []).map((t) =>
+          t.ticketCode === code ? { ...t, status: "cancelled" } : t
+        ),
+      }));
     });
   },
 });

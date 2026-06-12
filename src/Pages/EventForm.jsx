@@ -14,8 +14,10 @@ import {
 } from "@/store/slices/eventSlice";
 
 const CATEGORIES = [
-  "Tech", "Design", "Workshop", "Business",
-  "Music", "Sports", "Food", "Arts", "Other",
+  "Tech", "Design", "Workshop", "Business", "Music", "Sports", "Food", "Arts",
+  "Concert", "Festival", "Conference", "Comedy", "Theatre", "Film", "Party",
+  "Networking", "Religious", "Health", "Education", "Fashion", "Gaming",
+  "Charity", "Sports & Fitness", "Other",
 ];
 
 const emptyTier = () => ({ name: "", price: "", quantity: "", description: "" });
@@ -38,6 +40,7 @@ const EventForm = ({ mode = "create" }) => {
   const [form, setForm] = useState({
     title: "",
     category: "Other",
+    organizerName: "",
     description: "",
     isOnline: false,
     onlineLink: "",
@@ -64,6 +67,7 @@ const EventForm = ({ mode = "create" }) => {
       setForm({
         title: current.title || "",
         category: current.category || "Other",
+        organizerName: current.organizerName || "",
         description: current.description || "",
         isOnline: !!current.isOnline,
         onlineLink: current.onlineLink || "",
@@ -134,6 +138,7 @@ const EventForm = ({ mode = "create" }) => {
     const fd = new FormData();
     fd.append("title", form.title.trim());
     fd.append("category", form.category);
+    fd.append("organizerName", form.organizerName.trim());
     fd.append("description", form.description.trim());
     fd.append("isOnline", String(form.isOnline));
     if (form.isOnline) fd.append("onlineLink", form.onlineLink.trim());
@@ -163,8 +168,8 @@ const EventForm = ({ mode = "create" }) => {
         await dispatch(updateEvent({ id, formData: fd })).unwrap();
         toast.success("Event updated.");
       } else {
-        await dispatch(createEvent(fd)).unwrap();
-        toast.success("Event created as a draft. Publish it when you're ready!");
+        const res = await dispatch(createEvent(fd)).unwrap();
+        toast.success(res?.message || "Event created.");
       }
       navigate("/organizer");
     } catch (er) {
@@ -239,6 +244,18 @@ const EventForm = ({ mode = "create" }) => {
                     <option key={c}>{c}</option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label className={labelCls}>HOST / ORGANIZER NAME (OPTIONAL)</label>
+                <input
+                  value={form.organizerName}
+                  onChange={(e) => setField("organizerName", e.target.value)}
+                  className={inputCls}
+                  placeholder="Leave blank to use your account name"
+                />
+                <p className="text-[11px] text-neutral-400 mt-1">
+                  Set this when you're organizing on behalf of someone else.
+                </p>
               </div>
               <div>
                 <label className={labelCls}>DESCRIPTION</label>
