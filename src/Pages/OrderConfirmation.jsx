@@ -5,7 +5,7 @@ import * as motion from "motion/react-client";
 import { CheckCircle2, Calendar, MapPin, Download, Ticket } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import api from "@/lib/api";
+import { downloadTicketPdf } from "@/lib/downloadTicket";
 import {
   fetchOrder,
   selectCheckoutOrder,
@@ -37,15 +37,10 @@ const OrderConfirmation = () => {
     dispatch(fetchOrder({ id, email: guestEmail }));
   };
 
-  const downloadTicket = async (ticketCode) => {
-    try {
-      const q = isAuthenticated ? "" : `?email=${encodeURIComponent(guestEmail)}`;
-      const { data } = await api.get(`/tickets/${ticketCode}/download${q}`);
-      if (data.downloadUrl) window.open(data.downloadUrl, "_blank");
-    } catch {
-      // PDF may still be generating; surface gently
-      alert("Your ticket PDF is still being prepared — try again in a moment.");
-    }
+  const downloadTicket = (ticketCode) => {
+    downloadTicketPdf(ticketCode, isAuthenticated ? undefined : guestEmail).catch(
+      () => alert("Your ticket PDF is still being prepared — try again in a moment."),
+    );
   };
 
   return (

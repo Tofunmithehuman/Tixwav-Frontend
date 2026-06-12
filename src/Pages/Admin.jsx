@@ -184,9 +184,9 @@ const EventsTab = () => {
           <thead>
             <tr className="text-left text-xs text-neutral-400 border-b border-neutral-100">
               <th className="px-4 py-3 font-medium">Event</th>
-              <th className="px-4 py-3 font-medium">Organizer</th>
+              <th className="px-4 py-3 font-medium hidden sm:table-cell">Organizer</th>
               <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Revenue</th>
+              <th className="px-4 py-3 font-medium hidden sm:table-cell">Revenue</th>
               <th className="px-4 py-3 font-medium text-right">Actions</th>
             </tr>
           </thead>
@@ -199,7 +199,7 @@ const EventsTab = () => {
                     <span className="font-medium text-neutral-700 line-clamp-1">{ev.title}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-neutral-500">
+                <td className="px-4 py-3 text-neutral-500 hidden sm:table-cell">
                   {ev.organizer?.organizerInfo?.companyName ||
                     (ev.organizer ? `${ev.organizer.firstName} ${ev.organizer.lastName}` : "—")}
                 </td>
@@ -208,7 +208,7 @@ const EventsTab = () => {
                     {ev.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-neutral-600">{formatNaira(ev.totalRevenue)}</td>
+                <td className="px-4 py-3 text-neutral-600 hidden sm:table-cell">{formatNaira(ev.totalRevenue)}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1">
                     <button
@@ -395,9 +395,9 @@ const OrdersTab = () => {
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-xs text-neutral-400 border-b border-neutral-100">
-              <th className="px-4 py-3 font-medium">Order</th>
+              <th className="px-4 py-3 font-medium hidden sm:table-cell">Order</th>
               <th className="px-4 py-3 font-medium">Event</th>
-              <th className="px-4 py-3 font-medium">Buyer</th>
+              <th className="px-4 py-3 font-medium hidden md:table-cell">Buyer</th>
               <th className="px-4 py-3 font-medium">Total</th>
               <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3 font-medium text-right">Action</th>
@@ -406,9 +406,9 @@ const OrdersTab = () => {
           <tbody>
             {orders.map((o) => (
               <tr key={o._id} className="border-b border-neutral-50 last:border-0 hover:bg-neutral-50/50">
-                <td className="px-4 py-3 text-neutral-500 whitespace-nowrap">{o.orderRef}</td>
+                <td className="px-4 py-3 text-neutral-500 whitespace-nowrap hidden sm:table-cell">{o.orderRef}</td>
                 <td className="px-4 py-3 text-neutral-600 line-clamp-1">{o.event?.title || "—"}</td>
-                <td className="px-4 py-3 text-neutral-500">
+                <td className="px-4 py-3 text-neutral-500 hidden md:table-cell">
                   {o.user ? `${o.user.firstName} ${o.user.lastName}` : o.guestName || "Guest"}
                 </td>
                 <td className="px-4 py-3 font-medium text-neutral-700">{formatNaira(o.total)}</td>

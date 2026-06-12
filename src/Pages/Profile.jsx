@@ -34,6 +34,8 @@ import {
   Upload,
 } from "lucide-react";
 
+import { downloadTicketPdf } from "../lib/downloadTicket";
+
 // Redux
 import { logoutUser, selectUser } from "../store/slices/authSlice";
 import {
@@ -726,9 +728,10 @@ const Profile = () => {
                                     : "Date TBD"}
                                 </p>
                               </div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 shrink-0">
                                 <span
-                                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize ${
+                                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize whitespace-nowrap ${
+                                    order.status === "confirmed" ||
                                     order.status === "completed"
                                       ? "bg-emerald-50 text-emerald-600"
                                       : order.status === "paid"
@@ -740,7 +743,7 @@ const Profile = () => {
                                 </span>
                                 <ChevronRight
                                   size={13}
-                                  className="text-neutral-200 group-hover:text-[#ff7f11ff] transition-colors"
+                                  className="text-neutral-200 group-hover:text-[#ff7f11ff] transition-colors shrink-0"
                                 />
                               </div>
                             </motion.div>
@@ -1025,8 +1028,16 @@ const Profile = () => {
             ))}
             <motion.button
               onClick={() => {
-                toast.success("Ticket downloaded!");
-                setModal(null);
+                const code = selectedTicket.tickets?.[0]?.ticketCode;
+                if (!code) {
+                  toast.info("Your ticket is still being prepared — try again shortly.");
+                  return;
+                }
+                downloadTicketPdf(code)
+                  .then(() => setModal(null))
+                  .catch(() =>
+                    toast.error("Couldn't download yet — please try again shortly."),
+                  );
               }}
               whileTap={{ scale: 0.96 }}
               className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#ff7f11ff] text-white rounded-lg text-sm font-semibold hover:bg-[#e66f00] transition-colors"

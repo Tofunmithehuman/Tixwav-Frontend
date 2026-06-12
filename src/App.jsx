@@ -16,6 +16,7 @@ const ResetPassword = lazy(() => import("./Pages/ResetPassword"));
 const VerifyEmail = lazy(() => import("./Pages/VerifyEmail"));
 const Admin = lazy(() => import("./Pages/Admin"));
 const Profile = lazy(() => import("./Pages/Profile"));
+const MyTickets = lazy(() => import("./Pages/MyTickets"));
 const About = lazy(() => import("./Pages/About"));
 const Discover = lazy(() => import("./Pages/Discover"));
 const Pricing = lazy(() => import("./Pages/Pricing"));
@@ -85,6 +86,14 @@ function App() {
               </ProtectedRoute>
             }
             path="/profile"
+          />
+          <Route
+            element={
+              <ProtectedRoute>
+                <MyTickets />
+              </ProtectedRoute>
+            }
+            path="/my-tickets"
           />
           <Route
             element={

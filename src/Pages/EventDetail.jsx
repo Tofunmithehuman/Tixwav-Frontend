@@ -179,13 +179,13 @@ const EventDetail = () => {
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4 }}
-                className="relative aspect-video rounded-2xl overflow-hidden bg-neutral-100 mb-6"
+                className="relative rounded-2xl overflow-hidden bg-neutral-100 mb-6"
               >
                 <img
                   src={event.image || FALLBACK_IMG}
                   alt={event.title}
                   onError={(e) => (e.currentTarget.src = FALLBACK_IMG)}
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto block"
                 />
                 {event.category && (
                   <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/45 backdrop-blur-sm text-white text-xs font-medium">
@@ -245,21 +245,25 @@ const EventDetail = () => {
                 </span>
               </div>
 
-              {event.organizer && (
-                <div className="flex items-center gap-3 mb-6 pb-6 border-b border-neutral-100">
-                  <div className="w-10 h-10 rounded-full bg-[#ff7f11]/10 flex items-center justify-center text-[#ff7f11] font-semibold">
-                    {(event.organizer.organizerInfo?.companyName ||
-                      event.organizer.firstName ||
-                      "T")[0]?.toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="text-xs text-neutral-400">Organized by</p>
-                    <p className="text-sm font-medium text-neutral-700">
-                      {event.organizer.organizerInfo?.companyName ||
-                        `${event.organizer.firstName} ${event.organizer.lastName}`}
-                    </p>
-                  </div>
-                </div>
+              {(event.organizerName || event.organizer) && (
+                (() => {
+                  const hostName =
+                    event.organizerName ||
+                    event.organizer?.organizerInfo?.companyName ||
+                    `${event.organizer?.firstName || ""} ${event.organizer?.lastName || ""}`.trim() ||
+                    "Organizer";
+                  return (
+                    <div className="flex items-center gap-3 mb-6 pb-6 border-b border-neutral-100">
+                      <div className="w-10 h-10 rounded-full bg-[#ff7f11]/10 flex items-center justify-center text-[#ff7f11] font-semibold">
+                        {hostName[0]?.toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="text-xs text-neutral-400">Organized by</p>
+                        <p className="text-sm font-medium text-neutral-700">{hostName}</p>
+                      </div>
+                    </div>
+                  );
+                })()
               )}
 
               <h2 className="text-sm font-semibold text-neutral-700 mb-2">

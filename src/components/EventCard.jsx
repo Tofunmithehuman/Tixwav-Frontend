@@ -66,12 +66,13 @@ const EventCard = ({ event, index = 0 }) => {
           <h3 className="text-sm font-semibold text-neutral-800 mb-1 group-hover:text-[#ff7f11] transition-colors line-clamp-2">
             {event.title}
           </h3>
-          {event.organizer && (
+          {(event.organizerName || event.organizer) && (
             <p className="text-[11px] text-neutral-400 mb-2 truncate">
               by{" "}
               <span className="text-neutral-600 font-medium">
-                {event.organizer.organizerInfo?.companyName ||
-                  `${event.organizer.firstName || ""} ${event.organizer.lastName || ""}`.trim() ||
+                {event.organizerName ||
+                  event.organizer?.organizerInfo?.companyName ||
+                  `${event.organizer?.firstName || ""} ${event.organizer?.lastName || ""}`.trim() ||
                   "Organizer"}
               </span>
             </p>

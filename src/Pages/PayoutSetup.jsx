@@ -39,7 +39,12 @@ const PayoutSetup = () => {
     const bankName = banks.find((b) => b.code === bankCode)?.name || "";
     dispatch(savePayout({ bankCode, bankName, accountNumber }))
       .unwrap()
-      .then(() => toast.success("Payout account verified and saved!"))
+      .then(() => {
+        toast.success("Payout account verified and saved!");
+        setBankCode("");
+        setAccountNumber("");
+        dispatch(fetchPayout()); // refresh the masked details so the banner updates instantly
+      })
       .catch((err) => toast.error(err || "Could not verify that account."));
   };
 
