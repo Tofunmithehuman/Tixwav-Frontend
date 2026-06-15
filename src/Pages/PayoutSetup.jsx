@@ -6,6 +6,7 @@ import * as motion from "motion/react-client";
 import { Wallet, ShieldCheck, ArrowLeft, CheckCircle2 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import SearchableSelect from "@/components/SearchableSelect";
 import {
   fetchBanks,
   fetchPayout,
@@ -95,21 +96,16 @@ const PayoutSetup = () => {
           >
             <div>
               <label className="text-xs font-semibold text-neutral-600">BANK</label>
-              <select
-                value={bankCode}
-                onChange={(e) => setBankCode(e.target.value)}
-                className="w-full mt-1 border border-neutral-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-[#ff7f11] bg-white"
-              >
-                <option value="">Select your bank</option>
-                {banks.map((b) => (
-                  <option key={b.code} value={b.code}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
-              {banks.length === 0 && (
-                <p className="text-[11px] text-neutral-400 mt-1">Loading banks…</p>
-              )}
+              <div className="mt-1">
+                <SearchableSelect
+                  value={bankCode}
+                  onChange={setBankCode}
+                  options={banks.map((b) => ({ value: b.code, label: b.name }))}
+                  placeholder="Select your bank"
+                  loading={banks.length === 0}
+                  ariaLabel="Select your bank"
+                />
+              </div>
             </div>
 
             <div>
