@@ -8,25 +8,52 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-let inMemoryToken = null;
-let inMemoryRefreshToken = null;
+// Tokens live in memory but are mirrored to sessionStorage so the session
+// survives a full-page navigation — e.g. the Paystack checkout round-trip —
+// without depending on the cross-site refresh cookie (which some browsers
+// block). sessionStorage is per-tab and cleared when the tab closes.
+const AT_KEY = "tw_at";
+const RT_KEY = "tw_rt";
+
+const readStore = (k) => {
+  try {
+    return sessionStorage.getItem(k);
+  } catch {
+    return null;
+  }
+};
+const writeStore = (k, v) => {
+  try {
+    if (v) sessionStorage.setItem(k, v);
+    else sessionStorage.removeItem(k);
+  } catch {
+    /* storage unavailable (e.g. private mode) — memory only */
+  }
+};
+
+let inMemoryToken = readStore(AT_KEY);
+let inMemoryRefreshToken = readStore(RT_KEY);
 
 export const setInMemoryToken = (token) => {
   inMemoryToken = token;
+  writeStore(AT_KEY, token);
 };
 
 export const clearInMemoryToken = () => {
   inMemoryToken = null;
+  writeStore(AT_KEY, null);
 };
 
 export const setInMemoryRefreshToken = (token) => {
   inMemoryRefreshToken = token;
+  writeStore(RT_KEY, token);
 };
 
 export const getInMemoryToken = () => inMemoryToken;
 
 export const clearInMemoryRefreshToken = () => {
   inMemoryRefreshToken = null;
+  writeStore(RT_KEY, null);
 };
 
 api.interceptors.request.use((config) => {
