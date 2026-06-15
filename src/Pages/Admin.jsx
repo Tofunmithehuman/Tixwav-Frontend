@@ -406,13 +406,17 @@ const OrdersTab = () => {
           <tbody>
             {orders.map((o) => (
               <tr key={o._id} className="border-b border-neutral-50 last:border-0 hover:bg-neutral-50/50">
-                <td className="px-4 py-3 text-neutral-500 whitespace-nowrap hidden sm:table-cell">{o.orderRef}</td>
-                <td className="px-4 py-3 text-neutral-600 line-clamp-1">{o.event?.title || "—"}</td>
-                <td className="px-4 py-3 text-neutral-500 hidden md:table-cell">
+                <td className="px-3 sm:px-4 py-3 text-neutral-500 whitespace-nowrap hidden sm:table-cell">{o.orderRef}</td>
+                <td className="px-3 sm:px-4 py-3 text-neutral-600">
+                  <span className="block max-w-[130px] sm:max-w-[260px] truncate">
+                    {o.event?.title || "—"}
+                  </span>
+                </td>
+                <td className="px-3 sm:px-4 py-3 text-neutral-500 hidden md:table-cell">
                   {o.user ? `${o.user.firstName} ${o.user.lastName}` : o.guestName || "Guest"}
                 </td>
-                <td className="px-4 py-3 font-medium text-neutral-700">{formatNaira(o.total)}</td>
-                <td className="px-4 py-3">
+                <td className="px-3 sm:px-4 py-3 font-medium text-neutral-700 whitespace-nowrap">{formatNaira(o.total)}</td>
+                <td className="px-3 sm:px-4 py-3">
                   <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium capitalize ${statusStyles[o.status] || ""}`}>
                     {o.status}
                   </span>
