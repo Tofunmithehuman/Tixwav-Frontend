@@ -297,11 +297,22 @@ const Profile = () => {
     },
   ];
 
+  // Hide orders whose tickets have all been removed/cancelled, so a ticket
+  // deleted on the My Tickets page also disappears here. Orders whose tickets
+  // are still being generated (empty array) are kept.
+  const visibleOrders = orders.filter(
+    (o) =>
+      !(
+        o.tickets?.length > 0 &&
+        o.tickets.every((t) => t.status === "cancelled")
+      ),
+  );
+
   // Filter orders for tickets tab
   const filteredOrders =
     ticketFilter === "all"
-      ? orders
-      : orders.filter((o) => {
+      ? visibleOrders
+      : visibleOrders.filter((o) => {
           if (ticketFilter === "upcoming")
             return (
               o.event?.status === "active" || o.event?.status === "upcoming"

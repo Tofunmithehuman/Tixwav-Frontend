@@ -65,7 +65,13 @@ const SearchableSelect = ({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return opts;
-    return opts.filter((o) => o.label.toLowerCase().includes(q));
+    // Keep only matches, then rank by where the match occurs so the closest
+    // match (label that starts with the query) is always first.
+    return opts
+      .map((o) => ({ o, i: o.label.toLowerCase().indexOf(q) }))
+      .filter((x) => x.i !== -1)
+      .sort((a, b) => a.i - b.i || a.o.label.length - b.o.label.length)
+      .map((x) => x.o);
   }, [opts, query]);
 
   // Position the floating panel under (or above, if cramped) the trigger.
