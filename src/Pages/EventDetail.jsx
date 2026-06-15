@@ -241,7 +241,6 @@ const EventDetail = () => {
                         {[
                           event.venue?.name,
                           event.venue?.address,
-                          event.venue?.city,
                           event.venue?.state,
                         ]
                           .filter(Boolean)
