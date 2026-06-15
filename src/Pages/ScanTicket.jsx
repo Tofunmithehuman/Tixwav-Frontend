@@ -72,7 +72,13 @@ const ScanTicket = () => {
       if (!scannerRef.current) scannerRef.current = new Html5Qrcode(REGION_ID);
       await scannerRef.current.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 240, height: 240 } },
+        {
+          fps: 10,
+          qrbox: (w, h) => {
+            const size = Math.min(w, h) * 0.7;
+            return { width: size, height: size };
+          },
+        },
         (decoded) => {
           if (lockRef.current) return;
           lockRef.current = true;
