@@ -57,7 +57,7 @@ const OrderConfirmation = () => {
               <p className="text-sm text-neutral-400 mb-4">
                 Enter the email you used at checkout.
               </p>
-              <form onSubmit={loadAsGuest} className="flex gap-2">
+              <form onSubmit={loadAsGuest} className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="email"
                   placeholder="you@example.com"

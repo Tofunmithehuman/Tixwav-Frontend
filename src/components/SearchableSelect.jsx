@@ -104,7 +104,12 @@ const SearchableSelect = ({
   // On open: preselect the current value and move focus into the panel.
   useEffect(() => {
     if (open) {
-      setActiveIndex(Math.max(0, filtered.findIndex((o) => o.value === value)));
+      setActiveIndex(
+        Math.max(
+          0,
+          filtered.findIndex((o) => o.value === value),
+        ),
+      );
       const t = setTimeout(() => {
         if (showSearch) searchRef.current?.focus();
         else panelRef.current?.focus();
@@ -168,7 +173,8 @@ const SearchableSelect = ({
     }
   };
 
-  const triggerPad = size === "sm" ? "px-2 py-1 text-xs" : "px-3 py-2.5 text-sm";
+  const triggerPad =
+    size === "sm" ? "px-2 py-1 text-xs" : "px-3 py-2.5 text-sm";
 
   return (
     <>
@@ -186,7 +192,7 @@ const SearchableSelect = ({
             ? "border-[#ff7f11]"
             : "border-neutral-200 hover:border-neutral-300"
         } ${className}`}
-    >
+      >
         <span
           className={`truncate ${selected ? "text-neutral-700" : "text-neutral-400"}`}
         >

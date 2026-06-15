@@ -1021,8 +1021,8 @@ const Profile = () => {
               ["Venue", selectedTicket.event?.venue?.name || "TBD"],
               [
                 "Amount",
-                selectedTicket.totalAmount != null
-                  ? `₦${selectedTicket.totalAmount.toLocaleString("en-NG")}`
+                selectedTicket.total != null
+                  ? `₦${selectedTicket.total.toLocaleString("en-NG")}`
                   : "–",
               ],
               ["Status", selectedTicket.status],
