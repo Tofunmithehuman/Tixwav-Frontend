@@ -74,8 +74,11 @@ const ScanTicket = () => {
         { facingMode: "environment" },
         {
           fps: 10,
-          qrbox: (w, h) => {
-            const size = Math.min(w, h) * 0.7;
+          aspectRatio: 1.0,
+          // Square scan box sized to the smaller side of the viewfinder, so it
+          // stays a square (not a wide rectangle) on any screen.
+          qrbox: (vw, vh) => {
+            const size = Math.floor(Math.min(vw, vh) * 0.7);
             return { width: size, height: size };
           },
         },
