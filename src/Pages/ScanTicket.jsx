@@ -72,7 +72,16 @@ const ScanTicket = () => {
       if (!scannerRef.current) scannerRef.current = new Html5Qrcode(REGION_ID);
       await scannerRef.current.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 240, height: 240 } },
+        {
+          fps: 10,
+          aspectRatio: 1.0,
+          // Square scan box sized to the smaller side of the viewfinder, so it
+          // stays a square (not a wide rectangle) on any screen.
+          qrbox: (vw, vh) => {
+            const size = Math.floor(Math.min(vw, vh) * 0.7);
+            return { width: size, height: size };
+          },
+        },
         (decoded) => {
           if (lockRef.current) return;
           lockRef.current = true;

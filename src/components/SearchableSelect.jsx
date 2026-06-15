@@ -65,12 +65,21 @@ const SearchableSelect = ({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return opts;
-    // Keep only matches, then rank by where the match occurs so the closest
-    // match (label that starts with the query) is always first.
-    return opts
-      .map((o) => ({ o, i: o.label.toLowerCase().indexOf(q) }))
-      .filter((x) => x.i !== -1)
-      .sort((a, b) => a.i - b.i || a.o.label.length - b.o.label.length)
+    const terms = q.split(/\s+/).filter(Boolean);
+    const scored = [];
+    for (const o of opts) {
+      const label = o.label.toLowerCase();
+      // Every typed term must appear in the label (supports letters + words).
+      if (!terms.every((t) => label.includes(t))) continue;
+      // Rank: 0 = label starts with the query, 1 = a word starts with the
+      // first term, 2 = matches elsewhere. Lower ranks first.
+      let rank = 2;
+      if (label.startsWith(q)) rank = 0;
+      else if (label.split(/\s+/).some((w) => w.startsWith(terms[0]))) rank = 1;
+      scored.push({ o, rank, pos: label.indexOf(terms[0]), len: label.length });
+    }
+    return scored
+      .sort((a, b) => a.rank - b.rank || a.pos - b.pos || a.len - b.len)
       .map((x) => x.o);
   }, [opts, query]);
 
