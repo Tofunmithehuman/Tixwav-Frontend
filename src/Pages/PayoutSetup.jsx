@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -25,6 +25,16 @@ const PayoutSetup = () => {
 
   const [bankCode, setBankCode] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
+
+  // Paystack lists some banks more than once (different settlement codes).
+  // Dedupe by name and sort so the dropdown shows each bank once, alphabetically.
+  const bankOptions = useMemo(() => {
+    const seen = new Set();
+    return banks
+      .filter((b) => (seen.has(b.name) ? false : seen.add(b.name)))
+      .map((b) => ({ value: b.code, label: b.name }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [banks]);
 
   useEffect(() => {
     dispatch(fetchBanks());
@@ -100,7 +110,7 @@ const PayoutSetup = () => {
                 <SearchableSelect
                   value={bankCode}
                   onChange={setBankCode}
-                  options={banks.map((b) => ({ value: b.code, label: b.name }))}
+                  options={bankOptions}
                   placeholder="Select your bank"
                   loading={banks.length === 0}
                   ariaLabel="Select your bank"
