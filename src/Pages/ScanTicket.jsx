@@ -132,7 +132,9 @@ const ScanTicket = () => {
 
           <div className="flex items-center gap-2 mb-1">
             <ScanLine size={22} className="text-[#ff7f11]" />
-            <h1 className="text-xl font-semibold text-neutral-800">Verify tickets</h1>
+            <h1 className="text-xl font-semibold text-neutral-800">
+              Verify tickets
+            </h1>
           </div>
           <p className="text-xs text-neutral-400 mb-5">
             Scan a ticket's QR code at the door, or enter the code by hand.
@@ -169,7 +171,9 @@ const ScanTicket = () => {
                           : "text-red-800"
                     }`}
                   >
-                    {valid ? "Valid ticket" : result.message || "Invalid ticket"}
+                    {valid
+                      ? "Valid ticket"
+                      : result.message || "Invalid ticket"}
                   </p>
                   {result.usedAt && (
                     <p className="text-xs text-amber-700">
@@ -201,7 +205,10 @@ const ScanTicket = () => {
           {!result && (
             <>
               <div className="bg-black rounded-2xl overflow-hidden aspect-square relative">
-                <div id={REGION_ID} className="w-full h-full [&_video]:object-cover" />
+                <div
+                  id={REGION_ID}
+                  className="w-full h-full [&_video]:object-cover"
+                />
                 {!cameraOn && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-white/70 gap-3">
                     {isVerifying ? (
@@ -250,17 +257,17 @@ const ScanTicket = () => {
                     e.preventDefault();
                     submitCode(manual.trim().toUpperCase());
                   }}
-                  className="flex gap-2"
+                  className="flex flex-col sm:flex-row gap-2"
                 >
                   <input
                     value={manual}
                     onChange={(e) => setManual(e.target.value)}
                     placeholder="e.g. A1B2C3D4E5F6"
-                    className="flex-1 border border-neutral-200 rounded-lg px-3 py-2.5 text-base uppercase tracking-wide focus:outline-none focus:border-[#ff7f11]"
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2.5 text-base uppercase tracking-wide focus:outline-none focus:border-[#ff7f11]"
                   />
                   <button
                     disabled={isVerifying || !manual.trim()}
-                    className="bg-neutral-800 text-white px-4 rounded-xs text-sm font-semibold hover:bg-neutral-700 disabled:opacity-50"
+                    className="w-full sm:w-auto bg-neutral-800 text-white px-6 py-2.5 rounded-xs text-sm font-semibold hover:bg-neutral-700 disabled:opacity-50"
                   >
                     Verify
                   </button>
