@@ -4,6 +4,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import EventCard from "@/components/EventCard";
+import SearchableSelect from "@/components/SearchableSelect";
 import * as motion from "motion/react-client";
 import {
   Search,
@@ -11,7 +12,6 @@ import {
   MapPin,
   Tag,
   X,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -189,23 +189,13 @@ const Discover = () => {
                 <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wider mb-2">
                   Sort by
                 </p>
-                <div className="relative">
-                  <select
-                    value={sort}
-                    onChange={(e) => onSort(e.target.value)}
-                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-xs text-neutral-600 focus:outline-none focus:border-[#ff7f11] appearance-none bg-white cursor-pointer"
-                  >
-                    {sorts.map((s) => (
-                      <option key={s.value} value={s.value}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    size={12}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
-                  />
-                </div>
+                <SearchableSelect
+                  value={sort}
+                  onChange={onSort}
+                  options={sorts}
+                  searchable={false}
+                  ariaLabel="Sort events"
+                />
               </div>
             </motion.div>
           )}

@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { ArrowLeft, Plus, Trash2, ImageIcon } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import SearchableSelect from "@/components/SearchableSelect";
 import {
   createEvent,
   updateEvent,
@@ -235,15 +236,15 @@ const EventForm = ({ mode = "create" }) => {
               </div>
               <div>
                 <label className={labelCls}>CATEGORY</label>
-                <select
-                  value={form.category}
-                  onChange={(e) => setField("category", e.target.value)}
-                  className={`${inputCls} bg-white`}
-                >
-                  {CATEGORIES.map((c) => (
-                    <option key={c}>{c}</option>
-                  ))}
-                </select>
+                <div className="mt-1">
+                  <SearchableSelect
+                    value={form.category}
+                    onChange={(v) => setField("category", v)}
+                    options={CATEGORIES}
+                    placeholder="Select a category"
+                    ariaLabel="Event category"
+                  />
+                </div>
               </div>
               <div>
                 <label className={labelCls}>HOST / ORGANIZER NAME (OPTIONAL)</label>

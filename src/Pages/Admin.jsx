@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Pagination from "@/components/Pagination";
+import SearchableSelect from "@/components/SearchableSelect";
 import {
   fetchAdminOverview,
   fetchAdminRevenue,
@@ -319,20 +320,24 @@ const UsersTab = () => {
                       <p className="text-xs text-neutral-400">{u.email}</p>
                     </td>
                     <td className="px-4 py-3">
-                      <select
+                      <SearchableSelect
                         value={u.role}
-                        onChange={(e) =>
-                          dispatch(setUserRole({ id: u._id, role: e.target.value }))
+                        onChange={(role) =>
+                          dispatch(setUserRole({ id: u._id, role }))
                             .unwrap()
                             .then(() => toast.success("Role updated"))
                             .catch((err) => toast.error(err))
                         }
-                        className="border border-neutral-200 rounded-lg px-2 py-1 text-xs bg-white focus:outline-none focus:border-[#ff7f11] capitalize"
-                      >
-                        <option value="user">user</option>
-                        <option value="organizer">organizer</option>
-                        <option value="admin">admin</option>
-                      </select>
+                        options={[
+                          { value: "user", label: "User" },
+                          { value: "organizer", label: "Organizer" },
+                          { value: "admin", label: "Admin" },
+                        ]}
+                        searchable={false}
+                        size="sm"
+                        className="min-w-[7rem]"
+                        ariaLabel="Change user role"
+                      />
                     </td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${u.isActive ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-600"}`}>
