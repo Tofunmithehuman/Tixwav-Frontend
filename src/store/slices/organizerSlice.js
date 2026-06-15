@@ -46,9 +46,15 @@ export const savePayout = createAsyncThunk(
   "organizer/savePayout",
   async (payload, { rejectWithValue }) => {
     try {
-      const { data } = await api.post("/users/payout", payload);
+      // 60s timeout so a stalled request can't leave the button stuck forever
+      const { data } = await api.post("/users/payout", payload, { timeout: 60000 });
       return data.payoutAccount;
     } catch (err) {
+      if (err.code === "ECONNABORTED") {
+        return rejectWithValue(
+          "This is taking longer than usual — refresh the page to check if it saved.",
+        );
+      }
       return rejectWithValue(err.response?.data?.message || "Could not save payout account");
     }
   },
