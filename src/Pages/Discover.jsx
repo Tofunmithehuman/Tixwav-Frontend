@@ -23,7 +23,10 @@ import {
 } from "@/store/slices/eventSlice";
 
 const categories = [
-  "All", "Tech", "Design", "Workshop", "Business", "Music", "Sports", "Food", "Arts", "Other",
+  "All", "Tech", "Design", "Workshop", "Business", "Music", "Sports", "Food", "Arts",
+  "Concert", "Festival", "Conference", "Comedy", "Theatre", "Film", "Party",
+  "Networking", "Religious", "Health", "Education", "Fashion", "Gaming",
+  "Charity", "Sports & Fitness", "Other",
 ];
 const sorts = [
   { value: "startDate", label: "Date (soonest)" },

@@ -229,17 +229,24 @@ const EventDetail = () => {
                     minute: "2-digit",
                   })}
                 </span>
-                <span className="flex items-center gap-2">
+                <span className="flex items-start gap-2">
                   {event.isOnline ? (
                     <>
                       <Globe size={15} className="text-[#ff7f11]" /> Online event
                     </>
                   ) : (
                     <>
-                      <MapPin size={15} className="text-[#ff7f11]" />
-                      {[event.venue?.name, event.venue?.city]
-                        .filter(Boolean)
-                        .join(", ") || "Venue TBA"}
+                      <MapPin size={15} className="text-[#ff7f11] mt-0.5 shrink-0" />
+                      <span>
+                        {[
+                          event.venue?.name,
+                          event.venue?.address,
+                          event.venue?.city,
+                          event.venue?.state,
+                        ]
+                          .filter(Boolean)
+                          .join(", ") || "Venue TBA"}
+                      </span>
                     </>
                   )}
                 </span>
