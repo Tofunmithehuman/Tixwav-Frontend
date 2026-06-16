@@ -26,12 +26,18 @@ const PayoutSetup = () => {
   const [bankCode, setBankCode] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
 
-  // Paystack lists some banks more than once (different settlement codes).
-  // Dedupe by name and sort so the dropdown shows each bank once, alphabetically.
+  // Paystack lists some banks more than once and some with no settlement code.
+  // Drop unusable entries, dedupe by name (case-insensitive), and sort.
   const bankOptions = useMemo(() => {
     const seen = new Set();
     return banks
-      .filter((b) => (seen.has(b.name) ? false : seen.add(b.name)))
+      .filter((b) => b && b.code && b.name)
+      .filter((b) => {
+        const key = b.name.trim().toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
       .map((b) => ({ value: b.code, label: b.name }))
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [banks]);
