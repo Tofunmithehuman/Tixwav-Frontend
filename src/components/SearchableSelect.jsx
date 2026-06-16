@@ -264,7 +264,7 @@ const SearchableSelect = ({
                   const isActive = i === activeIndex;
                   return (
                     <li
-                      key={o.value}
+                      key={`${o.value}-${o.label}-${i}`}
                       role="option"
                       aria-selected={isSelected}
                       ref={(el) => (optionRefs.current[i] = el)}
