@@ -8,6 +8,10 @@ import store from "./store/store";
 import App from "./App.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 
+// Lets you confirm which build is actually live: open the browser console and
+// compare this SHA to the latest commit on the deployed branch.
+console.log(`Tixwav build: ${import.meta.env.VITE_BUILD_SHA}`);
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
