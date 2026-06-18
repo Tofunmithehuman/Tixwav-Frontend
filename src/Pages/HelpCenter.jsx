@@ -13,19 +13,19 @@ const FAQS = [
   },
   {
     q: "Where are my tickets after I pay?",
-    a: "Right after payment we email your tickets (with a QR code and a calendar invite). Logged-in users also find them under ‘My Tickets’ and on their profile. Guests can re-open them from the link in the email.",
+    a: "Right after payment we email your tickets (with a QR code and a calendar invite). Logged-in users also find them under ‘My Tickets’ and on their profile. Guests can reopen them from the link in the email.",
   },
   {
-    q: "I didn't get my ticket email — what do I do?",
+    q: "I didn't get my ticket email, what do I do?",
     a: "Check your spam folder first. Tickets are generated within a minute of payment. If it still hasn't arrived, open the order link from checkout (or your profile) to download the ticket, or contact us.",
   },
   {
     q: "Can I get a refund?",
-    a: "Refunds are handled by the event organizer / Tixwav support on a case-by-case basis. Reach out through the Contact page with your order reference and we'll help.",
+    a: "Refunds are handled by the event organizer / Tixwav support on a case by case basis. Reach out through the Contact page with your order reference and we'll help.",
   },
   {
     q: "How do I become an organizer?",
-    a: "Create an account, then go to ‘Become an organizer’. Add your payout bank details and you can start creating events and selling tickets — you keep 90% of every sale, settled straight to your bank.",
+    a: "Create an account, then go to ‘Become an organizer’. Add your payout bank details and you can start creating events and selling tickets, you keep 90% of every sale, settled straight to your bank.",
   },
   {
     q: "How do payouts work for organizers?",

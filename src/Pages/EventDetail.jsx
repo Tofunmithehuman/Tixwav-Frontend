@@ -165,7 +165,7 @@ const EventDetail = () => {
       <Navigation />
 
       <main className="flex-1 px-4 md:px-8 py-6">
-        <div className="max-w-screen-xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <button
             onClick={() => navigate(-1)}
             className="flex items-center gap-1.5 text-sm text-neutral-500 hover:text-[#ff7f11] mb-4 transition-colors"
