@@ -4,6 +4,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import EventCard from "@/components/EventCard";
+import Seo from "@/components/Seo";
 import { Link } from "react-router-dom";
 import {
   Carousel,
@@ -46,6 +47,10 @@ const Home = () => {
 
   return (
     <div>
+      <Seo
+        description="Discover and book tickets for the best events across Nigeria — concerts, conferences, festivals and more. Sell your own event with payouts straight to your bank."
+        path="/"
+      />
       <Navigation />
       <div className="p-4 md:p-8">
         <div className="max-w-screen-2xl mx-auto">

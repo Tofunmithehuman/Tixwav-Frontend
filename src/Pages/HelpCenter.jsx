@@ -5,6 +5,7 @@ import { LifeBuoy, ChevronDown, Mail } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import Seo from "@/components/Seo";
 
 const FAQS = [
   {
@@ -42,6 +43,11 @@ const HelpCenter = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fffffc]">
+      <Seo
+        title="Help Center"
+        description="Answers to common questions about buying tickets, organizing events, payouts and verifying tickets on Tixwav."
+        path="/help"
+      />
       <Navigation />
       <main className="flex-1 px-4 md:px-8 py-12">
         <div className="max-w-3xl mx-auto">

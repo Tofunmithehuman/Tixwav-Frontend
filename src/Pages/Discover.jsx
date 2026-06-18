@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import EventCard from "@/components/EventCard";
 import SearchableSelect from "@/components/SearchableSelect";
+import Seo from "@/components/Seo";
 import * as motion from "motion/react-client";
 import {
   Search,
@@ -85,6 +86,11 @@ const Discover = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fffffcff]">
+      <Seo
+        title="Discover Events"
+        description="Browse upcoming events across Nigeria — concerts, conferences, festivals, workshops and more. Filter by category and city."
+        path="/discover"
+      />
       <Navigation />
 
       {/* Hero */}

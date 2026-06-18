@@ -1,5 +1,6 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Seo from "@/components/Seo";
 import ScrollToTop from "@/components/ScrollToTop";
 import * as motion from "motion/react-client";
 import { Link } from "react-router-dom";
@@ -50,6 +51,11 @@ const Pricing = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fffffc]">
+      <Seo
+        title="Pricing"
+        description="Simple, transparent pricing — organizers keep 90% of every ticket sale, with payouts straight to their bank."
+        path="/pricing"
+      />
       <Navigation />
 
       <main className="flex-1 px-4 md:px-8 py-12">
