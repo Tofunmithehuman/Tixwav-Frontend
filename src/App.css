@@ -316,3 +316,61 @@ html.dark .border-gray-300\/50 {
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
+/* Colored pastel tints (status badges, info/danger boxes) → subtle dark tints,
+   with the matching dark text lightened so it stays readable on dark. */
+html.dark .bg-red-50,
+html.dark .bg-red-100,
+html.dark .bg-red-50\/30 {
+  background-color: rgba(239, 68, 68, 0.12) !important;
+}
+html.dark .bg-emerald-50,
+html.dark .bg-emerald-100 {
+  background-color: rgba(16, 185, 129, 0.13) !important;
+}
+html.dark .bg-amber-50,
+html.dark .bg-amber-100,
+html.dark .bg-amber-100\/60 {
+  background-color: rgba(245, 158, 11, 0.13) !important;
+}
+html.dark .bg-blue-50,
+html.dark .bg-blue-100 {
+  background-color: rgba(59, 130, 246, 0.14) !important;
+}
+html.dark .bg-orange-50 {
+  background-color: rgba(255, 127, 17, 0.12) !important;
+}
+html.dark .bg-rose-50 {
+  background-color: rgba(244, 63, 94, 0.12) !important;
+}
+
+html.dark .border-red-100,
+html.dark .border-red-200,
+html.dark .border-red-300 {
+  border-color: rgba(248, 113, 113, 0.3) !important;
+}
+html.dark .border-emerald-200 {
+  border-color: rgba(52, 211, 153, 0.3) !important;
+}
+html.dark .border-amber-200 {
+  border-color: rgba(251, 191, 36, 0.3) !important;
+}
+
+/* Lighten dark colored text so it reads on the dark tints */
+html.dark .text-red-600,
+html.dark .text-red-800 {
+  color: #f87171 !important;
+}
+html.dark .text-emerald-600,
+html.dark .text-emerald-700,
+html.dark .text-emerald-800 {
+  color: #34d399 !important;
+}
+html.dark .text-amber-600,
+html.dark .text-amber-700,
+html.dark .text-amber-800 {
+  color: #fbbf24 !important;
+}
+html.dark .text-blue-600 {
+  color: #60a5fa !important;
+}
+
