@@ -57,7 +57,7 @@ function ForgotPassword() {
       <AuthNavigation />
       <section className="Auth flex-1 flex items-center justify-center px-4 py-10">
         <motion.div
-          className="w-11/12 max-w-100 p-4 sm:p-0 bg-white"
+          className="w-11/12 max-w-100 p-4 sm:p-0"
           initial="hidden"
           animate="visible"
           variants={containerVariants}
