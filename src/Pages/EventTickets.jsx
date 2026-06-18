@@ -6,6 +6,7 @@ import { ArrowLeft, Ban, Search } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import Pagination from "@/components/Pagination";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import {
   fetchEventTickets,
   cancelTicket,
@@ -31,6 +32,8 @@ const EventTickets = () => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [toDisable, setToDisable] = useState(null); // ticketCode pending disable
+  const [disabling, setDisabling] = useState(false);
 
   // Debounce the search term for real-time, server-side search across all pages
   useEffect(() => {
@@ -54,13 +57,17 @@ const EventTickets = () => {
     setPage(1);
   };
 
-  const disable = (code) => {
-    if (!window.confirm(`Disable ticket ${code}? The holder won't be able to check in.`))
-      return;
-    dispatch(cancelTicket(code))
+  const confirmDisable = () => {
+    if (!toDisable) return;
+    setDisabling(true);
+    dispatch(cancelTicket(toDisable))
       .unwrap()
       .then(() => toast.success("Ticket disabled."))
-      .catch((err) => toast.error(err || "Could not disable ticket."));
+      .catch((err) => toast.error(err || "Could not disable ticket."))
+      .finally(() => {
+        setDisabling(false);
+        setToDisable(null);
+      });
   };
 
   const total = pagination?.total ?? tickets.length;
@@ -140,7 +147,7 @@ const EventTickets = () => {
                         <td className="px-4 py-3 text-right">
                           {t.status === "active" ? (
                             <button
-                              onClick={() => disable(t.ticketCode)}
+                              onClick={() => setToDisable(t.ticketCode)}
                               className="inline-flex items-center gap-1 text-xs text-red-500 hover:text-red-600"
                             >
                               <Ban size={13} /> Disable
@@ -160,6 +167,16 @@ const EventTickets = () => {
         </div>
       </main>
       <Footer />
+      <ConfirmDialog
+        open={!!toDisable}
+        danger
+        title="Disable this ticket?"
+        message={`Ticket ${toDisable || ""} will be voided — the holder won't be able to check in.`}
+        confirmLabel="Disable"
+        loading={disabling}
+        onConfirm={confirmDisable}
+        onCancel={() => !disabling && setToDisable(null)}
+      />
     </div>
   );
 };

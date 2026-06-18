@@ -13,6 +13,16 @@ html {
   background-color: #fffffc;
   font-family: "Poppins", sans-serif;
 }
+
+/* iOS Safari zooms the page when focusing a form control whose font-size is
+   < 16px. Force 16px on mobile so tapping inputs/selects never zooms. */
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
 .QurovaDEMO {
   font-family: "QurovaDEMO", sans-serif;
 }

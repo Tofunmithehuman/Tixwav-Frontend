@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getMe, selectSessionChecked } from "./store/slices/authSlice";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRoute from "./components/RoleRoute";
+import ScrollRestoration from "./components/ScrollRestoration";
 
 // Code-split every route so the initial bundle stays small and heavy deps
 // (e.g. the QR scanner on /organizer/scan) only load when needed.
@@ -58,6 +59,7 @@ function App() {
 
   return (
     <div className="App">
+      <ScrollRestoration />
       <Suspense fallback={<Fallback />}>
         <Routes>
           {/* Public */}

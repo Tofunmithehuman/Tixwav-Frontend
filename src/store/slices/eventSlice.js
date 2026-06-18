@@ -35,6 +35,32 @@ export const fetchFeatured = createAsyncThunk(
   },
 );
 
+// Latest = most recently uploaded, still-active (not ended) events.
+export const fetchLatest = createAsyncThunk(
+  "event/fetchLatest",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get(`/events?active=true&sort=-createdAt&limit=8`);
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Failed to load events");
+    }
+  },
+);
+
+// Popular = highest ticket sales among still-active events.
+export const fetchPopular = createAsyncThunk(
+  "event/fetchPopular",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get(`/events?active=true&sort=-totalRevenue&limit=6`);
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Failed to load events");
+    }
+  },
+);
+
 export const fetchEvent = createAsyncThunk(
   "event/fetchEvent",
   async (idOrSlug, { rejectWithValue }) => {
@@ -120,6 +146,8 @@ const initialState = {
   list: [],
   pagination: null,
   featured: [],
+  latest: [],
+  popular: [],
   current: null,
   myEvents: [],
   myPagination: null,
@@ -158,6 +186,12 @@ const eventSlice = createSlice({
 
     builder.addCase(fetchFeatured.fulfilled, (state, action) => {
       state.featured = action.payload.events;
+    });
+    builder.addCase(fetchLatest.fulfilled, (state, action) => {
+      state.latest = action.payload.events;
+    });
+    builder.addCase(fetchPopular.fulfilled, (state, action) => {
+      state.popular = action.payload.events;
     });
 
     builder
@@ -241,6 +275,8 @@ export default eventSlice.reducer;
 export const selectEvents = (state) => state.event.list;
 export const selectEventsPagination = (state) => state.event.pagination;
 export const selectFeatured = (state) => state.event.featured;
+export const selectLatest = (state) => state.event.latest;
+export const selectPopular = (state) => state.event.popular;
 export const selectCurrentEvent = (state) => state.event.current;
 export const selectMyEvents = (state) => state.event.myEvents;
 export const selectMyEventsPagination = (state) => state.event.myPagination;

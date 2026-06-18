@@ -16,6 +16,7 @@ const EventCard = ({ event, index = 0 }) => {
   const tiers = event.ticketTiers || [];
   const soldOut =
     tiers.length > 0 && tiers.every((t) => (t.quantity ?? 0) - (t.sold ?? 0) <= 0);
+  const ended = event.endDate && new Date(event.endDate) < new Date();
 
   return (
     <motion.div
@@ -52,10 +53,10 @@ const EventCard = ({ event, index = 0 }) => {
               {event.category}
             </span>
           )}
-          {soldOut && (
+          {(ended || soldOut) && (
             <div className="absolute inset-0 bg-black/55 flex items-center justify-center">
               <span className="px-3 py-1 rounded-full bg-white text-neutral-800 text-xs font-semibold">
-                Sold out
+                {ended ? "Ended" : "Sold out"}
               </span>
             </div>
           )}
