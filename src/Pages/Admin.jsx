@@ -20,6 +20,7 @@ import {
 import Navigation from "@/components/Navigation";
 import Pagination from "@/components/Pagination";
 import SearchableSelect from "@/components/SearchableSelect";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import {
   fetchAdminOverview,
   fetchAdminRevenue,
@@ -164,6 +165,8 @@ const EventsTab = () => {
   const pagination = useSelector(selectAdminEventsPagination);
   const loading = useSelector(selectAdminLoading);
   const [page, setPage] = useState(1);
+  const [toDelete, setToDelete] = useState(null); // event pending deletion
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAllEvents({ page, limit: 10 }));
@@ -174,6 +177,19 @@ const EventsTab = () => {
       .unwrap()
       .then(() => okMsg && toast.success(okMsg))
       .catch((err) => toast.error(err || "Action failed."));
+
+  const confirmDelete = () => {
+    if (!toDelete) return;
+    setDeleting(true);
+    dispatch(adminDeleteEvent(toDelete._id))
+      .unwrap()
+      .then(() => toast.success("Event deleted"))
+      .catch((err) => toast.error(err || "Action failed."))
+      .finally(() => {
+        setDeleting(false);
+        setToDelete(null);
+      });
+  };
 
   return loading && events.length === 0 ? (
     <Loader />
@@ -238,10 +254,7 @@ const EventsTab = () => {
                     )}
                     <button
                       title="Delete"
-                      onClick={() => {
-                        if (window.confirm(`Delete "${ev.title}"?`))
-                          act(adminDeleteEvent(ev._id), "Event deleted");
-                      }}
+                      onClick={() => setToDelete(ev)}
                       className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-neutral-100"
                     >
                       <Trash2 size={15} />
@@ -256,6 +269,20 @@ const EventsTab = () => {
       {events.length === 0 && <Empty label="No events" />}
     </div>
     <Pagination page={page} pages={pagination?.pages} total={pagination?.total} onPage={setPage} />
+    <ConfirmDialog
+      open={!!toDelete}
+      danger
+      title="Delete event?"
+      message={
+        toDelete
+          ? `"${toDelete.title}" and its data will be permanently removed. This can't be undone.`
+          : ""
+      }
+      confirmLabel="Delete"
+      loading={deleting}
+      onConfirm={confirmDelete}
+      onCancel={() => !deleting && setToDelete(null)}
+    />
     </>
   );
 };

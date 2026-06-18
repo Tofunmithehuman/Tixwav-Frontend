@@ -158,6 +158,7 @@ const EventDetail = () => {
   const soldOut =
     event.ticketTiers?.length > 0 &&
     event.ticketTiers.every((t) => t.quantity - t.sold <= 0);
+  const ended = event.endDate && new Date(event.endDate) < new Date();
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fffffc]">
@@ -190,6 +191,11 @@ const EventDetail = () => {
                 {event.category && (
                   <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/45 backdrop-blur-sm text-white text-xs font-medium">
                     {event.category}
+                  </span>
+                )}
+                {ended && (
+                  <span className="absolute top-4 right-4 px-3 py-1 rounded-full bg-neutral-900/80 text-white text-xs font-semibold">
+                    Ended
                   </span>
                 )}
               </motion.div>
@@ -304,7 +310,11 @@ const EventDetail = () => {
                   Secure checkout — pay with card, bank or USSD.
                 </p>
 
-                {event.status !== "published" ? (
+                {ended ? (
+                  <div className="text-center py-8 text-sm font-medium text-neutral-500">
+                    This event has ended.
+                  </div>
+                ) : event.status !== "published" ? (
                   <div className="text-center py-8 text-sm text-neutral-400">
                     Tickets are not on sale for this event.
                   </div>

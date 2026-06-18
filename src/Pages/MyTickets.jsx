@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import {
   getMyOrders,
   removeMyTicket,
@@ -32,6 +33,8 @@ const MyTickets = () => {
   const dispatch = useDispatch();
   const orders = useSelector(selectOrders);
   const loading = useSelector(selectIsOrdersLoading);
+  const [toRemove, setToRemove] = useState(null); // ticketCode pending removal
+  const [removing, setRemoving] = useState(false);
 
   useEffect(() => {
     dispatch(getMyOrders({ limit: 100 }));
@@ -49,13 +52,17 @@ const MyTickets = () => {
       toast.error("Your ticket PDF is still being prepared — try again shortly."),
     );
 
-  const remove = (code) => {
-    if (!window.confirm("Remove this ticket from your account? This can't be undone."))
-      return;
-    dispatch(removeMyTicket(code))
+  const confirmRemove = () => {
+    if (!toRemove) return;
+    setRemoving(true);
+    dispatch(removeMyTicket(toRemove))
       .unwrap()
       .then(() => toast.success("Ticket removed."))
-      .catch((err) => toast.error(err || "Could not remove ticket."));
+      .catch((err) => toast.error(err || "Could not remove ticket."))
+      .finally(() => {
+        setRemoving(false);
+        setToRemove(null);
+      });
   };
 
   return (
@@ -152,7 +159,7 @@ const MyTickets = () => {
                       <Download size={13} /> Download
                     </button>
                     <button
-                      onClick={() => remove(t.ticketCode)}
+                      onClick={() => setToRemove(t.ticketCode)}
                       className="flex items-center justify-center gap-1.5 text-xs font-medium text-red-500 border border-neutral-200 rounded-lg px-3 py-2 hover:border-red-300 hover:bg-red-50 transition-colors"
                     >
                       <Trash2 size={13} /> Remove
@@ -165,6 +172,16 @@ const MyTickets = () => {
         </div>
       </main>
       <Footer />
+      <ConfirmDialog
+        open={!!toRemove}
+        danger
+        title="Remove this ticket?"
+        message="This removes the ticket from your account and can't be undone."
+        confirmLabel="Remove"
+        loading={removing}
+        onConfirm={confirmRemove}
+        onCancel={() => !removing && setToRemove(null)}
+      />
     </div>
   );
 };

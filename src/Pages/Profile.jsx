@@ -322,6 +322,14 @@ const Profile = () => {
           return true;
         });
 
+  // Flatten to individual (non-removed) tickets so two tickets for the same
+  // event show as two rows — matching the My Tickets page.
+  const ticketItems = filteredOrders.flatMap((o) =>
+    (o.tickets || [])
+      .filter((t) => t.status !== "cancelled")
+      .map((t) => ({ ...t, event: o.event, amount: o.total })),
+  );
+
   const inp =
     "w-full border border-neutral-200 focus:border-[#ff7f11ff] rounded-lg px-3 py-2.5 text-sm text-neutral-700 focus:outline-none transition-colors bg-white";
 
@@ -692,7 +700,7 @@ const Profile = () => {
                         <div className="flex items-center justify-center py-12">
                           <div className="w-6 h-6 border-2 border-[#ff7f11] border-t-transparent rounded-full animate-spin" />
                         </div>
-                      ) : filteredOrders.length === 0 ? (
+                      ) : ticketItems.length === 0 ? (
                         <div className="text-center py-12">
                           <Ticket
                             size={32}
@@ -704,14 +712,14 @@ const Profile = () => {
                         </div>
                       ) : (
                         <div className="space-y-2.5">
-                          {filteredOrders.map((order, i) => (
+                          {ticketItems.map((ticket, i) => (
                             <motion.div
-                              key={order._id}
+                              key={ticket._id || ticket.ticketCode || i}
                               initial={{ opacity: 0, y: 6 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: i * 0.05 }}
                               onClick={() => {
-                                setSelectedTicket(order);
+                                setSelectedTicket(ticket);
                                 setModal("ticket");
                               }}
                               className="flex items-center gap-3 p-3.5 rounded-xl border border-neutral-100 hover:border-[#ff7f11ff]/30 hover:bg-[#ff7f11ff]/[0.02] cursor-pointer transition-all group"
@@ -724,33 +732,31 @@ const Profile = () => {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-neutral-700 truncate group-hover:text-[#ff7f11ff] transition-colors">
-                                  {order.event?.title || "Event"}
+                                  {ticket.event?.title || "Event"}
                                 </p>
                                 <p className="text-xs text-neutral-400 flex items-center gap-1 mt-0.5">
                                   <Clock size={10} />
-                                  {order.event?.startDate
+                                  {ticket.event?.startDate
                                     ? new Date(
-                                        order.event.startDate,
+                                        ticket.event.startDate,
                                       ).toLocaleDateString("en-NG", {
                                         day: "numeric",
                                         month: "short",
                                         year: "numeric",
                                       })
                                     : "Date TBD"}
+                                  {ticket.tierName ? ` · ${ticket.tierName}` : ""}
                                 </p>
                               </div>
                               <div className="flex items-center gap-2 shrink-0">
                                 <span
                                   className={`px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize whitespace-nowrap ${
-                                    order.status === "confirmed" ||
-                                    order.status === "completed"
-                                      ? "bg-emerald-50 text-emerald-600"
-                                      : order.status === "paid"
-                                        ? "bg-blue-50 text-blue-600"
-                                        : "bg-amber-50 text-amber-600"
+                                    ticket.status === "used"
+                                      ? "bg-blue-50 text-blue-600"
+                                      : "bg-emerald-50 text-emerald-600"
                                   }`}
                                 >
-                                  {order.status}
+                                  {ticket.status || "active"}
                                 </span>
                                 <ChevronRight
                                   size={13}
@@ -997,13 +1003,20 @@ const Profile = () => {
       <Modal
         open={modal === "ticket"}
         onClose={() => setModal(null)}
-        title="Order Details"
+        title="Ticket Details"
       >
         {selectedTicket && (
           <div className="space-y-4">
             <div className="p-4 bg-[#ff7f11ff]/5 rounded-xl border border-[#ff7f11ff]/10 text-center">
-              <p className="text-lg font-mono font-bold text-[#ff7f11ff]">
-                {selectedTicket._id?.slice(-8).toUpperCase()}
+              {selectedTicket.qrCode && (
+                <img
+                  src={selectedTicket.qrCode}
+                  alt="Ticket QR"
+                  className="w-24 h-24 mx-auto mb-2 rounded bg-white"
+                />
+              )}
+              <p className="text-base font-mono font-bold tracking-widest text-[#ff7f11ff]">
+                {selectedTicket.ticketCode || "—"}
               </p>
               <p className="text-xs text-neutral-500 mt-1">
                 {selectedTicket.event?.title || "Event"}
@@ -1019,13 +1032,8 @@ const Profile = () => {
                   : "TBD",
               ],
               ["Venue", selectedTicket.event?.venue?.name || "TBD"],
-              [
-                "Amount",
-                selectedTicket.total != null
-                  ? `₦${selectedTicket.total.toLocaleString("en-NG")}`
-                  : "–",
-              ],
-              ["Status", selectedTicket.status],
+              ["Tier", selectedTicket.tierName || "—"],
+              ["Status", selectedTicket.status || "active"],
             ].map(([k, v]) => (
               <div
                 key={k}
@@ -1039,7 +1047,7 @@ const Profile = () => {
             ))}
             <motion.button
               onClick={() => {
-                const code = selectedTicket.tickets?.[0]?.ticketCode;
+                const code = selectedTicket.ticketCode;
                 if (!code) {
                   toast.info("Your ticket is still being prepared — try again shortly.");
                   return;

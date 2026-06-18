@@ -21,6 +21,7 @@ import {
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import Pagination from "@/components/Pagination";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { selectUser } from "@/store/slices/authSlice";
 import {
   fetchMyEvents,
@@ -70,6 +71,8 @@ const OrganizerDashboard = () => {
   const [q, setQ] = useState("");
   const [debouncedQ, setDebouncedQ] = useState("");
   const [page, setPage] = useState(1);
+  const [toDelete, setToDelete] = useState(null); // event pending deletion
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     dispatch(fetchOrgOverview());
@@ -106,12 +109,17 @@ const OrganizerDashboard = () => {
       });
   };
 
-  const handleDelete = (ev) => {
-    if (!window.confirm(`Delete "${ev.title}"? This can't be undone.`)) return;
-    dispatch(deleteEvent(ev._id))
+  const confirmDelete = () => {
+    if (!toDelete) return;
+    setDeleting(true);
+    dispatch(deleteEvent(toDelete._id))
       .unwrap()
       .then(() => toast.success("Event deleted."))
-      .catch((err) => toast.error(err || "Could not delete event."));
+      .catch((err) => toast.error(err || "Could not delete event."))
+      .finally(() => {
+        setDeleting(false);
+        setToDelete(null);
+      });
   };
 
   return (
@@ -292,7 +300,7 @@ const OrganizerDashboard = () => {
                             </Link>
                             <button
                               title="Delete"
-                              onClick={() => handleDelete(ev)}
+                              onClick={() => setToDelete(ev)}
                               className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-neutral-100"
                             >
                               <Trash2 size={15} />
@@ -311,6 +319,20 @@ const OrganizerDashboard = () => {
         </div>
       </main>
       <Footer />
+      <ConfirmDialog
+        open={!!toDelete}
+        danger
+        title="Delete event?"
+        message={
+          toDelete
+            ? `"${toDelete.title}" and its data will be permanently removed. This can't be undone.`
+            : ""
+        }
+        confirmLabel="Delete"
+        loading={deleting}
+        onConfirm={confirmDelete}
+        onCancel={() => !deleting && setToDelete(null)}
+      />
     </div>
   );
 };

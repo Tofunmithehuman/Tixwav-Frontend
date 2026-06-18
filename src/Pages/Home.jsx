@@ -14,10 +14,10 @@ import {
 } from "@/components/ui/carousel";
 import * as motion from "motion/react-client";
 import {
-  fetchFeatured,
-  fetchEvents,
-  selectFeatured,
-  selectEvents,
+  fetchLatest,
+  fetchPopular,
+  selectLatest,
+  selectPopular,
   selectEventsLoading,
 } from "@/store/slices/eventSlice";
 
@@ -32,17 +32,17 @@ const itemVariants = {
 
 const Home = () => {
   const dispatch = useDispatch();
-  const featured = useSelector(selectFeatured);
-  const events = useSelector(selectEvents);
+  const latest = useSelector(selectLatest);
+  const popular = useSelector(selectPopular);
   const loading = useSelector(selectEventsLoading);
 
   useEffect(() => {
-    dispatch(fetchFeatured());
-    dispatch(fetchEvents({ limit: 6, sort: "-views" }));
+    dispatch(fetchLatest());
+    dispatch(fetchPopular());
   }, [dispatch]);
 
-  // Carousel shows featured events; falls back to the general list when none are featured.
-  const carouselEvents = (featured.length ? featured : events).slice(0, 8);
+  // Carousel shows the latest (most recently uploaded) active events.
+  const carouselEvents = latest.slice(0, 8);
 
   return (
     <div>
@@ -103,8 +103,8 @@ const Home = () => {
             </motion.div>
           </motion.section>
 
-          {/* Popular events */}
-          {events.length > 0 && (
+          {/* Popular events — most ticket sales among active events */}
+          {popular.length > 0 && (
             <motion.section
               className="mt-16"
               initial="hidden"
@@ -118,7 +118,7 @@ const Home = () => {
                 Popular events
               </motion.h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {events.map((event, index) => (
+                {popular.map((event, index) => (
                   <EventCard key={event._id} event={event} index={index} />
                 ))}
               </div>
