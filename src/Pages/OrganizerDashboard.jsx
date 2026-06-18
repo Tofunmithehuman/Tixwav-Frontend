@@ -126,7 +126,7 @@ const OrganizerDashboard = () => {
     <div className="min-h-screen flex flex-col bg-[#fffffc]">
       <Navigation />
       <main className="flex-1 px-4 md:px-8 py-8">
-        <div className="max-w-screen-xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
             <div>

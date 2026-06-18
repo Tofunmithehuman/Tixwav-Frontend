@@ -69,7 +69,7 @@ const MyTickets = () => {
     <div className="min-h-screen flex flex-col bg-[#fffffc]">
       <Navigation />
       <main className="flex-1 px-4 md:px-8 py-8">
-        <div className="max-w-screen-lg mx-auto">
+        <div className="max-w-5xl mx-auto">
           <div className="flex items-center gap-2 mb-1">
             <TicketIcon size={22} className="text-[#ff7f11]" />
             <h1 className="text-2xl font-semibold text-neutral-800">My tickets</h1>
@@ -154,7 +154,7 @@ const MyTickets = () => {
                   <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-neutral-100">
                     <button
                       onClick={() => download(t.ticketCode)}
-                      className="flex-1 min-w-[120px] flex items-center justify-center gap-1.5 text-xs font-medium text-white bg-[#ff7f11] rounded-lg px-3 py-2 hover:bg-[#e66f00] transition-colors"
+                      className="flex-1 min-w-30 flex items-center justify-center gap-1.5 text-xs font-medium text-white bg-[#ff7f11] rounded-lg px-3 py-2 hover:bg-[#e66f00] transition-colors"
                     >
                       <Download size={13} /> Download
                     </button>

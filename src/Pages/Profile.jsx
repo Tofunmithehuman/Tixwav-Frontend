@@ -112,7 +112,7 @@ const Toggle = ({ value, onChange }) => (
     }}
   >
     <motion.div
-      className="absolute top-[3px] w-4 h-4 bg-white rounded-full shadow-sm"
+      className="absolute top-0.75 w-4 h-4 bg-white rounded-full shadow-sm"
       animate={{ left: value ? "20px" : "3px" }}
       transition={{ type: "spring", stiffness: 500, damping: 35 }}
     />
@@ -359,7 +359,7 @@ const Profile = () => {
           />
         </div>
 
-        <div className="max-w-screen-xl mx-auto px-4 md:px-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
           {/* Header Row */}
           <motion.div
             className="relative -mt-16 mb-8 bg-white border border-neutral-100 rounded-2xl shadow-sm p-5 sm:p-6"
@@ -386,7 +386,7 @@ const Profile = () => {
                   display:
                     user?.avatar && user.avatar.trim() !== "" ? "none" : "flex",
                 }}
-                className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#ff7f11ff] to-[#ff3f00] flex items-center justify-center text-white text-3xl font-semibold shadow-lg border-4 border-white select-none"
+                className="w-24 h-24 rounded-2xl bg-linear-to-br from-[#ff7f11ff] to-[#ff3f00] flex items-center justify-center text-white text-3xl font-semibold shadow-lg border-4 border-white select-none"
               >
                 {initials}
               </div>
@@ -445,13 +445,6 @@ const Profile = () => {
                     className="flex items-center gap-2 px-4 py-2 rounded-lg border border-neutral-200 text-sm text-neutral-600 hover:border-[#ff7f11ff] hover:text-[#ff7f11ff] transition-all"
                   >
                     <Edit3 size={14} /> Edit Profile
-                  </motion.button>
-                  <motion.button
-                    onClick={() => toast.info("Downloading your data…")}
-                    whileTap={{ scale: 0.96 }}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-neutral-200 text-sm text-neutral-500 hover:bg-neutral-50 transition-all"
-                  >
-                    <Download size={14} />
                   </motion.button>
                 </>
               ) : (
@@ -662,7 +655,7 @@ const Profile = () => {
                         onClick={() => setActiveTab(tab.key)}
                         className={`flex-1 flex items-center justify-center gap-1.5 py-3.5 text-xs font-medium transition-colors ${
                           activeTab === tab.key
-                            ? "text-[#ff7f11ff] border-b-2 border-[#ff7f11ff] -mb-px bg-[#ff7f11ff]/[0.02]"
+                            ? "text-[#ff7f11ff] border-b-2 border-[#ff7f11ff] -mb-px bg-[#ff7f11ff]/2"
                             : "text-neutral-400 hover:text-neutral-600"
                         }`}
                       >
@@ -722,7 +715,7 @@ const Profile = () => {
                                 setSelectedTicket(ticket);
                                 setModal("ticket");
                               }}
-                              className="flex items-center gap-3 p-3.5 rounded-xl border border-neutral-100 hover:border-[#ff7f11ff]/30 hover:bg-[#ff7f11ff]/[0.02] cursor-pointer transition-all group"
+                              className="flex items-center gap-3 p-3.5 rounded-xl border border-neutral-100 hover:border-[#ff7f11ff]/30 hover:bg-[#ff7f11ff]/2 cursor-pointer transition-all group"
                             >
                               <div className="w-9 h-9 rounded-lg bg-[#ff7f11ff]/10 flex items-center justify-center shrink-0">
                                 <Ticket
@@ -879,11 +872,6 @@ const Profile = () => {
                           label: "Newsletter",
                           desc: "Weekly digest of events near you",
                         },
-                        {
-                          key: "smsAlerts",
-                          label: "SMS Alerts",
-                          desc: "Text message reminders",
-                        },
                       ].map(({ key, label, desc }) => (
                         <div
                           key={key}
@@ -921,19 +909,6 @@ const Profile = () => {
                             label: "Change Password",
                             desc: "Update your account password",
                             action: () => setModal("password"),
-                          },
-                          {
-                            icon: "🛡️",
-                            label: "Two-Factor Auth",
-                            desc: "Add an extra layer of security",
-                            action: () => toast.info("2FA coming soon!"),
-                          },
-                          {
-                            icon: "📁",
-                            label: "Export My Data",
-                            desc: "Download a copy of your account data",
-                            action: () =>
-                              toast.info("Data export coming soon!"),
                           },
                         ].map((item, i) => (
                           <motion.button

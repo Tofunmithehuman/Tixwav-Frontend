@@ -66,7 +66,7 @@ const About = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <motion.p
               className="text-[11px] font-semibold text-[#ff7f11] uppercase tracking-widest mb-3"
@@ -133,7 +133,7 @@ const About = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="max-w-screen-xl mx-auto text-center max-w-2xl mx-auto">
+        <div className="text-center max-w-2xl mx-auto">
           <p className="text-[11px] font-semibold text-[#ff7f11] uppercase tracking-widest mb-3">Our Mission</p>
           <blockquote className="text-xl md:text-2xl font-light text-neutral-700 leading-relaxed">
             "To remove every barrier between a great event and the people who deserve to experience it."
@@ -143,7 +143,7 @@ const About = () => {
 
       {/* Values */}
       <section className="px-4 md:px-8 py-14 border-b border-neutral-100">
-        <div className="max-w-screen-xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             className="text-center mb-10"
             initial={{ opacity: 0, y: 12 }}
@@ -183,7 +183,7 @@ const About = () => {
 
       {/* Team */}
       <section className="px-4 md:px-8 py-14 border-b border-neutral-100 bg-white">
-        <div className="max-w-screen-xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             className="text-center mb-10"
             initial={{ opacity: 0, y: 12 }}
@@ -230,7 +230,7 @@ const About = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="max-w-screen-lg mx-auto bg-[#ff7f11] rounded-2xl px-8 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="max-w-5xl mx-auto bg-[#ff7f11] rounded-2xl px-8 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <h3 className="text-lg font-semibold text-white mb-1">Join the Tixwav community</h3>
             <p className="text-sm text-white/70">Discover events, connect with people, and create memories.</p>

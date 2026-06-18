@@ -63,7 +63,7 @@ const ContactUs = () => {
                   <p className="text-[11px] uppercase tracking-wider text-neutral-400">
                     {label}
                   </p>
-                  <p className="text-sm font-medium text-neutral-700 mt-0.5 break-words">
+                  <p className="text-sm font-medium text-neutral-700 mt-0.5 wrap-break-words">
                     {value}
                   </p>
                 </div>

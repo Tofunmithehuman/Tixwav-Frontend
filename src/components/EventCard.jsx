@@ -39,7 +39,7 @@ const EventCard = ({ event, index = 0 }) => {
             onError={(e) => (e.currentTarget.src = FALLBACK_IMG)}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
-          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/30 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-black/30 to-transparent" />
 
           <span
             className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-semibold shadow-sm ${

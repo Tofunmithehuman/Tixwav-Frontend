@@ -481,9 +481,7 @@ const Navigation = () => {
 };
 
 const menuItems = [
-  // { label: "About", path: "/about" },
   { label: "Discover", path: "/discover" },
-  // { label: "Pricing", path: "/pricing" },
   { label: "Search", path: "/search" },
 ];
 

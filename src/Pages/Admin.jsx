@@ -362,7 +362,7 @@ const UsersTab = () => {
                         ]}
                         searchable={false}
                         size="sm"
-                        className="min-w-[7rem]"
+                        className="min-w-28"
                         ariaLabel="Change user role"
                       />
                     </td>
@@ -440,7 +440,7 @@ const OrdersTab = () => {
               <tr key={o._id} className="border-b border-neutral-50 last:border-0 hover:bg-neutral-50/50">
                 <td className="px-3 sm:px-4 py-3 text-neutral-500 whitespace-nowrap hidden sm:table-cell">{o.orderRef}</td>
                 <td className="px-3 sm:px-4 py-3 text-neutral-600">
-                  <span className="block max-w-[130px] sm:max-w-[260px] truncate">
+                  <span className="block max-w-32.5 sm:max-w-65 truncate">
                     {o.event?.title || "—"}
                   </span>
                 </td>
@@ -481,7 +481,7 @@ const Admin = () => {
     <div className="min-h-screen flex flex-col bg-[#fffffc]">
       <Navigation />
       <main className="flex-1 px-4 md:px-8 py-8">
-        <div className="max-w-screen-xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl font-semibold text-neutral-800 mb-1">Admin dashboard</h1>
           <p className="text-sm text-neutral-400 mb-6">
             Platform overview, organizer payouts (90/10), events, users & orders.

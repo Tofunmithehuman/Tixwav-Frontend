@@ -94,7 +94,7 @@ const Discover = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="max-w-screen-xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <p className="text-[11px] font-semibold text-[#ff7f11] uppercase tracking-widest mb-2">
             Browse Events
           </p>
@@ -204,7 +204,7 @@ const Discover = () => {
 
       {/* Results */}
       <main className="flex-1 px-4 md:px-8 py-8">
-        <div className="max-w-screen-xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-5">
             <p className="text-xs text-neutral-400">
               <span className="font-semibold text-neutral-700">{total}</span> event

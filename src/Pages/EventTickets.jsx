@@ -76,7 +76,7 @@ const EventTickets = () => {
     <div className="min-h-screen flex flex-col bg-[#fffffc]">
       <Navigation />
       <main className="flex-1 px-4 md:px-8 py-8">
-        <div className="max-w-screen-lg mx-auto">
+        <div className="max-w-5xl mx-auto">
           <button
             onClick={() => navigate(-1)}
             className="flex items-center gap-1.5 text-sm text-neutral-500 hover:text-[#ff7f11] mb-4"
