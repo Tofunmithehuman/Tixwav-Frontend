@@ -84,18 +84,15 @@ function Login() {
   };
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="min-h-screen flex flex-col">
       <AuthNavigation />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <section className="flex-1 overflow-auto">
-          <div className="max-w-360 m-auto h-full">
-            <div className="Auth flex justify-center items-center h-full">
-              <motion.div
-                className="w-11/12 max-w-100 p-4 sm:p-0 bg-white"
-                initial="hidden"
-                animate="visible"
-                variants={containerVariants}
-              >
+      <section className="Auth flex-1 flex items-center justify-center px-4 py-10">
+        <motion.div
+          className="w-11/12 max-w-100 p-4 sm:p-0 bg-white"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
                 {/* Header */}
                 <motion.div className="text-center" variants={itemVariants}>
                   <h1 className="text-base sm:text-xl text-neutral-600 font-semibold mb-1">
@@ -263,11 +260,8 @@ function Login() {
                     </motion.span>
                   </motion.p>
                 </motion.div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-      </div>
+        </motion.div>
+      </section>
     </div>
   );
 }
