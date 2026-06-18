@@ -5,6 +5,7 @@ import { Mail, Phone, MapPin, Send } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import Seo from "@/components/Seo";
 
 const SUPPORT_EMAIL = "tixwav@gmail.com";
 
@@ -39,6 +40,11 @@ const ContactUs = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fffffc]">
+      <Seo
+        title="Contact Us"
+        description="Get in touch with the Tixwav team — questions, feedback or help with an order."
+        path="/contact"
+      />
       <Navigation />
       <main className="flex-1 px-4 md:px-8 py-12">
         <div className="max-w-3xl mx-auto">

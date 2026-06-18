@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Private / authenticated areas — not useful in search results
+Disallow: /admin
+Disallow: /organizer
+Disallow: /profile
+Disallow: /my-tickets
+Disallow: /become-organizer
+Disallow: /orders
+Disallow: /payment
+Disallow: /auth
+Disallow: /reset-password
+Disallow: /verify-email
+
+Sitemap: https://tixwav.vercel.app/sitemap.xml

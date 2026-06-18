@@ -237,7 +237,13 @@ const Profile = () => {
   };
 
   const handlePasswordChange = () => {
-    if (!passwords.current || !passwords.newPass || !passwords.confirm) {
+    // Google sign-ups (no password yet) set one without entering a current password.
+    const settingNew = user?.hasPassword === false;
+    if (
+      !passwords.newPass ||
+      !passwords.confirm ||
+      (!settingNew && !passwords.current)
+    ) {
       toast.error("Please fill all fields.");
       return;
     }
@@ -251,7 +257,7 @@ const Profile = () => {
     }
     dispatch(
       changePassword({
-        currentPassword: passwords.current,
+        currentPassword: settingNew ? undefined : passwords.current,
         newPassword: passwords.newPass,
       }),
     )
@@ -259,7 +265,12 @@ const Profile = () => {
       .then(() => {
         setPasswords({ current: "", newPass: "", confirm: "" });
         setModal(null);
-        toast.success("Password changed successfully!");
+        toast.success(
+          settingNew
+            ? "Password set! You can now sign in with your email and password."
+            : "Password changed successfully!",
+        );
+        dispatch(getProfile()); // refresh hasPassword so the form switches modes
       })
       .catch(() => {}); // handled by passwordError useEffect
   };
@@ -906,8 +917,14 @@ const Profile = () => {
                         {[
                           {
                             icon: "🔑",
-                            label: "Change Password",
-                            desc: "Update your account password",
+                            label:
+                              user?.hasPassword === false
+                                ? "Set Password"
+                                : "Change Password",
+                            desc:
+                              user?.hasPassword === false
+                                ? "Add a password to sign in with email"
+                                : "Update your account password",
                             action: () => setModal("password"),
                           },
                         ].map((item, i) => (
@@ -1042,15 +1059,23 @@ const Profile = () => {
         )}
       </Modal>
 
-      {/* Change Password */}
+      {/* Change / Set Password */}
       <Modal
         open={modal === "password"}
         onClose={() => setModal(null)}
-        title="Change Password"
+        title={user?.hasPassword === false ? "Set Password" : "Change Password"}
       >
         <div className="space-y-4">
+          {user?.hasPassword === false && (
+            <p className="text-xs text-neutral-500 leading-relaxed bg-[#ff7f11]/5 border border-[#ff7f11]/10 rounded-lg p-3">
+              Your account uses Google sign-in. Set a password to also sign in
+              with your email address.
+            </p>
+          )}
           {[
-            { key: "current", label: "Current Password" },
+            ...(user?.hasPassword === false
+              ? []
+              : [{ key: "current", label: "Current Password" }]),
             { key: "newPass", label: "New Password" },
             { key: "confirm", label: "Confirm New Password" },
           ].map(({ key, label }) => (

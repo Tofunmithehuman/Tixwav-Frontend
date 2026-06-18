@@ -1,5 +1,6 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import Seo from "@/components/Seo";
 import ScrollToTop from "@/components/ScrollToTop";
 import * as motion from "motion/react-client";
 import { Link } from "react-router-dom";
@@ -57,6 +58,11 @@ const itemVariants = {
 const About = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#fffffcff]">
+      <Seo
+        title="About"
+        description="Tixwav is Nigeria's event ticketing platform — making it easy to discover, buy and sell tickets for the events you love."
+        path="/about"
+      />
       <Navigation />
 
       {/* Hero */}

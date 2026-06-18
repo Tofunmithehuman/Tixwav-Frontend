@@ -4,6 +4,7 @@ import { ShieldCheck } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import Seo from "@/components/Seo";
 
 const SECTIONS = [
   {
@@ -43,6 +44,11 @@ const SECTIONS = [
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen flex flex-col bg-[#fffffc]">
+      <Seo
+        title="Privacy Policy"
+        description="How Tixwav collects, uses and protects your personal information."
+        path="/privacy"
+      />
       <Navigation />
       <main className="flex-1 px-4 md:px-8 py-12">
         <div className="max-w-3xl mx-auto">

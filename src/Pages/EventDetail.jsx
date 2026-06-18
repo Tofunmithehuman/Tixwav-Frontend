@@ -17,6 +17,7 @@ import {
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
+import Seo from "@/components/Seo";
 import {
   fetchEvent,
   selectCurrentEvent,
@@ -162,6 +163,12 @@ const EventDetail = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fffffc]">
+      <Seo
+        title={event.title}
+        description={(event.description || "").slice(0, 155)}
+        path={`/events/${event.slug || event._id}`}
+        image={event.image}
+      />
       <Navigation />
 
       <main className="flex-1 px-4 md:px-8 py-6">

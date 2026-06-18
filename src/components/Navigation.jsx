@@ -14,6 +14,7 @@ import { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import * as motion from "motion/react-client";
+import ThemeToggle from "./ThemeToggle";
 import {
   selectIsAuthenticated,
   selectUser,
@@ -129,6 +130,7 @@ const Navigation = () => {
 
             {/* Desktop Auth / User */}
             <nav className="md:flex items-center space-x-4 hidden">
+              <ThemeToggle />
               {isAuthenticated && user ? (
                 <div className="relative" ref={dropdownRef}>
                   <motion.button
@@ -269,7 +271,11 @@ const Navigation = () => {
             </nav>
 
             {/* Mobile Menu Button */}
-            <nav className="block md:hidden relative" style={{ zIndex: 51 }}>
+            <nav
+              className="md:hidden flex items-center gap-3 relative"
+              style={{ zIndex: 51 }}
+            >
+              <ThemeToggle />
               <motion.button
                 onClick={() => setIsOpen(!isOpen)}
                 className="relative z-50"
