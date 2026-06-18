@@ -8,6 +8,8 @@ const Footer = () => {
       { name: "About", path: "/about" },
       { name: "Discover", path: "/discover" },
       { name: "Pricing", path: "/pricing" },
+      { name: "Login", path: "/login" },
+      { name: "Sign Up", path: "/register" },
     ],
     Support: [
       { name: "Help Center", path: "/help" },
@@ -15,9 +17,9 @@ const Footer = () => {
       { name: "Privacy Policy", path: "/privacy" },
     ],
     Social: [
-      { name: "Instagram", path: "#" },
-      { name: "Twitter", path: "#" },
-      { name: "LinkedIn", path: "#" },
+      { name: "Instagram", path: "https://instagram.com", external: true },
+      { name: "Twitter", path: "https://twitter.com", external: true },
+      { name: "Facebook", path: "https://facebook.com", external: true },
     ],
   };
 
@@ -117,12 +119,23 @@ const Footer = () => {
                         whileHover={{ x: 5 }}
                         transition={{ type: "spring", stiffness: 300 }}
                       >
-                        <Link
-                          to={link.path}
-                          className="text-gray-600 text-sm hover:text-[#ff7f11ff] transition-colors inline-block"
-                        >
-                          {link.name}
-                        </Link>
+                        {link.external ? (
+                          <a
+                            href={link.path}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-gray-600 text-sm hover:text-[#ff7f11ff] transition-colors inline-block"
+                          >
+                            {link.name}
+                          </a>
+                        ) : (
+                          <Link
+                            to={link.path}
+                            className="text-gray-600 text-sm hover:text-[#ff7f11ff] transition-colors inline-block"
+                          >
+                            {link.name}
+                          </Link>
+                        )}
                       </motion.li>
                     ))}
                   </ul>
