@@ -18,7 +18,7 @@ const Footer = () => {
     ],
     Social: [
       { name: "Instagram", path: "https://instagram.com", external: true },
-      { name: "Twitter", path: "https://twitter.com", external: true },
+      { name: "X", path: "https://x.com/tixwavteam", external: true },
       { name: "Facebook", path: "https://facebook.com", external: true },
     ],
   };
@@ -27,7 +27,7 @@ const Footer = () => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
+      transition: { 
         staggerChildren: 0.1,
         delayChildren: 0.2,
       },

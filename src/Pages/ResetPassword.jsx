@@ -49,7 +49,7 @@ function ResetPassword() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-11/12 max-w-100 bg-white"
+          className="w-11/12 max-w-100"
         >
           <div className="text-center mb-8">
             <h1 className="text-xl text-neutral-600 font-semibold mb-1">
