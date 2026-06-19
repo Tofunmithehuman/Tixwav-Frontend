@@ -42,14 +42,14 @@ const EventCard = ({ event, index = 0 }) => {
           <div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-black/30 to-transparent" />
 
           <span
-            className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-semibold shadow-sm ${
+            className={`absolute top-2 left-2 @min-[210px]:top-3 @min-[210px]:left-3 px-2 py-0.5 @min-[210px]:px-2.5 @min-[210px]:py-1 rounded-full text-[9px] @min-[210px]:text-[10px] font-semibold shadow-sm ${
               price === 0 ? "bg-emerald-500 text-white" : "bg-white/95 text-neutral-700"
             }`}
           >
             {price === 0 ? "Free" : `From ${formatPrice(price)}`}
           </span>
           {event.category && (
-            <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-sm text-white text-[10px] font-medium">
+            <span className="absolute top-2 right-2 @min-[210px]:top-3 @min-[210px]:right-3 px-2 py-0.5 @min-[210px]:px-2.5 @min-[210px]:py-1 rounded-full bg-black/45 backdrop-blur-sm text-white text-[9px] @min-[210px]:text-[10px] font-medium">
               {event.category}
             </span>
           )}
@@ -64,7 +64,7 @@ const EventCard = ({ event, index = 0 }) => {
 
         {/* Content */}
         <div className="flex flex-col flex-1 p-3 @min-[210px]:p-4">
-          <h3 className="text-[13px] @min-[210px]:text-sm font-semibold text-neutral-800 mb-1 group-hover:text-[#ff7f11] transition-colors line-clamp-2">
+          <h3 className="text-xs @min-[210px]:text-sm font-semibold text-neutral-800 mb-1 group-hover:text-[#ff7f11] transition-colors line-clamp-2">
             {event.title}
           </h3>
           {(event.organizerName || event.organizer) && (
@@ -110,12 +110,12 @@ const EventCard = ({ event, index = 0 }) => {
               <p className="text-[10px] text-neutral-400 leading-none mb-0.5">
                 {price === 0 ? "Entry" : `${tiers.length || 1} ticket type${tiers.length === 1 ? "" : "s"}`}
               </p>
-              <p className="text-[13px] @min-[210px]:text-sm font-semibold text-neutral-800">
+              <p className="text-xs @min-[210px]:text-sm font-semibold text-neutral-800">
                 {price === 0 ? "Free" : `From ${formatPrice(price)}`}
               </p>
             </div>
-            <span className="flex items-center gap-1 text-[11px] @min-[210px]:text-xs font-semibold text-[#ff7f11] group-hover:gap-2 transition-all shrink-0 whitespace-nowrap">
-              Get tickets <ArrowRight size={13} />
+            <span className="flex items-center gap-1 text-[10px] @min-[210px]:text-xs font-semibold text-[#ff7f11] group-hover:gap-2 transition-all shrink-0 whitespace-nowrap">
+              Get tickets <ArrowRight size={12} />
             </span>
           </div>
         </div>
