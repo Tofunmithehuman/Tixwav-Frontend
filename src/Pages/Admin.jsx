@@ -405,17 +405,24 @@ const OrdersTab = () => {
   const pagination = useSelector(selectAdminOrdersPagination);
   const loading = useSelector(selectAdminLoading);
   const [page, setPage] = useState(1);
+  const [toRefund, setToRefund] = useState(null); // order pending refund
+  const [refunding, setRefunding] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAllOrders({ page, limit: 10 }));
   }, [dispatch, page]);
 
-  const refund = (o) => {
-    if (!window.confirm(`Refund order ${o.orderRef}?`)) return;
-    dispatch(refundOrder({ id: o._id, reason: "Admin refund" }))
+  const confirmRefund = () => {
+    if (!toRefund) return;
+    setRefunding(true);
+    dispatch(refundOrder({ id: toRefund._id, reason: "Admin refund" }))
       .unwrap()
       .then(() => toast.success("Order refunded"))
-      .catch((err) => toast.error(err || "Refund failed"));
+      .catch((err) => toast.error(err || "Refund failed"))
+      .finally(() => {
+        setRefunding(false);
+        setToRefund(null);
+      });
   };
 
   return loading && orders.length === 0 ? (
@@ -455,7 +462,7 @@ const OrdersTab = () => {
                 </td>
                 <td className="px-4 py-3 text-right">
                   {o.status === "confirmed" ? (
-                    <button onClick={() => refund(o)} className="text-xs font-medium text-red-500 hover:text-red-600">
+                    <button onClick={() => setToRefund(o)} className="text-xs font-medium text-red-500 hover:text-red-600">
                       Refund
                     </button>
                   ) : (
@@ -470,6 +477,20 @@ const OrdersTab = () => {
       {orders.length === 0 && <Empty label="No orders" />}
     </div>
     <Pagination page={page} pages={pagination?.pages} total={pagination?.total} onPage={setPage} />
+    <ConfirmDialog
+      open={!!toRefund}
+      danger
+      title="Refund this order?"
+      message={
+        toRefund
+          ? `Order ${toRefund.orderRef} will be refunded to the buyer via Paystack.`
+          : ""
+      }
+      confirmLabel="Refund"
+      loading={refunding}
+      onConfirm={confirmRefund}
+      onCancel={() => !refunding && setToRefund(null)}
+    />
     </>
   );
 };
