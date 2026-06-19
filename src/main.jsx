@@ -2,11 +2,11 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { Provider } from "react-redux";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import store from "./store/store";
 import App from "./App.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
+import ThemedToastContainer from "./components/ThemedToastContainer.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -15,22 +15,7 @@ createRoot(document.getElementById("root")).render(
         <ErrorBoundary>
           <App />
         </ErrorBoundary>
-        <ToastContainer
-          position="bottom-center"
-          autoClose={3500}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-          toastStyle={{
-            borderRadius: "12px",
-            fontFamily: "inherit",
-            fontSize: "14px",
-          }}
-        />
+        <ThemedToastContainer />
       </BrowserRouter>
     </Provider>
   </StrictMode>,
