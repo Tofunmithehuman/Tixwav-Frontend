@@ -267,7 +267,7 @@ const ScanTicket = () => {
                   />
                   <button
                     disabled={isVerifying || !manual.trim()}
-                    className="w-full sm:w-auto bg-neutral-800 text-white px-6 py-2.5 rounded-xs text-sm font-semibold hover:bg-neutral-700 disabled:opacity-50"
+                    className="w-full sm:w-auto bg-[#ff7f11] text-white px-6 py-2.5 rounded-xs text-sm font-semibold hover:bg-[#e66f00] transition-colors disabled:opacity-50"
                   >
                     Verify
                   </button>
