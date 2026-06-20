@@ -126,6 +126,20 @@ export const removeMyTicket = createAsyncThunk(
   }
 );
 
+export const deleteAccount = createAsyncThunk(
+  "user/deleteAccount",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await api.delete("/users/account");
+      return data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Could not delete account"
+      );
+    }
+  }
+);
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 
 const initialState = {
