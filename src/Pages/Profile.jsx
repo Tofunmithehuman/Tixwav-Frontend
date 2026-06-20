@@ -56,6 +56,7 @@ import {
   getSavedEvents,
   toggleSavedEvent,
   selectSavedEvents,
+  deleteAccount,
 } from "../store/slices/userSlice";
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
@@ -142,6 +143,7 @@ const Profile = () => {
   const [modal, setModal] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [draft, setDraft] = useState({});
+  const [deleting, setDeleting] = useState(false);
   const avatarInputRef = useRef(null);
 
   // Ticket filter (orders from API)
@@ -283,6 +285,22 @@ const Profile = () => {
         navigate("/login", { replace: true });
       })
       .catch(() => navigate("/login", { replace: true }));
+  };
+
+  const handleDeleteAccount = () => {
+    setDeleting(true);
+    dispatch(deleteAccount())
+      .unwrap()
+      .then(() => {
+        toast.success("Your account has been deleted.");
+        dispatch(logoutUser()); // clear tokens/session client-side
+        navigate("/", { replace: true });
+      })
+      .catch((err) => toast.error(err || "Could not delete account."))
+      .finally(() => {
+        setDeleting(false);
+        setModal(null);
+      });
   };
 
   const removeSaved = (id) => {
@@ -1164,19 +1182,25 @@ const Profile = () => {
           <div className="flex gap-2">
             <button
               onClick={() => setModal(null)}
-              className="flex-1 py-2.5 border border-neutral-200 rounded-lg text-sm text-neutral-600 hover:bg-neutral-50 transition-colors"
+              disabled={deleting}
+              className="flex-1 py-2.5 border border-neutral-200 rounded-lg text-sm text-neutral-600 hover:bg-neutral-50 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <motion.button
-              onClick={() => {
-                setModal(null);
-                toast.error("Account deletion is disabled. Contact support.");
-              }}
+              onClick={handleDeleteAccount}
+              disabled={deleting}
               whileTap={{ scale: 0.97 }}
-              className="flex-1 py-2.5 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600 transition-colors"
+              className="flex-1 py-2.5 bg-red-500 text-white rounded-lg text-sm font-semibold hover:bg-red-600 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
             >
-              Delete
+              {deleting ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Deleting…
+                </>
+              ) : (
+                "Delete"
+              )}
             </motion.button>
           </div>
         </div>

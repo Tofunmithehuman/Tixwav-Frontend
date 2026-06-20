@@ -18,6 +18,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import Seo from "@/components/Seo";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import {
   fetchEvent,
   selectCurrentEvent,
@@ -54,6 +55,7 @@ const EventDetail = () => {
 
   const [qty, setQty] = useState({}); // tierId -> quantity
   const [guest, setGuest] = useState({ name: "", email: "", phone: "" });
+  const [confirmEmail, setConfirmEmail] = useState(false); // guest email confirm
 
   useEffect(() => {
     dispatch(fetchEvent(id));
@@ -94,17 +96,11 @@ const EventDetail = () => {
   }, 0);
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
 
-  const handleCheckout = async () => {
-    if (totalQty === 0) {
-      toast.warning("Select at least one ticket.");
-      return;
-    }
+  // Runs the actual order once any guest-email confirmation has passed.
+  const proceedCheckout = async () => {
+    setConfirmEmail(false);
     const payload = { eventId: event._id, items };
     if (!isAuthenticated) {
-      if (!guest.name || !guest.email) {
-        toast.warning("Enter your name and email to continue.");
-        return;
-      }
       payload.guestName = guest.name;
       payload.guestEmail = guest.email;
       payload.guestPhone = guest.phone;
@@ -123,6 +119,27 @@ const EventDetail = () => {
     } catch (err) {
       toast.error(typeof err === "string" ? err : "Checkout failed. Try again.");
     }
+  };
+
+  const handleCheckout = () => {
+    if (totalQty === 0) {
+      toast.warning("Select at least one ticket.");
+      return;
+    }
+    if (!isAuthenticated) {
+      if (!guest.name || !guest.email) {
+        toast.warning("Enter your name and email to continue.");
+        return;
+      }
+      if (!/^\S+@\S+\.\S+$/.test(guest.email.trim())) {
+        toast.warning("Enter a valid email address.");
+        return;
+      }
+      // Confirm the email first — guests need it to access their tickets.
+      setConfirmEmail(true);
+      return;
+    }
+    proceedCheckout();
   };
 
   if (loading) {
@@ -447,6 +464,17 @@ const EventDetail = () => {
 
       <Footer />
       <ScrollToTop />
+
+      <ConfirmDialog
+        open={confirmEmail}
+        title="Confirm your email"
+        message={`Your tickets will be sent to ${guest.email}. Make sure it's correct — you'll need it to view your tickets.`}
+        confirmLabel="Yes, continue"
+        cancelLabel="Edit email"
+        loading={isInitiating}
+        onConfirm={proceedCheckout}
+        onCancel={() => setConfirmEmail(false)}
+      />
     </div>
   );
 };
