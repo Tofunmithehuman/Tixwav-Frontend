@@ -292,21 +292,12 @@ const Profile = () => {
       .catch(() => toast.error("Could not update saved events."));
   };
 
-  // ── Derived stats from orders ─────────────────────────────────────────────
-  const attendedCount = orders.filter(
-    (o) => o.event?.status === "completed",
-  ).length;
-  const totalSpent = orders.reduce((a, o) => a + (o.totalAmount || 0), 0);
-  const stats = [
-    { label: "Events Attended", value: attendedCount, icon: Calendar },
-    { label: "Orders", value: orders.length, icon: Ticket },
-    { label: "Saved Events", value: saved.length, icon: Heart },
-    {
-      label: "Total Spent",
-      value: `₦${totalSpent.toLocaleString("en-NG")}`,
-      icon: Star,
-    },
-  ];
+  // ── Derived stats + ticket lists ──────────────────────────────────────────
+  const now = Date.now();
+  const isEnded = (event) => {
+    const end = event?.endDate || event?.startDate;
+    return end ? new Date(end).getTime() < now : false;
+  };
 
   // Hide orders whose tickets have all been removed/cancelled, so a ticket
   // deleted on the My Tickets page also disappears here. Orders whose tickets
@@ -319,27 +310,42 @@ const Profile = () => {
       ),
   );
 
-  // Filter orders for tickets tab
-  const filteredOrders =
-    ticketFilter === "all"
-      ? visibleOrders
-      : visibleOrders.filter((o) => {
-          if (ticketFilter === "upcoming")
-            return (
-              o.event?.status === "active" || o.event?.status === "upcoming"
-            );
-          if (ticketFilter === "attended")
-            return o.event?.status === "completed";
-          return true;
-        });
-
   // Flatten to individual (non-removed) tickets so two tickets for the same
   // event show as two rows — matching the My Tickets page.
-  const ticketItems = filteredOrders.flatMap((o) =>
+  const allTickets = visibleOrders.flatMap((o) =>
     (o.tickets || [])
       .filter((t) => t.status !== "cancelled")
       .map((t) => ({ ...t, event: o.event, amount: o.total })),
   );
+
+  // Tab filter — upcoming: not used and the event hasn't ended;
+  // attended: ticket used or the event has ended.
+  const ticketItems =
+    ticketFilter === "upcoming"
+      ? allTickets.filter((t) => t.status !== "used" && !isEnded(t.event))
+      : ticketFilter === "attended"
+        ? allTickets.filter((t) => t.status === "used" || isEnded(t.event))
+        : allTickets;
+
+  // ── Overview stats ────────────────────────────────────────────────────────
+  // Events attended = distinct events that ended or had a ticket used.
+  const attendedCount = new Set(
+    allTickets
+      .filter((t) => t.status === "used" || isEnded(t.event))
+      .map((t) => t.event?._id)
+      .filter(Boolean),
+  ).size;
+  const totalSpent = orders.reduce((a, o) => a + (o.total || 0), 0);
+  const stats = [
+    { label: "Events Attended", value: attendedCount, icon: Calendar },
+    { label: "Orders", value: orders.length, icon: Ticket },
+    { label: "Saved Events", value: saved.length, icon: Heart },
+    {
+      label: "Total Spent",
+      value: `₦${totalSpent.toLocaleString("en-NG")}`,
+      icon: Star,
+    },
+  ];
 
   const inp =
     "w-full border border-neutral-200 focus:border-[#ff7f11ff] rounded-lg px-3 py-2.5 text-sm text-neutral-700 focus:outline-none transition-colors bg-white";
