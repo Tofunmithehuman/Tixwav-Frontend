@@ -41,7 +41,7 @@ export default function Seo({ title, description, path = "", image }) {
       ? image.startsWith("http")
         ? image
         : `${BASE}${image}`
-      : `${BASE}/Logo.png`;
+      : `${BASE}/Card.png`;
 
     document.title = fullTitle;
     if (description) upsertMeta("name", "description", description);
