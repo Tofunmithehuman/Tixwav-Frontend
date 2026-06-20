@@ -28,7 +28,7 @@ const EventCard = ({ event, index = 0 }) => {
     >
       <Link
         to={to}
-        className="@container flex flex-col h-full bg-white border border-neutral-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group"
+        className="@container flex flex-col h-full bg-white border border-neutral-100 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow group"
       >
         {/* Square media */}
         <div className="relative aspect-square overflow-hidden bg-neutral-100">
@@ -42,14 +42,14 @@ const EventCard = ({ event, index = 0 }) => {
           <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/30 to-transparent" />
 
           <span
-            className={`absolute top-2 left-2 @min-[210px]:top-3 @min-[210px]:left-3 px-2 py-0.5 @min-[210px]:px-2.5 @min-[210px]:py-1 rounded-full text-[9px] @min-[210px]:text-[10px] font-semibold shadow-sm ${
+            className={`absolute top-2 left-2 @min-[210px]:top-3 @min-[210px]:left-3 px-1.5 py-0.5 @min-[210px]:px-2.5 @min-[210px]:py-1 rounded-full text-[8px] @min-[210px]:text-[10px] font-semibold shadow-sm ${
               price === 0 ? "bg-emerald-500 text-white" : "bg-white/95 text-neutral-700"
             }`}
           >
             {price === 0 ? "Free" : `From ${formatPrice(price)}`}
           </span>
           {event.category && (
-            <span className="absolute top-2 right-2 @min-[210px]:top-3 @min-[210px]:right-3 px-2 py-0.5 @min-[210px]:px-2.5 @min-[210px]:py-1 rounded-full bg-black/45 backdrop-blur-sm text-white text-[9px] @min-[210px]:text-[10px] font-medium">
+            <span className="absolute top-2 right-2 @min-[210px]:top-3 @min-[210px]:right-3 px-1.5 py-0.5 @min-[210px]:px-2.5 @min-[210px]:py-1 rounded-full bg-black/45 backdrop-blur-sm text-white text-[8px] @min-[210px]:text-[10px] font-medium">
               {event.category}
             </span>
           )}
@@ -114,8 +114,8 @@ const EventCard = ({ event, index = 0 }) => {
                 {price === 0 ? "Free" : `From ${formatPrice(price)}`}
               </p>
             </div>
-            <span className="flex items-center gap-1 text-[10px] @min-[210px]:text-xs font-semibold text-[#ff7f11] group-hover:gap-2 transition-all shrink-0 whitespace-nowrap">
-              Get tickets <ArrowRight size={12} />
+            <span className="flex items-center justify-center gap-1 w-full @min-[210px]:w-auto px-3 py-2 @min-[210px]:p-0 rounded-lg @min-[210px]:rounded-none bg-[#ff7f11] @min-[210px]:bg-transparent text-white @min-[210px]:text-[#ff7f11] text-[11px] @min-[210px]:text-xs font-semibold whitespace-nowrap shrink-0 group-hover:gap-2 transition-all">
+              Get tickets <ArrowRight size={13} />
             </span>
           </div>
         </div>
