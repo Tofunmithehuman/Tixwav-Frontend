@@ -9,8 +9,10 @@ const FALLBACK_IMG =
     `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='100%' height='100%' fill='%23beb7a4'/></svg>`,
   );
 
-/** Reusable event card used on Home, Discover and Search. Square (1:1) image. */
-const EventCard = ({ event, index = 0 }) => {
+/** Reusable event card used on Home, Discover and Search. Square (1:1) image.
+ *  mobileButton: render the CTA as a full-width button on tablet and below
+ *  (inline link at lg+). The carousel leaves it off so it always shows the link. */
+const EventCard = ({ event, index = 0, mobileButton = false }) => {
   const price = minTierPrice(event);
   const to = `/events/${event.slug || event._id}`;
   const tiers = event.ticketTiers || [];
@@ -99,7 +101,13 @@ const EventCard = ({ event, index = 0 }) => {
           </div>
 
           {/* Footer: price + CTA */}
-          <div className="mt-auto flex flex-col gap-1.5 @min-[210px]:flex-row @min-[210px]:items-center @min-[210px]:justify-between pt-3 border-t border-neutral-100">
+          <div
+            className={`mt-auto pt-3 border-t border-neutral-100 flex ${
+              mobileButton
+                ? "flex-col gap-1.5 lg:flex-row lg:items-center lg:justify-between"
+                : "items-center justify-between"
+            }`}
+          >
             <div className="min-w-0">
               <p className="text-[10px] text-neutral-400 leading-none mb-0.5">
                 {price === 0 ? "Entry" : `${tiers.length || 1} ticket type${tiers.length === 1 ? "" : "s"}`}
@@ -108,7 +116,13 @@ const EventCard = ({ event, index = 0 }) => {
                 {price === 0 ? "Free" : `From ${formatPrice(price)}`}
               </p>
             </div>
-            <span className="flex items-center justify-center gap-1 w-full @min-[210px]:w-auto px-3 py-2 @min-[210px]:p-0 rounded-lg @min-[210px]:rounded-none bg-[#ff7f11] @min-[210px]:bg-transparent text-white @min-[210px]:text-[#ff7f11] text-[11px] @min-[210px]:text-xs font-semibold whitespace-nowrap shrink-0 group-hover:gap-2 transition-all">
+            <span
+              className={
+                mobileButton
+                  ? "flex items-center justify-center gap-1 w-full lg:w-auto px-3 py-2 lg:p-0 rounded-lg lg:rounded-none bg-[#ff7f11] lg:bg-transparent text-white lg:text-[#ff7f11] text-xs font-semibold whitespace-nowrap shrink-0 group-hover:gap-2 transition-all"
+                  : "flex items-center gap-1 text-xs font-semibold text-[#ff7f11] whitespace-nowrap shrink-0 group-hover:gap-2 transition-all"
+              }
+            >
               Get tickets <ArrowRight size={13} />
             </span>
           </div>

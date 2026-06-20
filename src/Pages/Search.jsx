@@ -113,7 +113,7 @@ const Search = () => {
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
               {events.map((event, i) => (
-                <EventCard key={event._id} event={event} index={i} />
+                <EventCard key={event._id} event={event} index={i} mobileButton />
               ))}
             </div>
           )}
