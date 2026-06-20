@@ -210,7 +210,7 @@ const EventDetail = () => {
                   src={event.image || FALLBACK_IMG}
                   alt={event.title}
                   onError={(e) => (e.currentTarget.src = FALLBACK_IMG)}
-                  className="w-full h-auto block lg:w-auto lg:max-h-[560px]"
+                  className="w-full h-auto block lg:w-auto lg:max-h-140"
                 />
                 {event.category && (
                   <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/45 backdrop-blur-sm text-white text-xs font-medium">
@@ -468,7 +468,7 @@ const EventDetail = () => {
       <ConfirmDialog
         open={confirmEmail}
         title="Confirm your email"
-        message={`Your tickets will be sent to ${guest.email}. Make sure it's correct — you'll need it to view your tickets.`}
+        message={`Your tickets will be sent to ${guest.email}. Make sure it's correct, you'll need it to view your tickets.`}
         confirmLabel="Yes, continue"
         cancelLabel="Edit email"
         loading={isInitiating}
