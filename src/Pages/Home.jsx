@@ -90,8 +90,8 @@ const Home = () => {
                       </CarouselItem>
                     ))}
                   </CarouselContent>
-                  <CarouselPrevious className="left-0 -ms-4.5 p-6" />
-                  <CarouselNext className="right-0 -me-4.5 p-6" />
+                  <CarouselPrevious className="left-0 -ms-4.5 p-6 bg-white text-neutral-700 border border-neutral-200 shadow-md hover:bg-neutral-50" />
+                  <CarouselNext className="right-0 -me-4.5 p-6 bg-white text-neutral-700 border border-neutral-200 shadow-md hover:bg-neutral-50" />
                 </Carousel>
               </motion.div>
             )}

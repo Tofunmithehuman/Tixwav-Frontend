@@ -187,13 +187,13 @@ const EventDetail = () => {
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4 }}
-                className="relative rounded-2xl overflow-hidden bg-neutral-100 mb-6"
+                className="relative rounded-2xl overflow-hidden bg-neutral-100 mb-6 lg:w-fit"
               >
                 <img
                   src={event.image || FALLBACK_IMG}
                   alt={event.title}
                   onError={(e) => (e.currentTarget.src = FALLBACK_IMG)}
-                  className="w-full h-auto block"
+                  className="w-full h-auto block lg:w-auto lg:max-h-[560px]"
                 />
                 {event.category && (
                   <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/45 backdrop-blur-sm text-white text-xs font-medium">
