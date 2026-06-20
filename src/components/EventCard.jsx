@@ -41,13 +41,7 @@ const EventCard = ({ event, index = 0 }) => {
           />
           <div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-black/30 to-transparent" />
 
-          <span
-            className={`absolute top-2 left-2 @min-[210px]:top-3 @min-[210px]:left-3 px-1.5 py-0.5 @min-[210px]:px-2.5 @min-[210px]:py-1 rounded-full text-[8px] @min-[210px]:text-[10px] font-semibold shadow-sm ${
-              price === 0 ? "bg-emerald-500 text-white" : "bg-white/95 text-neutral-700"
-            }`}
-          >
-            {price === 0 ? "Free" : `From ${formatPrice(price)}`}
-          </span>
+         
           {event.category && (
             <span className="absolute top-2 right-2 @min-[210px]:top-3 @min-[210px]:right-3 px-1.5 py-0.5 @min-[210px]:px-2.5 @min-[210px]:py-1 rounded-full bg-black/45 backdrop-blur-sm text-white text-[8px] @min-[210px]:text-[10px] font-medium">
               {event.category}
@@ -110,7 +104,7 @@ const EventCard = ({ event, index = 0 }) => {
               <p className="text-[10px] text-neutral-400 leading-none mb-0.5">
                 {price === 0 ? "Entry" : `${tiers.length || 1} ticket type${tiers.length === 1 ? "" : "s"}`}
               </p>
-              <p className="text-xs @min-[210px]:text-sm font-semibold text-neutral-800">
+              <p className="text-xs @min-[210px]:text-sm font-semibold text-neutral-800 mt-1">
                 {price === 0 ? "Free" : `From ${formatPrice(price)}`}
               </p>
             </div>
