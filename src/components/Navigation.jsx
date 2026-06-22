@@ -278,6 +278,8 @@ const Navigation = () => {
               <ThemeToggle />
               <motion.button
                 onClick={() => setIsOpen(!isOpen)}
+                aria-label={isOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isOpen}
                 className="relative z-50"
                 whileTap={{ scale: 0.9 }}
                 animate={{ rotate: isOpen ? 90 : 0 }}
