@@ -24,6 +24,7 @@ const Pricing = lazy(() => import("./Pages/Pricing"));
 const HelpCenter = lazy(() => import("./Pages/HelpCenter"));
 const ContactUs = lazy(() => import("./Pages/ContactUs"));
 const PrivacyPolicy = lazy(() => import("./Pages/PrivacyPolicy"));
+const RefundPolicy = lazy(() => import("./Pages/RefundPolicy"));
 const NotFound = lazy(() => import("./Pages/NotFound"));
 const AuthCallback = lazy(() => import("./Pages/AuthCallback"));
 const EventDetail = lazy(() => import("./Pages/EventDetail"));
@@ -79,6 +80,7 @@ function App() {
           <Route element={<HelpCenter />} path="/help" />
           <Route element={<ContactUs />} path="/contact" />
           <Route element={<PrivacyPolicy />} path="/privacy" />
+          <Route element={<RefundPolicy />} path="/refund-policy" />
           <Route element={<EventDetail />} path="/events/:id" />
           <Route element={<PaymentVerify />} path="/payment/verify" />
           <Route element={<OrderConfirmation />} path="/orders/:id" />
