@@ -15,6 +15,7 @@ const Footer = () => {
       { name: "Help Center", path: "/help" },
       { name: "Contact Us", path: "/contact" },
       { name: "Privacy Policy", path: "/privacy" },
+      { name: "Refund Policy", path: "/refund-policy" },
     ],
     Social: [
       { name: "Instagram", path: "https://instagram.com", external: true },

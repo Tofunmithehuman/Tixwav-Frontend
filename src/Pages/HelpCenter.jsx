@@ -22,7 +22,8 @@ const FAQS = [
   },
   {
     q: "Can I get a refund?",
-    a: "Refunds are handled by the event organizer / Tixwav support on a case by case basis. Reach out through the Contact page with your order reference and we'll help.",
+    a: "All ticket sales are final, so we don't offer refunds for change of mind or being unable to attend. You may be eligible if an event is cancelled, or if you were charged twice or in error — see our Refund Policy for the full details and how to request one.",
+    link: { to: "/refund-policy", label: "Read our Refund Policy" },
   },
   {
     q: "How do I become an organizer?",
@@ -98,6 +99,14 @@ const HelpCenter = () => {
                       <p className="text-sm text-neutral-500 leading-relaxed">
                         {f.a}
                       </p>
+                      {f.link && (
+                        <Link
+                          to={f.link.to}
+                          className="mt-2 inline-block text-sm font-medium text-[#ff7f11] hover:underline"
+                        >
+                          {f.link.label} →
+                        </Link>
+                      )}
                     </motion.div>
                   )}
                 </div>
