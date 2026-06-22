@@ -27,6 +27,10 @@ function Login() {
   // Redirect destination after login (supports ProtectedRoute redirect)
   const from = location.state?.from?.pathname || "/profile";
 
+  // Set when arriving straight from registration — show a verify-email notice.
+  const justRegistered = location.state?.justRegistered;
+  const registeredEmail = location.state?.email;
+
   // If already authenticated, send to profile
   useEffect(() => {
     if (isAuthenticated) navigate(from, { replace: true });
@@ -102,6 +106,23 @@ function Login() {
                     Enter your credentials to access your account
                   </p>
                 </motion.div>
+
+                {justRegistered && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-6 flex items-start gap-2.5 rounded-lg border border-[#ff7f11]/30 bg-[#ff7f11]/5 px-4 py-3"
+                  >
+                    <Mail className="w-4 h-4 text-[#ff7f11] mt-0.5 shrink-0" />
+                    <p className="text-xs text-neutral-600 leading-relaxed">
+                      Account created! We&apos;ve sent a verification link to{" "}
+                      <span className="font-semibold text-neutral-700">
+                        {registeredEmail || "your email"}
+                      </span>
+                      . Verify your email, then log in below.
+                    </p>
+                  </motion.div>
+                )}
 
                 <motion.div className="mt-10" variants={formVariants}>
                   <form onSubmit={handleSubmit}>

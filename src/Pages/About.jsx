@@ -244,7 +244,7 @@ const About = () => {
           <Link to="/register">
             <motion.div
               whileTap={{ scale: 0.96 }}
-              className="shrink-0 flex items-center gap-2 px-6 py-3 bg-white text-[#ff7f11] rounded-xl text-sm font-semibold hover:bg-orange-50 transition-colors cursor-pointer"
+              className="shrink-0 flex items-center gap-2 px-6 py-3 bg-[#ffffff] text-[#ff7f11] rounded-xl text-sm font-semibold hover:bg-[#fff1e6] transition-colors cursor-pointer"
             >
               Get started <ArrowRight size={14} />
             </motion.div>
