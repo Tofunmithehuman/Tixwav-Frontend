@@ -9,10 +9,22 @@ const FALLBACK_IMG =
     `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='100%' height='100%' fill='%23beb7a4'/></svg>`,
   );
 
+/** Serve a right-sized, modern-format, square-cropped image from Cloudinary.
+ *  Non-Cloudinary URLs (and the fallback) are returned untouched. */
+const cloudinaryThumb = (url, size = 600) => {
+  if (!url || !url.includes("res.cloudinary.com/") || !url.includes("/upload/"))
+    return url;
+  return url.replace(
+    "/upload/",
+    `/upload/f_auto,q_auto,c_fill,g_auto,w_${size},h_${size}/`,
+  );
+};
+
 /** Reusable event card used on Home, Discover and Search. Square (1:1) image.
  *  mobileButton: render the CTA as a full-width button on tablet and below
- *  (inline link at lg+). The carousel leaves it off so it always shows the link. */
-const EventCard = ({ event, index = 0, mobileButton = false }) => {
+ *  (inline link at lg+). The carousel leaves it off so it always shows the link.
+ *  priority: eager-load + high fetch priority for above-the-fold (LCP) images. */
+const EventCard = ({ event, index = 0, mobileButton = false, priority = false }) => {
   const price = minTierPrice(event);
   const to = `/events/${event.slug || event._id}`;
   const tiers = event.ticketTiers || [];
@@ -35,9 +47,13 @@ const EventCard = ({ event, index = 0, mobileButton = false }) => {
         {/* Square media */}
         <div className="relative aspect-square overflow-hidden bg-neutral-100">
           <img
-            src={event.image || FALLBACK_IMG}
+            src={cloudinaryThumb(event.image) || FALLBACK_IMG}
             alt={event.title}
-            loading="lazy"
+            width={600}
+            height={600}
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
+            decoding="async"
             onError={(e) => (e.currentTarget.src = FALLBACK_IMG)}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
@@ -60,9 +76,9 @@ const EventCard = ({ event, index = 0, mobileButton = false }) => {
 
         {/* Content */}
         <div className="flex flex-col flex-1 p-3 @min-[210px]:p-4">
-          <h3 className="text-xs @min-[210px]:text-sm font-semibold text-neutral-800 mb-1 group-hover:text-[#ff7f11] transition-colors line-clamp-2">
+          <h2 className="text-xs @min-[210px]:text-sm font-semibold text-neutral-800 mb-1 group-hover:text-[#ff7f11] transition-colors line-clamp-2">
             {event.title}
-          </h3>
+          </h2>
           {(event.organizerName || event.organizer) && (
             <p className="text-[10px] @min-[210px]:text-[11px] text-neutral-400 mb-2 truncate">
               by{" "}

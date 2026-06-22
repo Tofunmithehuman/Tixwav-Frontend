@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
@@ -19,7 +19,6 @@ import {
   fetchPopular,
   selectLatest,
   selectPopular,
-  selectEventsLoading,
 } from "@/store/slices/eventSlice";
 
 const containerVariants = {
@@ -35,11 +34,16 @@ const Home = () => {
   const dispatch = useDispatch();
   const latest = useSelector(selectLatest);
   const popular = useSelector(selectPopular);
-  const loading = useSelector(selectEventsLoading);
+  // fetchLatest/fetchPopular don't drive the shared loading flag, so track the
+  // first load locally — this lets us reserve space with skeletons until the
+  // data lands, instead of an empty page that shoves the footer down (CLS).
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchLatest());
-    dispatch(fetchPopular());
+    Promise.allSettled([
+      dispatch(fetchLatest()),
+      dispatch(fetchPopular()),
+    ]).finally(() => setLoaded(true));
   }, [dispatch]);
 
   // Carousel shows the latest (most recently uploaded) active events.
@@ -52,7 +56,7 @@ const Home = () => {
         path="/"
       />
       <Navigation />
-      <div className="p-4 md:p-8">
+      <main className="p-4 md:p-8">
         <div className="max-w-screen-2xl mx-auto">
           {/* Hero / featured */}
           <motion.section
@@ -69,9 +73,11 @@ const Home = () => {
               </h1>
             </motion.div>
 
-            {loading && carouselEvents.length === 0 ? (
-              <div className="h-56 flex items-center justify-center">
-                <div className="w-7 h-7 border-2 border-[#ff7f11] border-t-transparent rounded-full animate-spin" />
+            {!loaded && carouselEvents.length === 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 px-2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <SkeletonCard key={i} />
+                ))}
               </div>
             ) : carouselEvents.length === 0 ? (
               <EmptyState />
@@ -85,7 +91,11 @@ const Home = () => {
                         className="basis-full sm:basis-1/2 lg:basis-1/3"
                       >
                         <div className="p-1">
-                          <EventCard event={event} index={index} />
+                          <EventCard
+                            event={event}
+                            index={index}
+                            priority={index === 0}
+                          />
                         </div>
                       </CarouselItem>
                     ))}
@@ -109,7 +119,7 @@ const Home = () => {
           </motion.section>
 
           {/* Popular events — most ticket sales among active events */}
-          {popular.length > 0 && (
+          {(!loaded || popular.length > 0) && (
             <motion.section
               className="mt-16"
               initial="hidden"
@@ -123,19 +133,40 @@ const Home = () => {
                 Popular events
               </motion.h2>
               <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-                {popular.map((event, index) => (
-                  <EventCard key={event._id} event={event} index={index} mobileButton />
-                ))}
+                {popular.length > 0
+                  ? popular.map((event, index) => (
+                      <EventCard
+                        key={event._id}
+                        event={event}
+                        index={index}
+                        mobileButton
+                      />
+                    ))
+                  : Array.from({ length: 6 }).map((_, i) => (
+                      <SkeletonCard key={i} />
+                    ))}
               </div>
             </motion.section>
           )}
         </div>
-      </div>
+      </main>
       <Footer />
       <ScrollToTop />
     </div>
   );
 };
+
+const SkeletonCard = () => (
+  <div className="flex flex-col h-full bg-white border border-neutral-100 rounded-lg overflow-hidden shadow-sm">
+    <div className="aspect-square bg-neutral-100 animate-pulse" />
+    <div className="p-4 space-y-2.5">
+      <div className="h-3.5 w-4/5 bg-neutral-100 rounded animate-pulse" />
+      <div className="h-2.5 w-1/2 bg-neutral-100 rounded animate-pulse" />
+      <div className="h-2.5 w-2/3 bg-neutral-100 rounded animate-pulse" />
+      <div className="h-8 bg-neutral-100 rounded animate-pulse mt-2" />
+    </div>
+  </div>
+);
 
 const EmptyState = () => (
   <div className="text-center py-16 border border-dashed border-neutral-200 rounded-2xl">
