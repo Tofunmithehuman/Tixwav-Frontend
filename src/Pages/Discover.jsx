@@ -255,7 +255,13 @@ const Discover = () => {
                 animate="visible"
               >
                 {events.map((event, i) => (
-                  <EventCard key={event._id} event={event} index={i} mobileButton />
+                  <EventCard
+                    key={event._id}
+                    event={event}
+                    index={i}
+                    mobileButton
+                    priority={i === 0}
+                  />
                 ))}
               </motion.div>
 

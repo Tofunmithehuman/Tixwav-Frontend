@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 
 import { downloadTicketPdf } from "../lib/downloadTicket";
+import { optimizeImage } from "@/lib/cloudinary";
 
 // Redux
 import { logoutUser, selectUser } from "../store/slices/authSlice";
@@ -420,7 +421,7 @@ const Profile = () => {
             <div className="relative w-fit">
               {user?.avatar && user.avatar.trim() !== "" ? (
                 <img
-                  src={user.avatar}
+                  src={optimizeImage(user.avatar, { width: 200, height: 200 })}
                   alt="Avatar"
                   className="w-24 h-24 rounded-2xl object-cover shadow-lg border-4 border-white"
                   onError={(e) => {
@@ -842,7 +843,7 @@ const Profile = () => {
                               >
                                 {event.image ? (
                                   <img
-                                    src={event.image}
+                                    src={optimizeImage(event.image, { width: 96, height: 96 })}
                                     alt=""
                                     className="w-10 h-10 rounded-lg object-cover shrink-0"
                                   />

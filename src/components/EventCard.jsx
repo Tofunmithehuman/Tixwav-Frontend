@@ -2,23 +2,13 @@ import { Link } from "react-router-dom";
 import { Calendar, MapPin, ArrowRight } from "lucide-react";
 import * as motion from "motion/react-client";
 import { formatPrice, formatDate, minTierPrice } from "@/lib/format";
+import { optimizeImage } from "@/lib/cloudinary";
 
 const FALLBACK_IMG =
   "data:image/svg+xml;utf8," +
   encodeURIComponent(
     `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='100%' height='100%' fill='%23beb7a4'/></svg>`,
   );
-
-/** Serve a right-sized, modern-format, square-cropped image from Cloudinary.
- *  Non-Cloudinary URLs (and the fallback) are returned untouched. */
-const cloudinaryThumb = (url, size = 600) => {
-  if (!url || !url.includes("res.cloudinary.com/") || !url.includes("/upload/"))
-    return url;
-  return url.replace(
-    "/upload/",
-    `/upload/f_auto,q_auto,c_fill,g_auto,w_${size},h_${size}/`,
-  );
-};
 
 /** Reusable event card used on Home, Discover and Search. Square (1:1) image.
  *  mobileButton: render the CTA as a full-width button on tablet and below
@@ -47,7 +37,7 @@ const EventCard = ({ event, index = 0, mobileButton = false, priority = false })
         {/* Square media */}
         <div className="relative aspect-square overflow-hidden bg-neutral-100">
           <img
-            src={cloudinaryThumb(event.image) || FALLBACK_IMG}
+            src={optimizeImage(event.image, { width: 600, height: 600 }) || FALLBACK_IMG}
             alt={event.title}
             width={600}
             height={600}
