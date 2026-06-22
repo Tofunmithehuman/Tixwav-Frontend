@@ -317,6 +317,18 @@ const Profile = () => {
     return end ? new Date(end).getTime() < now : false;
   };
 
+  // Display state for a single ticket. A ticket is "Closed" when the event has
+  // ended but the ticket was never used — it isn't an attendance, just expired.
+  const ticketState = (t) => {
+    if (t.status === "used")
+      return { label: "Used", cls: "bg-blue-50 text-blue-600" };
+    if (t.status === "cancelled")
+      return { label: "Cancelled", cls: "bg-neutral-100 text-neutral-500" };
+    if (isEnded(t.event))
+      return { label: "Closed", cls: "bg-neutral-100 text-neutral-500" };
+    return { label: "Active", cls: "bg-emerald-50 text-emerald-600" };
+  };
+
   // Hide orders whose tickets have all been removed/cancelled, so a ticket
   // deleted on the My Tickets page also disappears here. Orders whose tickets
   // are still being generated (empty array) are kept.
@@ -337,19 +349,20 @@ const Profile = () => {
   );
 
   // Tab filter — upcoming: not used and the event hasn't ended;
-  // attended: ticket used or the event has ended.
+  // attended: ticket actually used. Ended-but-unused tickets are "Closed" and
+  // show only under All (never Upcoming or Attended).
   const ticketItems =
     ticketFilter === "upcoming"
       ? allTickets.filter((t) => t.status !== "used" && !isEnded(t.event))
       : ticketFilter === "attended"
-        ? allTickets.filter((t) => t.status === "used" || isEnded(t.event))
+        ? allTickets.filter((t) => t.status === "used")
         : allTickets;
 
   // ── Overview stats ────────────────────────────────────────────────────────
-  // Events attended = distinct events that ended or had a ticket used.
+  // Events attended = distinct events where a ticket was actually used.
   const attendedCount = new Set(
     allTickets
-      .filter((t) => t.status === "used" || isEnded(t.event))
+      .filter((t) => t.status === "used")
       .map((t) => t.event?._id)
       .filter(Boolean),
   ).size;
@@ -778,13 +791,9 @@ const Profile = () => {
                               </div>
                               <div className="flex items-center gap-2 shrink-0">
                                 <span
-                                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize whitespace-nowrap ${
-                                    ticket.status === "used"
-                                      ? "bg-blue-50 text-blue-600"
-                                      : "bg-emerald-50 text-emerald-600"
-                                  }`}
+                                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize whitespace-nowrap ${ticketState(ticket).cls}`}
                                 >
-                                  {ticket.status || "active"}
+                                  {ticketState(ticket).label}
                                 </span>
                                 <ChevronRight
                                   size={13}
@@ -1049,7 +1058,7 @@ const Profile = () => {
               ],
               ["Venue", selectedTicket.event?.venue?.name || "TBD"],
               ["Tier", selectedTicket.tierName || "—"],
-              ["Status", selectedTicket.status || "active"],
+              ["Status", ticketState(selectedTicket).label],
             ].map(([k, v]) => (
               <div
                 key={k}

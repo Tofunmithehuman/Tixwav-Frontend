@@ -14,7 +14,7 @@ export const registerUser = createAsyncThunk(
   async (credentials, { rejectWithValue }) => {
     try {
       const { data } = await api.post("/auth/register", credentials);
-      setInMemoryToken(data.token);
+      // No auto-login — the user must verify their email and then sign in.
       return data;
     } catch (err) {
       return rejectWithValue(
@@ -161,12 +161,10 @@ const authSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
+      .addCase(registerUser.fulfilled, (state) => {
         state.isLoading = false;
-        state.user = action.payload.user;
-        state.isAuthenticated = true;
-        state.sessionChecked = true;
-        localStorage.setItem("isLoggedIn", "true");
+        // Intentionally NOT authenticated — the account must be verified first,
+        // then the user signs in from the login page.
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;

@@ -12,7 +12,6 @@ import {
   selectAuthLoading,
   selectAuth,
 } from "../store/slices/authSlice";
-import { becomeOrganizer } from "../store/slices/organizerSlice";
 
 
 function Register() {
@@ -57,24 +56,21 @@ function Register() {
         lastName: lastNameInput,
         email: emailInput,
         password: passwordInput,
+        accountType,
       }),
     )
       .unwrap()
-      .then(async (data) => {
-        if (accountType === "organizer") {
-          try {
-            await dispatch(becomeOrganizer({})).unwrap();
-          } catch {
-            // non-fatal — they can finish onboarding from the dashboard
-          }
-          toast.success("Account created! Let's set up your payouts.");
-          navigate("/organizer/payout", { replace: true });
-        } else {
-          toast.success(
-            data.message || "Account created! Please verify your email.",
-          );
-          navigate("/profile", { replace: true });
-        }
+      .then((data) => {
+        toast.success(
+          data.message ||
+            "Account created! Check your email to verify your account.",
+        );
+        // Registration no longer logs the user in — they must verify their
+        // email first. Send them to login with a notice.
+        navigate("/login", {
+          replace: true,
+          state: { justRegistered: true, email: emailInput },
+        });
       })
       .catch(() => {}); // error handled by useEffect above
   };
