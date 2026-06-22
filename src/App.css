@@ -25,6 +25,30 @@ html {
     font-size: 16px !important;
   }
 }
+
+/* Native date/time pickers: keep the value, field separators and the empty
+   placeholder legible on iOS Safari in dark mode (WebKit renders these with
+   pseudo-elements that don't always follow color-scheme), and make the picker
+   indicator visible on the dark field. */
+html.dark input[type="datetime-local"],
+html.dark input[type="date"],
+html.dark input[type="time"],
+html.dark input[type="datetime-local"]::-webkit-datetime-edit,
+html.dark input[type="datetime-local"]::-webkit-datetime-edit-fields-wrapper,
+html.dark input[type="datetime-local"]::-webkit-datetime-edit-text,
+html.dark input[type="datetime-local"]::-webkit-datetime-edit-year-field,
+html.dark input[type="datetime-local"]::-webkit-datetime-edit-month-field,
+html.dark input[type="datetime-local"]::-webkit-datetime-edit-day-field,
+html.dark input[type="datetime-local"]::-webkit-datetime-edit-hour-field,
+html.dark input[type="datetime-local"]::-webkit-datetime-edit-minute-field,
+html.dark input[type="datetime-local"]::-webkit-datetime-edit-meridiem-field {
+  color: #f3f4f6;
+}
+html.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.7;
+}
+
 .QurovaDEMO {
   font-family: "QurovaDEMO", sans-serif;
 }

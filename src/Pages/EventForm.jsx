@@ -290,6 +290,11 @@ const EventForm = ({ mode = "create" }) => {
                     onChange={(e) => setField("startDate", e.target.value)}
                     className={inputCls}
                   />
+                  {!form.startDate && (
+                    <p className="text-[11px] text-neutral-500 mt-1">
+                      Tap to set date &amp; time
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className={labelCls}>ENDS</label>
@@ -299,6 +304,11 @@ const EventForm = ({ mode = "create" }) => {
                     onChange={(e) => setField("endDate", e.target.value)}
                     className={inputCls}
                   />
+                  {!form.endDate && (
+                    <p className="text-[11px] text-neutral-500 mt-1">
+                      Tap to set date &amp; time
+                    </p>
+                  )}
                 </div>
               </div>
 
