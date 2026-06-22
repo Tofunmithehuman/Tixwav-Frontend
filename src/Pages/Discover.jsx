@@ -30,8 +30,8 @@ const categories = [
   "Charity", "Sports & Fitness", "Other",
 ];
 const sorts = [
-  { value: "startDate", label: "Date (soonest)" },
   { value: "-createdAt", label: "Newest" },
+  { value: "startDate", label: "Date (soonest)" },
   { value: "-views", label: "Most popular" },
 ];
 
@@ -50,7 +50,7 @@ const Discover = () => {
   const [debounced, setDebounced] = useState("");
   const [category, setCategory] = useState("All");
   const [city, setCity] = useState("");
-  const [sort, setSort] = useState("startDate");
+  const [sort, setSort] = useState("-createdAt"); // newest-created first by default
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
 
