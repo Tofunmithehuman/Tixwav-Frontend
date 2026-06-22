@@ -58,6 +58,22 @@ function App() {
     }
   }, [dispatch, sessionChecked]);
 
+  // ── Follow the device colour scheme until the user picks a theme ──────────
+  useEffect(() => {
+    const mq = window.matchMedia?.("(prefers-color-scheme: dark)");
+    if (!mq) return;
+    const apply = (e) => {
+      try {
+        if (localStorage.getItem("theme")) return; // explicit choice wins
+      } catch {
+        /* ignore */
+      }
+      document.documentElement.classList.toggle("dark", e.matches);
+    };
+    mq.addEventListener?.("change", apply);
+    return () => mq.removeEventListener?.("change", apply);
+  }, []);
+
   // ── Minimal full-screen loader while checking session ────────────────────
   if (!sessionChecked) return <Fallback />;
 

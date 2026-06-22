@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { optimizeImage } from "@/lib/cloudinary";
 import {
   Search,
   Menu,
@@ -140,7 +141,7 @@ const Navigation = () => {
                   >
                     {user.avatar && user.avatar.trim() !== "" ? (
                       <img
-                        src={user.avatar}
+                        src={optimizeImage(user.avatar, { width: 96, height: 96 })}
                         alt={user.firstName}
                         className="w-9 h-9 rounded-full object-cover border-2 border-[#ff7f11]"
                         onError={(e) => {
@@ -317,7 +318,7 @@ const Navigation = () => {
                 <div className="flex items-center gap-3 pb-5 border-b border-neutral-100">
                   {user.avatar && user.avatar.trim() !== "" ? (
                     <img
-                      src={user.avatar}
+                      src={optimizeImage(user.avatar, { width: 96, height: 96 })}
                       alt={user.firstName}
                       className="w-11 h-11 rounded-full object-cover border-2 border-[#ff7f11]"
                       onError={(e) => {

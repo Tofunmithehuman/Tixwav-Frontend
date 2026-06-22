@@ -35,6 +35,7 @@ import {
 } from "@/store/slices/userSlice";
 import { selectIsAuthenticated, selectUser } from "@/store/slices/authSlice";
 import { formatPrice, formatDate } from "@/lib/format";
+import { optimizeImage } from "@/lib/cloudinary";
 
 const FALLBACK_IMG =
   "data:image/svg+xml;utf8," +
@@ -207,8 +208,11 @@ const EventDetail = () => {
                 className="relative rounded-2xl overflow-hidden bg-neutral-100 mb-6 lg:w-fit"
               >
                 <img
-                  src={event.image || FALLBACK_IMG}
+                  src={optimizeImage(event.image, { width: 1200 }) || FALLBACK_IMG}
                   alt={event.title}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                   onError={(e) => (e.currentTarget.src = FALLBACK_IMG)}
                   className="w-full h-auto block lg:w-auto lg:max-h-140"
                 />

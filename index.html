@@ -117,10 +117,15 @@
       }
     </script>
     <script>
-      // Apply the saved theme before React paints to avoid a flash of light mode.
+      // Apply the theme before React paints to avoid a flash. Use the saved
+      // choice if there is one, otherwise follow the device's colour scheme.
       try {
-        if (localStorage.getItem("theme") === "dark")
-          document.documentElement.classList.add("dark");
+        var saved = localStorage.getItem("theme");
+        var useDark = saved
+          ? saved === "dark"
+          : window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (useDark) document.documentElement.classList.add("dark");
       } catch (e) {}
     </script>
   </head>
