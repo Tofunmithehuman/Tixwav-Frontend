@@ -32,7 +32,6 @@ import {
   setEventStatus,
   featureEvent,
   adminDeleteEvent,
-  refundOrder,
   selectAdminOverview,
   selectAdminRecentOrders,
   selectAdminRevenue,
@@ -405,25 +404,10 @@ const OrdersTab = () => {
   const pagination = useSelector(selectAdminOrdersPagination);
   const loading = useSelector(selectAdminLoading);
   const [page, setPage] = useState(1);
-  const [toRefund, setToRefund] = useState(null); // order pending refund
-  const [refunding, setRefunding] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAllOrders({ page, limit: 10 }));
   }, [dispatch, page]);
-
-  const confirmRefund = () => {
-    if (!toRefund) return;
-    setRefunding(true);
-    dispatch(refundOrder({ id: toRefund._id, reason: "Admin refund" }))
-      .unwrap()
-      .then(() => toast.success("Order refunded"))
-      .catch((err) => toast.error(err || "Refund failed"))
-      .finally(() => {
-        setRefunding(false);
-        setToRefund(null);
-      });
-  };
 
   return loading && orders.length === 0 ? (
     <Loader />
@@ -439,7 +423,6 @@ const OrdersTab = () => {
               <th className="px-4 py-3 font-medium hidden md:table-cell">Buyer</th>
               <th className="px-4 py-3 font-medium">Total</th>
               <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium text-right">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -460,15 +443,6 @@ const OrdersTab = () => {
                     {o.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-right">
-                  {o.status === "confirmed" ? (
-                    <button onClick={() => setToRefund(o)} className="text-xs font-medium text-red-500 hover:text-red-600">
-                      Refund
-                    </button>
-                  ) : (
-                    <span className="text-xs text-neutral-300">—</span>
-                  )}
-                </td>
               </tr>
             ))}
           </tbody>
@@ -477,20 +451,6 @@ const OrdersTab = () => {
       {orders.length === 0 && <Empty label="No orders" />}
     </div>
     <Pagination page={page} pages={pagination?.pages} total={pagination?.total} onPage={setPage} />
-    <ConfirmDialog
-      open={!!toRefund}
-      danger
-      title="Refund this order?"
-      message={
-        toRefund
-          ? `Order ${toRefund.orderRef} will be refunded to the buyer via Paystack.`
-          : ""
-      }
-      confirmLabel="Refund"
-      loading={refunding}
-      onConfirm={confirmRefund}
-      onCancel={() => !refunding && setToRefund(null)}
-    />
     </>
   );
 };

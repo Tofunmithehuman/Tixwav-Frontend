@@ -158,18 +158,6 @@ export const fetchAllOrders = createAsyncThunk(
   },
 );
 
-export const refundOrder = createAsyncThunk(
-  "admin/refundOrder",
-  async ({ id, reason }, { rejectWithValue }) => {
-    try {
-      const { data } = await api.post(`/orders/${id}/refund`, { reason });
-      return { id, ...data };
-    } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Refund failed");
-    }
-  },
-);
-
 const initialState = {
   overview: null,
   recentOrders: [],
@@ -282,12 +270,6 @@ const adminSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       });
-
-    builder.addCase(refundOrder.fulfilled, (state, action) => {
-      state.orders = state.orders.map((o) =>
-        o._id === action.payload.id ? { ...o, status: "refunded" } : o,
-      );
-    });
   },
 });
 
