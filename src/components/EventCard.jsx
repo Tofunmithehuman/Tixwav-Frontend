@@ -30,7 +30,7 @@ const EventCard = ({ event, index = 0, mobileButton = false }) => {
     >
       <Link
         to={to}
-        className="@container flex flex-col h-full bg-white border border-neutral-100 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow group"
+        className="@container flex flex-col h-full bg-white border border-neutral-100 rounded-lg overflow-hidden shadow-xs hover:shadow-sm transition-shadow group"
       >
         {/* Square media */}
         <div className="relative aspect-square overflow-hidden bg-neutral-100">
