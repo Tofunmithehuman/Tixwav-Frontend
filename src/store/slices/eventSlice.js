@@ -10,6 +10,20 @@ const toQuery = (params = {}) => {
   return s ? `?${s}` : "";
 };
 
+// Reuse a fetch kicked off in index.html before the bundle loaded (home page,
+// production). Returns the parsed payload, or null to fall back to api.get.
+const consumePreload = async (key) => {
+  if (typeof window === "undefined" || !window.__TW_PRELOAD__) return null;
+  const p = window.__TW_PRELOAD__[key];
+  if (!p) return null;
+  window.__TW_PRELOAD__[key] = null; // use once
+  try {
+    return await p;
+  } catch {
+    return null;
+  }
+};
+
 // ── Public ───────────────────────────────────────────────────────────────────
 export const fetchEvents = createAsyncThunk(
   "event/fetchEvents",
@@ -40,6 +54,8 @@ export const fetchLatest = createAsyncThunk(
   "event/fetchLatest",
   async (_, { rejectWithValue }) => {
     try {
+      const preloaded = await consumePreload("latest");
+      if (preloaded?.events) return preloaded;
       const { data } = await api.get(`/events?active=true&sort=-createdAt&limit=8`);
       return data;
     } catch (err) {
@@ -53,6 +69,8 @@ export const fetchPopular = createAsyncThunk(
   "event/fetchPopular",
   async (_, { rejectWithValue }) => {
     try {
+      const preloaded = await consumePreload("popular");
+      if (preloaded?.events) return preloaded;
       const { data } = await api.get(`/events?active=true&sort=-totalRevenue&limit=6`);
       return data;
     } catch (err) {
