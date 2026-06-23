@@ -2,7 +2,35 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { ArrowLeft, Plus, Trash2, ImageIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  Plus,
+  Trash2,
+  ImageIcon,
+  Instagram,
+  Twitter,
+  Facebook,
+  Youtube,
+  Music2,
+  Globe,
+} from "lucide-react";
+
+const SOCIAL_FIELDS = [
+  { key: "instagram", Icon: Instagram, label: "Instagram" },
+  { key: "x", Icon: Twitter, label: "X (Twitter)" },
+  { key: "facebook", Icon: Facebook, label: "Facebook" },
+  { key: "tiktok", Icon: Music2, label: "TikTok" },
+  { key: "youtube", Icon: Youtube, label: "YouTube" },
+  { key: "website", Icon: Globe, label: "Website" },
+];
+const EMPTY_SOCIALS = {
+  instagram: "",
+  x: "",
+  facebook: "",
+  tiktok: "",
+  youtube: "",
+  website: "",
+};
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import SearchableSelect from "@/components/SearchableSelect";
@@ -59,6 +87,7 @@ const EventForm = ({ mode = "create" }) => {
   const [imagePreview, setImagePreview] = useState("");
   const [organizerImageFile, setOrganizerImageFile] = useState(null);
   const [organizerImagePreview, setOrganizerImagePreview] = useState("");
+  const [socials, setSocials] = useState(EMPTY_SOCIALS);
 
   useEffect(() => {
     if (mode === "edit" && id) dispatch(fetchEvent(id));
@@ -95,6 +124,8 @@ const EventForm = ({ mode = "create" }) => {
       if (current.image) setImagePreview(current.image);
         if (current.organizerImage)
           setOrganizerImagePreview(current.organizerImage);
+        if (current.socials)
+          setSocials((s) => ({ ...s, ...current.socials }));
     }
   }, [mode, current]);
 
@@ -175,6 +206,7 @@ const EventForm = ({ mode = "create" }) => {
     fd.append("requiresVerification", String(form.requiresVerification));
     if (imageFile) fd.append("image", imageFile);
     if (organizerImageFile) fd.append("organizerImage", organizerImageFile);
+    fd.append("socials", JSON.stringify(socials));
 
     try {
       if (mode === "edit") {
@@ -296,6 +328,31 @@ const EventForm = ({ mode = "create" }) => {
                     Leave blank to use your profile picture — or your initial if
                     you don't have one.
                   </p>
+                </div>
+              </div>
+              <div>
+                <label className={labelCls}>ORGANIZER SOCIALS (OPTIONAL)</label>
+                <p className="text-[11px] text-neutral-400 mt-0.5 mb-2">
+                  Add links so attendees can find you — shown under the event
+                  description.
+                </p>
+                <div className="space-y-2">
+                  {SOCIAL_FIELDS.map(({ key, Icon, label }) => (
+                    <div
+                      key={key}
+                      className="flex items-center gap-2 border border-neutral-200 focus-within:border-[#ff7f11] rounded-lg px-3 transition-colors"
+                    >
+                      <Icon size={16} className="text-neutral-400 shrink-0" />
+                      <input
+                        value={socials[key]}
+                        onChange={(e) =>
+                          setSocials((s) => ({ ...s, [key]: e.target.value }))
+                        }
+                        placeholder={`${label} link`}
+                        className="w-full py-2.5 text-base bg-transparent focus:outline-none text-neutral-700"
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
               <div>
