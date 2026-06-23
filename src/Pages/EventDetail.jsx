@@ -13,7 +13,22 @@ import {
   ArrowLeft,
   Globe,
   Heart,
+  Instagram,
+  Twitter,
+  Facebook,
+  Youtube,
+  Music2,
 } from "lucide-react";
+
+// Organizer social links shown under the event description.
+const SOCIAL_LINKS = [
+  { key: "instagram", Icon: Instagram, label: "Instagram" },
+  { key: "x", Icon: Twitter, label: "X (Twitter)" },
+  { key: "facebook", Icon: Facebook, label: "Facebook" },
+  { key: "tiktok", Icon: Music2, label: "TikTok" },
+  { key: "youtube", Icon: Youtube, label: "YouTube" },
+  { key: "website", Icon: Globe, label: "Website" },
+];
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -96,6 +111,10 @@ const EventDetail = () => {
     return sum + (qty[t._id] || 0) * t.price;
   }, 0);
   const totalQty = items.reduce((s, i) => s + i.quantity, 0);
+  // Mirror the backend service fee (1.5% capped at ₦2,000) so the buyer sees
+  // the exact amount they'll be charged before being sent to Paystack.
+  const serviceFee = subtotal > 0 ? Math.min(subtotal * 0.015, 2000) : 0;
+  const grandTotal = subtotal + serviceFee;
 
   // Runs the actual order once any guest-email confirmation has passed.
   const proceedCheckout = async () => {
@@ -340,6 +359,38 @@ const EventDetail = () => {
                   ))}
                 </div>
               )}
+
+              {event.socials &&
+                SOCIAL_LINKS.some(
+                  ({ key }) =>
+                    event.socials[key] &&
+                    /^https?:\/\//i.test(event.socials[key]),
+                ) && (
+                  <div className="flex items-center flex-wrap gap-3 mt-6 pt-5 border-t border-neutral-100">
+                    <span className="text-xs text-neutral-400">
+                      Follow the organizer
+                    </span>
+                    <div className="flex items-center gap-2">
+                      {SOCIAL_LINKS.map(({ key, Icon, label }) => {
+                        const url = event.socials?.[key];
+                        if (!url || !/^https?:\/\//i.test(url)) return null;
+                        return (
+                          <a
+                            key={key}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={label}
+                            title={label}
+                            className="w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-500 hover:border-[#ff7f11] hover:text-[#ff7f11] transition-colors"
+                          >
+                            <Icon size={16} />
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
             </div>
 
             {/* Right: ticket picker */}
@@ -444,10 +495,24 @@ const EventDetail = () => {
                     )}
 
                     <div className="border-t border-neutral-100 mt-4 pt-4">
-                      <div className="flex justify-between text-sm mb-3">
+                      <div className="flex justify-between text-sm mb-1.5">
                         <span className="text-neutral-500">Subtotal</span>
-                        <span className="font-semibold text-neutral-800">
+                        <span className="font-medium text-neutral-700">
                           {formatPrice(subtotal)}
+                        </span>
+                      </div>
+                      {serviceFee > 0 && (
+                        <div className="flex justify-between text-sm mb-1.5">
+                          <span className="text-neutral-500">Service fee</span>
+                          <span className="font-medium text-neutral-700">
+                            {formatPrice(serviceFee)}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-sm mb-3 pt-1.5 border-t border-neutral-100">
+                        <span className="text-neutral-500">Total</span>
+                        <span className="font-semibold text-neutral-800">
+                          {formatPrice(grandTotal)}
                         </span>
                       </div>
                       <motion.button
@@ -464,7 +529,7 @@ const EventDetail = () => {
                         ) : subtotal === 0 && totalQty > 0 ? (
                           "Get free tickets"
                         ) : (
-                          `Checkout · ${formatPrice(subtotal)}`
+                          `Checkout · ${formatPrice(grandTotal)}`
                         )}
                       </motion.button>
                       {user && (

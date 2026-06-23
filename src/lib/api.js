@@ -8,53 +8,25 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// Tokens live in memory but are mirrored to sessionStorage so the session
-// survives a full-page navigation — e.g. the Paystack checkout round-trip —
-// without depending on the cross-site refresh cookie (which some browsers
-// block). sessionStorage is per-tab and cleared when the tab closes.
-const AT_KEY = "tw_at";
-const RT_KEY = "tw_rt";
-
-const readStore = (k) => {
-  try {
-    return sessionStorage.getItem(k);
-  } catch {
-    return null;
-  }
-};
-const writeStore = (k, v) => {
-  try {
-    if (v) sessionStorage.setItem(k, v);
-    else sessionStorage.removeItem(k);
-  } catch {
-    /* storage unavailable (e.g. private mode) — memory only */
-  }
-};
-
-let inMemoryToken = readStore(AT_KEY);
-let inMemoryRefreshToken = readStore(RT_KEY);
+// The short-lived access token lives in memory only — never in storage — so it
+// can't be read by injected scripts. The long-lived refresh token is an
+// httpOnly cookie the browser sends automatically; a full-page navigation
+// (e.g. the Paystack round-trip) re-mints the access token via /auth/refresh on
+// app load.
+let inMemoryToken = null;
 
 export const setInMemoryToken = (token) => {
   inMemoryToken = token;
-  writeStore(AT_KEY, token);
 };
-
 export const clearInMemoryToken = () => {
   inMemoryToken = null;
-  writeStore(AT_KEY, null);
 };
-
-export const setInMemoryRefreshToken = (token) => {
-  inMemoryRefreshToken = token;
-  writeStore(RT_KEY, token);
-};
-
 export const getInMemoryToken = () => inMemoryToken;
 
-export const clearInMemoryRefreshToken = () => {
-  inMemoryRefreshToken = null;
-  writeStore(RT_KEY, null);
-};
+// Refresh tokens are no longer handled in JS (httpOnly cookie only). These
+// remain as no-ops so existing imports keep working.
+export const setInMemoryRefreshToken = () => {};
+export const clearInMemoryRefreshToken = () => {};
 
 api.interceptors.request.use((config) => {
   if (inMemoryToken) {
@@ -102,12 +74,10 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await api.post("/auth/refresh", {
-          refreshToken: inMemoryRefreshToken, // send in-memory token if available
-        });
+        // Relies on the httpOnly refresh cookie — no token in the body.
+        const { data } = await api.post("/auth/refresh", {});
         const newToken = data.token;
         setInMemoryToken(newToken);
-        if (data.refreshToken) setInMemoryRefreshToken(data.refreshToken); // keep in sync
         processQueue(null, newToken);
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
