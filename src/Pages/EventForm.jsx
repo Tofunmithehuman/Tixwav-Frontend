@@ -57,6 +57,8 @@ const EventForm = ({ mode = "create" }) => {
   const [tiers, setTiers] = useState([emptyTier()]);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
+  const [organizerImageFile, setOrganizerImageFile] = useState(null);
+  const [organizerImagePreview, setOrganizerImagePreview] = useState("");
 
   useEffect(() => {
     if (mode === "edit" && id) dispatch(fetchEvent(id));
@@ -91,6 +93,8 @@ const EventForm = ({ mode = "create" }) => {
           })),
         );
       if (current.image) setImagePreview(current.image);
+        if (current.organizerImage)
+          setOrganizerImagePreview(current.organizerImage);
     }
   }, [mode, current]);
 
@@ -103,6 +107,13 @@ const EventForm = ({ mode = "create" }) => {
     if (!file) return;
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
+  };
+
+  const onOrganizerImage = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setOrganizerImageFile(file);
+    setOrganizerImagePreview(URL.createObjectURL(file));
   };
 
   const validate = () => {
@@ -163,6 +174,7 @@ const EventForm = ({ mode = "create" }) => {
     fd.append("ticketTiers", JSON.stringify(cleanTiers));
     fd.append("requiresVerification", String(form.requiresVerification));
     if (imageFile) fd.append("image", imageFile);
+    if (organizerImageFile) fd.append("organizerImage", organizerImageFile);
 
     try {
       if (mode === "edit") {
@@ -257,6 +269,34 @@ const EventForm = ({ mode = "create" }) => {
                 <p className="text-[11px] text-neutral-400 mt-1">
                   Set this when you're organizing on behalf of someone else.
                 </p>
+              </div>
+              <div>
+                <label className={labelCls}>
+                  HOST / ORGANIZER PHOTO (OPTIONAL)
+                </label>
+                <div className="mt-2 flex items-center gap-4">
+                  <label className="w-16 h-16 rounded-full border-2 border-dashed border-neutral-200 hover:border-[#ff7f11] cursor-pointer overflow-hidden relative shrink-0 transition-colors flex items-center justify-center text-neutral-400">
+                    {organizerImagePreview ? (
+                      <img
+                        src={organizerImagePreview}
+                        alt="host"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <ImageIcon size={20} />
+                    )}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={onOrganizerImage}
+                      className="hidden"
+                    />
+                  </label>
+                  <p className="text-[11px] text-neutral-400">
+                    Leave blank to use your profile picture — or your initial if
+                    you don't have one.
+                  </p>
+                </div>
               </div>
               <div>
                 <label className={labelCls}>DESCRIPTION</label>

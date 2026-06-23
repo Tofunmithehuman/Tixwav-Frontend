@@ -292,11 +292,26 @@ const EventDetail = () => {
                     event.organizer?.organizerInfo?.companyName ||
                     `${event.organizer?.firstName || ""} ${event.organizer?.lastName || ""}`.trim() ||
                     "Organizer";
+                  // Host photo: per-event upload → organizer's profile avatar →
+                  // their initial (rendered below when there's no image).
+                  const hostImage = (
+                    event.organizerImage ||
+                    event.organizer?.avatar ||
+                    ""
+                  ).trim();
                   return (
                     <div className="flex items-center gap-3 mb-6 pb-6 border-b border-neutral-100">
-                      <div className="w-10 h-10 rounded-full bg-[#ff7f11]/10 flex items-center justify-center text-[#ff7f11] font-semibold">
-                        {hostName[0]?.toUpperCase()}
-                      </div>
+                      {hostImage ? (
+                        <img
+                          src={optimizeImage(hostImage, { width: 96, height: 96 })}
+                          alt={hostName}
+                          className="w-10 h-10 rounded-full object-cover shrink-0"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-[#ff7f11]/10 flex items-center justify-center text-[#ff7f11] font-semibold shrink-0">
+                          {hostName[0]?.toUpperCase()}
+                        </div>
+                      )}
                       <div>
                         <p className="text-xs text-neutral-400">Organized by</p>
                         <p className="text-sm font-medium text-neutral-700">{hostName}</p>
