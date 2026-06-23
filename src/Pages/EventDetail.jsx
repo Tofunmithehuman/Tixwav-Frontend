@@ -366,11 +366,11 @@ const EventDetail = () => {
                     event.socials[key] &&
                     /^https?:\/\//i.test(event.socials[key]),
                 ) && (
-                  <div className="flex items-center flex-wrap gap-3 mt-6 pt-5 border-t border-neutral-100">
-                    <span className="text-xs text-neutral-400">
+                  <div className="mt-6 pt-5 border-t border-neutral-100">
+                    <p className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-3">
                       Follow the organizer
-                    </span>
-                    <div className="flex items-center gap-2">
+                    </p>
+                    <div className="flex items-center flex-wrap gap-2.5">
                       {SOCIAL_LINKS.map(({ key, Icon, label }) => {
                         const url = event.socials?.[key];
                         if (!url || !/^https?:\/\//i.test(url)) return null;
@@ -382,9 +382,9 @@ const EventDetail = () => {
                             rel="noopener noreferrer"
                             aria-label={label}
                             title={label}
-                            className="w-9 h-9 rounded-full border border-neutral-200 flex items-center justify-center text-neutral-500 hover:border-[#ff7f11] hover:text-[#ff7f11] transition-colors"
+                            className="w-10 h-10 rounded-full bg-[#ff7f11]/10 text-[#ff7f11] flex items-center justify-center hover:bg-[#ff7f11] hover:text-white transition-colors"
                           >
-                            <Icon size={16} />
+                            <Icon size={17} />
                           </a>
                         );
                       })}
