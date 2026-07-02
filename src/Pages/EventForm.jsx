@@ -115,6 +115,7 @@ const EventForm = ({ mode = "create" }) => {
       if (current.ticketTiers?.length)
         setTiers(
           current.ticketTiers.map((t) => ({
+            _id: t._id, // lets the API match tiers and preserve sold counts
             name: t.name,
             price: t.price,
             quantity: t.quantity,
@@ -172,6 +173,7 @@ const EventForm = ({ mode = "create" }) => {
     const cleanTiers = tiers
       .filter((t) => t.name.trim())
       .map((t) => ({
+        ...(t._id ? { _id: t._id } : {}),
         name: t.name.trim(),
         price: Number(t.price),
         quantity: Number(t.quantity),
