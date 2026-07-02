@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import * as motion from "motion/react-client";
-import { Wallet, ShieldCheck, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Wallet, ShieldCheck, ArrowLeft, CheckCircle2, Clock } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import SearchableSelect from "@/components/SearchableSelect";
@@ -145,6 +145,19 @@ const PayoutSetup = () => {
               <p className="text-[11px] text-neutral-500 leading-relaxed">
                 We verify your account with Paystack and create a secure subaccount.
                 90% of each ticket sale is settled to you automatically; Tixwav keeps 10%.
+              </p>
+            </div>
+
+            <div className="flex items-start gap-2 bg-[#ff7f11]/5 border border-[#ff7f11]/15 rounded-lg p-3">
+              <Clock size={15} className="text-[#ff7f11] mt-0.5 shrink-0" />
+              <p className="text-[11px] text-neutral-500 leading-relaxed">
+                <span className="font-semibold text-neutral-700">
+                  When you get paid:
+                </span>{" "}
+                Paystack settles your share directly to this bank account,
+                typically the <span className="font-semibold text-neutral-700">next business day</span> after
+                each successful payment. Sales made on weekends or public
+                holidays settle on the next business day.
               </p>
             </div>
 
