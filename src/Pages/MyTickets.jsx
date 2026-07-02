@@ -27,6 +27,17 @@ const statusStyles = {
   used: "bg-blue-100 text-blue-600",
   cancelled: "bg-red-100 text-red-600",
   refunded: "bg-neutral-100 text-neutral-500",
+  ended: "bg-neutral-100 text-neutral-500",
+};
+
+// A ticket for an event that's over (and was never used) shows as "Ended"
+// instead of a misleading green "Active".
+const displayStatus = (t) => {
+  if (t.status === "active") {
+    const end = t.event?.endDate || t.event?.startDate;
+    if (end && new Date(end).getTime() < Date.now()) return "ended";
+  }
+  return t.status;
 };
 
 const MyTickets = () => {
@@ -126,9 +137,9 @@ const MyTickets = () => {
                         {t.ticketCode}
                       </p>
                       <span
-                        className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize ${statusStyles[t.status] || "bg-neutral-100 text-neutral-500"}`}
+                        className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-medium capitalize ${statusStyles[displayStatus(t)] || "bg-neutral-100 text-neutral-500"}`}
                       >
-                        {t.tierName} · {t.status}
+                        {t.tierName} · {displayStatus(t)}
                       </span>
                     </div>
                   </div>

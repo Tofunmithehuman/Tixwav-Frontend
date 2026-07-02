@@ -25,7 +25,7 @@ const SECTIONS = [
   },
   {
     h: "How payments are handled",
-    p: "When you buy a ticket, the payment is split at the moment of purchase: the event organizer receives their share (90%) directly and Tixwav retains a platform fee (10%). This is why refunds, where they apply, are coordinated with the organizer who received the funds rather than issued unilaterally by Tixwav.",
+    p: "When you buy a ticket, the payment is split at the moment of purchase: the event organizer receives their share (90%) directly and Tixwav retains a platform fee (10%). Paystack settles the organizer's share to their bank account, typically the next business day after a successful payment (weekend and public-holiday sales settle the next business day). This is why refunds, where they apply, are coordinated with the organizer who received the funds rather than issued unilaterally by Tixwav.",
   },
   {
     h: "How to request a refund",

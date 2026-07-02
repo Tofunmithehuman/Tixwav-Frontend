@@ -31,7 +31,7 @@ const FAQS = [
   },
   {
     q: "How do payouts work for organizers?",
-    a: "When a ticket sells, your 90% share is routed to your connected bank account via Paystack automatically. The remaining 10% is the Tixwav platform fee.",
+    a: "When a ticket sells, your 90% share is routed to your connected bank account via Paystack automatically — settlement typically lands the next business day after payment (weekend and holiday sales settle the next business day). The remaining 10% is the Tixwav platform fee.",
   },
   {
     q: "How do I verify tickets at the door?",

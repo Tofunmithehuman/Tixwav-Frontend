@@ -19,7 +19,6 @@ import {
   X,
   ChevronRight,
   Clock,
-  Star,
   Key,
   Bell,
   Shield,
@@ -367,16 +366,15 @@ const Profile = () => {
       .map((t) => t.event?._id)
       .filter(Boolean),
   ).size;
-  const totalSpent = orders.reduce((a, o) => a + (o.total || 0), 0);
+  // Tickets you can still use — not used yet, event not ended.
+  const upcomingCount = allTickets.filter(
+    (t) => t.status !== "used" && !isEnded(t.event),
+  ).length;
   const stats = [
     { label: "Events Attended", value: attendedCount, icon: Calendar },
     { label: "Orders", value: orders.length, icon: Ticket },
     { label: "Saved Events", value: saved.length, icon: Heart },
-    {
-      label: "Total Spent",
-      value: `₦${totalSpent.toLocaleString("en-NG")}`,
-      icon: Star,
-    },
+    { label: "Upcoming Tickets", value: upcomingCount, icon: Clock },
   ];
 
   const inp =
