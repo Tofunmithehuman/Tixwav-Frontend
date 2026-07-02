@@ -34,9 +34,9 @@ const values = [
 ];
 
 const team = [
-  { name: "Bolaji Oluwatofunmi", role: "CTO & Co-founder", avatar: "https://avatar.vercel.sh/ada1" },
-  { name: "Adebayo Timileyin", role: "CEO & Co-founder", avatar: "https://avatar.vercel.sh/seun2" },
-  { name: "Sophia Balogun", role: "Head of Design &  Co-founder", avatar: "https://avatar.vercel.sh/kemi3" },
+  { name: "Bolaji Oluwatofunmi", role: "CTO & Co-founder", avatar: "https://res.cloudinary.com/ektxj9o9/image/upload/v1782993739/BolajiOluwatofunmi_dauq8l.jpg" },
+  { name: "Adebayo Timileyin", role: "CEO & Co-founder", avatar: "https://res.cloudinary.com/ektxj9o9/image/upload/v1782993390/AdebayoTimileyin_wkllzm.jpg" },
+  { name: "Sophia Balogun", role: "Head of Design &  Co-founder", avatar: "https://res.cloudinary.com/ektxj9o9/image/upload/v1782993315/SophiaBalogun_dniijv.jpg" },
 ];
 
 const stats = [
